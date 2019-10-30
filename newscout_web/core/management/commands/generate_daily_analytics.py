@@ -15,7 +15,7 @@ from datetime import timedelta
 from django.db.models import Count
 from django.core.management.base import BaseCommand
 
-from news_site.models import Article, Category
+from core.models import Article, Category
 
 EMAIL_FROM = ''
 SMTP_SERVER = 'smtp.gmail.com'

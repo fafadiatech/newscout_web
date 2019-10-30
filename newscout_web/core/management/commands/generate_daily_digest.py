@@ -1,7 +1,7 @@
 import math
 import requests
-from news_site.utils import es
-from news_site.models import Article, Devices, DailyDigest
+from core.utils import es
+from core.models import Article, Devices, DailyDigest
 from django.core.management.base import BaseCommand
 
 

@@ -14,10 +14,10 @@ from random import randint
 from datetime import datetime
 from dateutil.parser import parse
 from django.core.management.base import BaseCommand, CommandError
-from news_site.models import *
+from core.models import *
 from api.v1.serializers import ArticleSerializer
-from news_site.utils import create_index, ingest_to_elastic
-from news_site.classify import RegexClassification
+from core.utils import create_index, ingest_to_elastic
+from core.classify import RegexClassification
 
 from multiprocessing import Pool
 

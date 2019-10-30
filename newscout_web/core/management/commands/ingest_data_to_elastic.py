@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from news_site.models import *
+from core.models import *
 from api.v1.serializers import ArticleSerializer
-from news_site.utils import create_index, ingest_to_elastic
+from core.utils import create_index, ingest_to_elastic
 
 
 class Command(BaseCommand):

@@ -1,7 +1,7 @@
 import math
 from django.core.management.base import BaseCommand
 
-from news_site.models import *
+from core.models import *
 from django.utils import timezone
 from datetime import datetime, time
 

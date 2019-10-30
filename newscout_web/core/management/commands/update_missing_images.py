@@ -1,9 +1,9 @@
 from random import randint
-from news_site.models import Article, CategoryDefaultImage
+from core.models import Article, CategoryDefaultImage
 from django.core.management.base import BaseCommand
 
 from api.v1.serializers import ArticleSerializer
-from news_site.utils import create_index, ingest_to_elastic
+from core.utils import create_index, ingest_to_elastic
 
 class Command(BaseCommand):
     help = 'This command is used to update missing images'

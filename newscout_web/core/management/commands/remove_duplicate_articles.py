@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from news_site.models import Article
+from core.models import Article
 from api.v1.serializers import ArticleSerializer
-from news_site.utils import delete_from_elastic
+from core.utils import delete_from_elastic
 from django.db.models import Count
 
 

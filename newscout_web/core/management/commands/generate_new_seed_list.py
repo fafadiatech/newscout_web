@@ -1,5 +1,5 @@
 from urllib.parse import urlparse
-from news_site.models import ScoutedItem
+from core.models import ScoutedItem
 from django.core.management.base import BaseCommand
 
 

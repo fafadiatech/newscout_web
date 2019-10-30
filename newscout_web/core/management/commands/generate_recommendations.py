@@ -3,7 +3,7 @@ import datetime
 from random import randint
 from operator import itemgetter
 from elasticsearch.helpers import scan
-from news_site.utils import es, create_index, ingest_to_elastic
+from core.utils import es, create_index, ingest_to_elastic
 from django.utils import timezone
 
 from urllib.parse import urlparse
