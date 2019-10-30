@@ -12,11 +12,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from django.utils.timezone import now
 
-EMAIL_FROM = 'devops01@fafadiatech.com'
+EMAIL_FROM = ''
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
-SMTP_PASSWORD = 'ftech@1234'
-MAILING_LIST = ['yogesh.panchal@fafadiatech.com', 'sidharth@fafadiatech.com']
+SMTP_PASSWORD = ''
+MAILING_LIST = []
 
 def send_mail(msg):
     today = now()

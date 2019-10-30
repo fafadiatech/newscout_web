@@ -17,11 +17,11 @@ from django.core.management.base import BaseCommand
 
 from news_site.models import Article, Category
 
-EMAIL_FROM = 'devops01@fafadiatech.com'
+EMAIL_FROM = ''
 SMTP_SERVER = 'smtp.gmail.com'
 SMTP_PORT = 587
-SMTP_PASSWORD = 'ftech@1234'
-MAILING_LIST = ['yogesh.panchal@fafadiatech.com', 'sidharth@fafadiatech.com']
+SMTP_PASSWORD = ''
+MAILING_LIST = []
 
 DATA_DIR = os.path.join(settings.BASE_DIR, "news_site", "static", "js", "react")
 
