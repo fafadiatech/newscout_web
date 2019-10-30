@@ -1,6 +1,6 @@
-# Django NewsCout News-site
+# NewScout
 
-This is a re-usable News Site Application for use in Django projects
+News/Magazine Site powered by Django
 
 ## Architecture
 
