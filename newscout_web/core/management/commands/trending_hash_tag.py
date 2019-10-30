@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from news_site.models import Article, TrendingHashTag
+from core.models import Article, TrendingHashTag
 from django.db.models import Count
 from datetime import datetime
 from datetime import timedelta

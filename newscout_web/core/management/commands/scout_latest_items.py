@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from django.core.management.base import BaseCommand
-from news_site.models import ScoutFrontier, Category, ScoutedItem
+from core.models import ScoutFrontier, Category, ScoutedItem
 
 
 class Command(BaseCommand):

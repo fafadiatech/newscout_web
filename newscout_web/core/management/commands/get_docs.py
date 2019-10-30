@@ -3,9 +3,9 @@ import sys
 import json
 from django.core.management.base import BaseCommand
 
-from news_site.models import *
+from core.models import *
 from api.v1.serializers import ArticleSerializer
-from news_site.utils import es
+from core.utils import es
 
 
 class Command(BaseCommand):

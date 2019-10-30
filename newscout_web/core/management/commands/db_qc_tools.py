@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from news_site.models import Article
+from core.models import Article
 import zulip
 import time
 from datetime import datetime, timedelta

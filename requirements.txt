@@ -6,7 +6,7 @@ configparser==3.5.0
 datasketch==1.4.3
 Django==2.2
 django-filter==1.0.4
-djangorestframework==3.6.3
+djangorestframework==3.10.3
 elasticsearch==6.3.1
 elasticsearch-dsl==6.3.1
 enum34==1.1.6
@@ -17,6 +17,7 @@ idna==2.8
 ipaddress==1.0.22
 mccabe==0.6.1
 numpy==1.16.2
+Pillow==6.2.1
 psycopg2-binary==2.7.6.1
 pyasn1==0.4.5
 pyasn1-modules==0.2.4

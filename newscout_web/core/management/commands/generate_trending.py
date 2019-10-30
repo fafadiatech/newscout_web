@@ -4,8 +4,8 @@ import datetime
 
 from operator import itemgetter
 from datasketch import MinHash
-from news_site.utils import es
-from news_site.models import Article, TrendingArticle
+from core.utils import es
+from core.models import Article, TrendingArticle
 from django.conf import settings
 from django.utils import timezone
 from django.core.management.base import BaseCommand
