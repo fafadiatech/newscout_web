@@ -25,6 +25,9 @@ SECRET_KEY = '_am!u5!_zzqh*tmls(jctl_3j186fuh5r7*p*t0*czpvu&i%+x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Enble sqlite database quick mode (by default disabled)
+QUICK_MODE = False
+
 ALLOWED_HOSTS = []
 
 
@@ -77,25 +80,24 @@ WSGI_APPLICATION = 'newscout_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'newscout',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3'),
+if QUICK_MODE: 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3'),
+        }
     }
-}
-
-
+else:  
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'newscout',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

@@ -35,6 +35,11 @@ This is a re-usable News Site Application for use in Django projects
 1. Create python 3 virtual environment `virtualenv -p /usr/bin/python3 /path/to/env/env_name`
 1. Activate your environment `source /path/to/env/env_name/bin/activate`
 1. Install requirements `pip install -r requirements.txt`
+1. If you don't want to use postgresql database, you can enable **QUICK_MODE**
+```python 
+QUICK_MODE=True
+```
+in settings.py file it will create sqlite database (You can skip following 3 steps). or You can continue with postgresql database installation.
 1. Install postgresql database `sudo apt-get install postgresql-9.5 postgresql-client-9.5 postgresql-client-common postgresql-common postgresql-contrib`
 1. Create postgresql database
     ```sh
@@ -71,4 +76,3 @@ This is a re-usable News Site Application for use in Django projects
     sudo apt install elasticsearch
     ```
 1. Ingest data into elasticsearch `python manage.py ingest_data_to_elastic`
-
