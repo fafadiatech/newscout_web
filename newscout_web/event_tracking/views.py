@@ -1,40 +1,29 @@
 import os
 import pymongo
+from datetime import datetime, timedelta, time
+
+from django.views import View
 from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from datetime import datetime, timedelta, time
 
 from .models import Event
 
 
-class TrackerAPI(APIView):
+class TrackerAPI(View):
+
     def get(self, request, format=None):
         events = Event()
-        pixel_path = os.path.join(settings.STATICFILES_DIRS[0], "tracker.gif")
+        pixel_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', "tracker.gif")
         pixel = open(pixel_path, "rb").read()
 
         fired_event = {}
-        for k,v in self.request.query_params.items():
+        for k,v in request.GET.items():
             fired_event[k] = v
 
         events.add(fired_event)
         return HttpResponse(pixel, content_type="image/gif")
-
-class ActivityLogAPI(APIView):
-    def get(self, request, format=None):
-        events = Event()
-        case_id = self.request.query_params.get('case_id')
-        action = self.request.query_params.get('action')
-
-        results = {}
-
-        if action == 'log':
-            results = events.get_activity_log(case_id)
-        else:
-            results = events.get_activity_stats(case_id)
-        return Response(results)
 
 
 class NewsCoutLogAPI(APIView):
