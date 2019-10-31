@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^ajax_select/', include(ajax_select_urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
+    url(r'^event/', include('event_tracking.urls')),
     url(r'^getad-redirect/$', AdRedirectView.as_view(),
         name='get-ads-redirect'),
 ]
