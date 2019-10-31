@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'rest_framework.authtoken',
-    'ajax_select'
+    'ajax_select',
+    'event_tracking'
 ]
 
 MIDDLEWARE = [
