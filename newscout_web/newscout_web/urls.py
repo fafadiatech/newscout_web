@@ -17,7 +17,6 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from ajax_select import urls as ajax_select_urls
-from api.v1.views import AdRedirectView
 
 app_name = 'newscout_web'
 
@@ -26,6 +25,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
     url(r'^event/', include('event_tracking.urls')),
-    url(r'^getad-redirect/$', AdRedirectView.as_view(),
-        name='get-ads-redirect'),
+    url(r'^ad/', include('advertising.urls')),
 ]

@@ -7,7 +7,7 @@ from .models import (Category, BaseUserProfile,
                      Source, HashTag, Article, ArticleMedia,
                      ArticleRating, RelatedArticle, BookmarkArticle, CategoryAssociation,
                     ScoutFrontier, ScoutedItem, TrendingArticle, Menu, SubMenu,
-                    CategoryDefaultImage, Domain, Campaign, AdGroup, AdType, Advertisement)
+                    CategoryDefaultImage, Domain)
 
 from core.utils import ingest_to_elastic, delete_from_elastic
 from api.v1.serializers import ArticleSerializer
@@ -26,10 +26,6 @@ admin.site.register(CategoryAssociation)
 admin.site.register(Menu)
 admin.site.register(CategoryDefaultImage)
 admin.site.register(Domain)
-admin.site.register(Campaign)
-admin.site.register(AdGroup)
-admin.site.register(AdType)
-admin.site.register(Advertisement)
 
 
 class ArticleEditedByFilter(admin.SimpleListFilter):
