@@ -119,20 +119,21 @@ class LoginAPIView(generics.GenericAPIView):
         user = BaseUserProfile.objects.filter(email=request.data["email"]).first()
         device_name = request.data["device_name"]
         device_id = request.data["device_id"]
-        device = Devices.objects.filter(user=user.id)
-        if device:
-            device.update(device_name=device_name, device_id=device_id)
-        else:
-            device, created = Devices.objects.get_or_create(device_name=device_name, device_id=device_id)
-            Devices.objects.filter(pk=device.pk).update(user=user)
-        notification = NotificationSerializer(Notification.objects.get_or_create(device=device), many=True)
+        device, _ = Devices.objects.get_or_create(user=user,
+                                               device_name=device_name,
+                                               device_id=device_id)
+        notification_obj, _ = Notification.objects.get_or_create(device=device)
+        notification = NotificationSerializer(notification_obj)
+
         user_serializer = BaseUserProfileSerializer(user)
         token, _ = Token.objects.get_or_create(user=user)
+
         data = user_serializer.data
         data["token"] = token.key
-        data["breaking_news"] = notification.data[0]['breaking_news']
-        data["daily_edition"] = notification.data[0]['daily_edition']
-        data["personalized"] = notification.data[0]['personalized']
+        data["breaking_news"] = notification.data['breaking_news']
+        data["daily_edition"] = notification.data['daily_edition']
+        data["personalized"] = notification.data['personalized']
+
         response_data = create_response({"user": data})
         return Response(response_data)
 
