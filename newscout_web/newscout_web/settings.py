@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'ajax_select',
-    'event_tracking'
+    'event_tracking',
+    'analytics',
+    'dashboard',
+    'frontend'
 ]
 
 MIDDLEWARE = [

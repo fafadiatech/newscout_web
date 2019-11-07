@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+#root .navbar .inner-section{
+	height: 48px;
+	margin-right: 16px;
+}
+
+#root .navbar .inner-section img.logo {
+	height: 100%;
+}
+#root .navbar {
+	background-color: #fff !important;
+}
+.mx-20 {
+	margin: 0px 20px;
+}
+.navbar-nav, .navbar-nav li {
+  width: 65rem;
+}
+.navbar {
+  box-shadow: 0px 0px 10px 0px;
+}
+nav.sidenav---sidenav---_2tBP {
+  top: 61px !important;
+  position: fixed;
+}
+.sidenav---sidenav---_2tBP .sidenav---navicon---3gCRo i.fa-fw {
+  font-size: 1.75em;
+  vertical-align: middle;
+}
+.sidenav---sidenav---_2tBP .sidenav---navtext---1AE_f {
+ padding-right: 32px;
+}
