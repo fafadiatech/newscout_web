@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'ajax_select',
     'event_tracking',
+    'advertising',
     'analytics',
     'dashboard',
     'frontend'

@@ -10,9 +10,7 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     ArtilcleLikeAPIView, HashTagAPIView, ArticleSearchAPI, MenuAPIView,
                     DevicesAPIView, NotificationAPIView, SocialLoginView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
-                    CategoryBulkUpdate, GetAds, GetDailyDigestView, CampaignView,
-                    CampaignDeleteView, AdGroupView, AdGroupDeleteView, AdvertisementView,
-                    AdvertisementDeleteView, CampaignCategoriesListView, GroupTypeListView)
+                    CategoryBulkUpdate, GetDailyDigestView)
 
 urlpatterns = [
     url(r'^trending/$', TrendingArticleAPIView.as_view(),
@@ -63,16 +61,6 @@ urlpatterns = [
         name='social-login'),
     url(r'^article/create-update/$', ArticleCreateUpdateView.as_view(),
         name='article-create-update'),
-    url(r'^get-ads/$', GetAds.as_view(),
-        name='get-ads'),
-    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
-    url(r'campaign-categories/$', CampaignCategoriesListView.as_view(), name='campign-categories-view'),
-    url(r'campaign/$', CampaignView.as_view(), name='campign-view'),
-    url(r'campaign/(?P<cid>[-\d]+)/$', CampaignDeleteView.as_view(), name='campign-view-delete'),
-    url(r'group-type/$', GroupTypeListView.as_view(), name='group-type-view'),
-    url(r'adgroup/$', AdGroupView.as_view(), name='adgroup-view'),
-    url(r'adgroup/(?P<cid>[-\d]+)/$', AdGroupDeleteView.as_view(), name='adgroup-view-delete'),
-    url(r'advertisement/$', AdvertisementView.as_view(), name='advertisement-view'),
-    url(r'advertisement/(?P<cid>[-\d]+)/$', AdvertisementDeleteView.as_view(), name='advertisement-view-delete')
+    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest')
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
