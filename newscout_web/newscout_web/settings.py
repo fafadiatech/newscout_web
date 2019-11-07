@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'advertising',
     'analytics',
     'dashboard',
-    'frontend'
+    'frontend',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -164,7 +165,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
-    'EXCEPTION_HANDLER': 'api.v1.exception_handler.newscout_exception_handler'
+    'EXCEPTION_HANDLER': 'api.v1.exception_handler.newscout_exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 
 }
 

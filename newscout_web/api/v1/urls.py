@@ -1,6 +1,9 @@
 from django.conf.urls import url
 
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title="Newscout API Documentation")
 
 from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     LoginAPIView, LogoutAPIView, SourceListAPIView,
@@ -13,6 +16,7 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     CategoryBulkUpdate, GetDailyDigestView)
 
 urlpatterns = [
+    url(r'^documentation/', schema_view),
     url(r'^trending/$', TrendingArticleAPIView.as_view(),
         name="trending"),
     url(r'^categories/bulk/$', CategoryBulkUpdate.as_view(),
