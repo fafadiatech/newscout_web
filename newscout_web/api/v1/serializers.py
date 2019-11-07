@@ -80,7 +80,7 @@ class LoginUserSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, data):
-        user = authenticate(username=data["email"], password=data["password"])
+        user = authenticate(request=None, username=data["email"], password=data["password"])
         if user:
             return user
         raise exceptions.AuthenticationFailed('User inactive or deleted')

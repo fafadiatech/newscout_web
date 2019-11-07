@@ -21,6 +21,8 @@ from ajax_select import urls as ajax_select_urls
 app_name = 'newscout_web'
 
 urlpatterns = [
+    url(r'^analytics/', include('analytics.urls')),
+    url(r'^dashboard/', include('dashboard.urls')),
     url(r'^ajax_select/', include(ajax_select_urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),

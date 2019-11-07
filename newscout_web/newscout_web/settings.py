@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'ajax_select',
     'event_tracking',
-    'advertising'
+    'advertising',
+    'analytics',
+    'dashboard',
+    'frontend'
 ]
 
 MIDDLEWARE = [
@@ -83,14 +86,14 @@ WSGI_APPLICATION = 'newscout_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-if QUICK_MODE: 
+if QUICK_MODE:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3'),
         }
     }
-else:  
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -148,8 +151,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'news_site.backends.EmailModelBackend'
+    'core.backends.EmailModelBackend',
+    'django.contrib.auth.backends.ModelBackend'
 ]
 
 REST_FRAMEWORK = {
