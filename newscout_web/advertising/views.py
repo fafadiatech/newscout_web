@@ -17,6 +17,7 @@ from api.v1.exception_handler import (create_error_response,
                                       AdGroupNotFoundException,
                                       AdvertisementNotFoundException)
 from advertising.models import (Campaign, AdGroup, AdType, Advertisement)
+from core.models import Category
 
 
 class GetAds(APIView):
