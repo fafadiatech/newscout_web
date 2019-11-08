@@ -10,6 +10,7 @@ from .serializers import  (AdvertisementSerializer, CampaignSerializer,
                            AdGroupSerializer, AdCreateSerializer, GetAdGroupSerializer, AdTypeSerializer, GetAdSerializer)
 
 from api.v1.views import create_response
+from api.v1.serializers import CategorySerializer
 
 from api.v1.exception_handler import (create_error_response,
                                       CampaignNotFoundException,
