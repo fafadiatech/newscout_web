@@ -10,7 +10,7 @@ Django==2.2.4
 django-ajax-selects==1.7.1
 django-filter==1.0.4
 djangorestframework==3.10.3
-django-rest-swagger==2.1.6
+django-rest-swagger==2.2.0
 docutils==0.15.2
 elasticsearch==6.3.1
 elasticsearch-dsl==6.3.1
