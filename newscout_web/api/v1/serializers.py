@@ -41,11 +41,12 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('id', 'title', 'source', 'category', 'hash_tags','source_url',
                   'cover_image', 'blurb', 'published_on', 'is_book_mark',
-                  'isLike','article_media', 'category_id', 'domain')
+                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id')
 
     source = serializers.ReadOnlyField(source='source.name')
     category = serializers.ReadOnlyField(source='category.name')
     category_id = serializers.ReadOnlyField(source='category.id')
+    source_id = serializers.ReadOnlyField(source='source.id')
     domain = serializers.ReadOnlyField(source='domain.domain_id')
     hash_tags = HashTagSerializer(many=True)
 
@@ -194,6 +195,10 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
                 video_url=am["video_url"]
             ) for am in article_media]
 
+        if self.context.get("publish"):
+            article.active = True
+            article.save()
+
         return article
 
     def update(self, instance, validated_data):
@@ -224,5 +229,9 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
                 url=am["url"],
                 video_url=am["video_url"]
             )[0] for am in article_media]
+
+        if self.context.get("publish"):
+            instance.active = True
+            instance.save()
 
         return instance

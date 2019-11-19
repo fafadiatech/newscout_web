@@ -6,7 +6,6 @@ from core.models import (Category, Article, Source, BaseUserProfile,
                               BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
                               SocialAccount, Category, CategoryAssociation,
                               TrendingArticle, Domain, DailyDigest)
-from advertising.models import (Advertisement, Campaign, AdGroup, AdType)
 
 from rest_framework.authtoken.models import Token
 
@@ -19,7 +18,6 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           ArticleCreateUpdateSerializer)
 
 from rest_framework.response import Response
-from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
 from newscout_web.constants import SOCIAL_AUTH_PROVIDERS
@@ -46,6 +44,9 @@ import facebook
 from .exception_handler import (create_error_response,TokenIDMissing, ProviderMissing,
                                 SocialAuthTokenException)
 import logging
+import operator
+from functools import reduce
+
 log = logging.getLogger(__name__)
 
 
@@ -160,7 +161,7 @@ class UserHashTagAPIView(APIView):
 
 
 class CategoryListAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None, *args, **kwargs):
         """
@@ -193,7 +194,7 @@ class CategoryListAPIView(APIView):
 
 
 class SourceListAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None, *args, **kwargs):
         """
@@ -242,7 +243,10 @@ class ArticleListAPIView(ListAPIView):
             queryset = queryset.filter(hash_tags__name__in=tag)
 
         if q:
-            queryset = queryset.filter(Q(title__icontains=q) | Q(full_text__icontains=q))
+            q_list = q.split(" ")
+            condition_1 = reduce(operator.or_, [Q(title__icontains=s) for s in q_list])
+            condition_2 = reduce(operator.or_, [Q(full_text__icontains=s) for s in q_list])
+            queryset = queryset.filter(condition_1|condition_2)
 
         return queryset.distinct()
 
@@ -991,23 +995,94 @@ class ArticleCreateUpdateView(APIView):
     """
     Article create update view
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
+
+    def get_tags(self, tags):
+        """
+        this method will return tag name from tags objects
+        """
+        tag_list = []
+        for tag in tags:
+            tag_list.append(tag["name"])
+        return tag_list
+
+    def publish(self, obj):
+        serializer = ArticleSerializer(obj)
+        json_data = serializer.data
+        # delete_from_elastic([json_data], "article", "article", "id")
+
+        if json_data["hash_tags"]:
+            tag_list = self.get_tags(json_data["hash_tags"])
+            json_data["hash_tags"] = tag_list
+        ingest_to_elastic([json_data], "article", "article", "id")
 
     def post(self, request):
-        serializer = ArticleCreateUpdateSerializer(data=request.data)
+        publish = request.data.get("publish")
+        context = {"publish": publish}
+        serializer = ArticleCreateUpdateSerializer(
+            data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
+            if publish:
+                self.publish(serializer.instance)
             return Response(create_response(serializer.data))
         return Response(create_error_response(serializer.errors), status=400)
 
     def put(self, request):
         _id = request.data.get("id")
+        publish = request.data.get("publish")
+        context = {"publish": publish}
         obj = Article.objects.get(id=_id)
-        serializer = ArticleCreateUpdateSerializer(obj, data=request.data)
+        serializer = ArticleCreateUpdateSerializer(
+            obj, data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
+            if publish:
+                self.publish(serializer.instance)
             return Response(create_response(serializer.data))
         return Response(create_error_response(serializer.errors), status=400)
+
+
+class ChangeArticleStatusView(APIView):
+    """
+    this view is used to update status of given article activate or deactivate
+    """
+    permission_classes = (AllowAny,)
+
+    def get_tags(self, tags):
+        """
+        this method will return tag name from tags objects
+        """
+        tag_list = []
+        for tag in tags:
+            tag_list.append(tag["name"])
+        return tag_list
+
+    def publish(self, obj):
+        serializer = ArticleSerializer(obj)
+        json_data = serializer.data
+
+        if obj.active:
+            if json_data["hash_tags"]:
+                tag_list = self.get_tags(json_data["hash_tags"])
+                json_data["hash_tags"] = tag_list
+            ingest_to_elastic([json_data], "article", "article", "id")
+        else:
+            delete_from_elastic([json_data], "article", "article", "id")
+
+    def post(self, request):
+        _id = request.data.get("id")
+        active_status = request.data.get("activate")
+        article_obj = Article.objects.filter(id=_id).first()
+        if not article_obj:
+            return Response(create_error_response({"error": "Article does not exists"}), status=400)
+        article_obj.active = active_status
+        article_obj.save()
+        self.publish(article_obj)
+        return Response(create_response({
+            "id": article_obj.id,
+            "active": article_obj.active
+            }))
 
 
 class CategoryBulkUpdate(APIView):
