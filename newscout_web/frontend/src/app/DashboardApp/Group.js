@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import * as serviceWorker from './serviceWorker';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { GROUP_URL, CATEGORIES_CAMPAIGN_URL } from '../../utils/Constants';
+import { GROUP_URL, GROUP_LIST_URL, CATEGORIES_CAMPAIGN_URL } from '../../utils/Constants';
 import { getRequest, postRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
@@ -23,7 +23,30 @@ class Group extends React.Component {
 			categories: [],
 			campaigns: [],
 			results: [],
+			next: null,
+			previous: null,
+			loading: false,
+			q: "",
+			page : 0
 		};
+	}
+
+	handleQueryChange = (event) => {
+		var value = event.target.value;
+		this.setState({
+			q: value
+		})
+	}
+
+	handleKeyPress = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			this.setState({
+				results: []
+			})
+			var url = GROUP_LIST_URL + "?q=" + this.state.q;
+			getRequest(url, this.getGroupsData);
+		}
 	}
 
 	handleValidation = () => {
@@ -219,20 +242,48 @@ class Group extends React.Component {
 	}
 
 	getGroups = (data) => {
-		var url = GROUP_URL;
+		var url = GROUP_LIST_URL;
 		getRequest(url, this.getGroupsData);
 	}
 
 	getGroupsData = (data) => {
+		var results = [
+			...this.state.results,
+			...data.body.results
+		]
 		this.setState({
-			'results': data.body
+			results: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getGroupsData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		this.getGroups()
 		var campaign_category_url = CATEGORIES_CAMPAIGN_URL;
 		getRequest(campaign_category_url, this.getCampaignCategories);
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render(){
@@ -305,7 +356,7 @@ class Group extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" />
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
 											</Form>
 										</div>
 									</div>
@@ -327,6 +378,13 @@ class Group extends React.Component {
 											{results}
 										</tbody>
 									</Table>
+									{
+										this.state.loading ?
+										<React.Fragment>
+											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+										</React.Fragment>
+										: ""
+									}
 								</div>
 							</main>
 						</div>

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import Datetime from 'react-datetime';
 import { ToastContainer } from 'react-toastify';
 import * as serviceWorker from './serviceWorker';
-import {CAMPAIGN_URL} from '../../utils/Constants';
+import {CAMPAIGN_URL, CAMPAIGN_LIST_URL} from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
 import { getRequest, postRequest, deleteRequest, notify } from '../../utils/Utils';
@@ -21,8 +21,31 @@ class Campaign extends React.Component {
 			errors: {},
 			rows: {},
 			formSuccess: false,
-			results: []
+			results: [],
+			next: null,
+			previous: null,
+			loading: false,
+			q: "",
+			page : 0
 		};
+	}
+
+	handleQueryChange = (event) => {
+		var value = event.target.value;
+		this.setState({
+			q: value
+		})
+	}
+
+	handleKeyPress = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			this.setState({
+				results: []
+			})
+			var url = CAMPAIGN_LIST_URL + "?q=" + this.state.q;
+			getRequest(url, this.getCampaignsData);
+		}
 	}
 
 	handleValidation = () => {
@@ -175,28 +198,56 @@ class Campaign extends React.Component {
 	}
 
 	getCampaigns = () => {
-		var url = CAMPAIGN_URL;
+		var url = CAMPAIGN_LIST_URL;
 		getRequest(url, this.getCampaignsData);
 	}
 
 	getCampaignsData = (data) => {
+		var results = [
+			...this.state.results,
+			...data.body.results
+		]
 		this.setState({
-			'results': data.body
+			results: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getCampaignsData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		this.getCampaigns()
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render(){
 		let result_array = this.state.results
 		let results = []
-		
+
 		result_array.map((el, index) => {
 			var start_date = moment(el.start_date).format('YYYY-MM-DD m:ss A');
 			var end_date = moment(el.end_date).format('YYYY-MM-DD m:ss A');
-			
+
 			var data = <tr key={index} data-row={el.id}>
 				<th scope="row">{index+1}</th>
 				<td>
@@ -291,7 +342,7 @@ class Campaign extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" />
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
 											</Form>
 										</div>
 									</div>
@@ -316,6 +367,13 @@ class Campaign extends React.Component {
 											{results}
 										</tbody>
 									</Table>
+									{
+										this.state.loading ?
+										<React.Fragment>
+											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+										</React.Fragment>
+										: ""
+									}
 								</div>
 							</main>
 						</div>

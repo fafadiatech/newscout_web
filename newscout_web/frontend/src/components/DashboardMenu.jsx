@@ -27,6 +27,9 @@ class DashboardMenu extends React.Component {
 						<li className="nav-item">
 							<a className={`${this.state.active_page === "advertisement" ? 'active' : ''} nav-link `} href="/dashboard/advertisements/">Advertisements</a>
 						</li>
+						<li className="nav-item">
+							<a className={`${this.state.active_page === "articles" ? 'active' : ''} nav-link `} href="/dashboard/articles/">Articles</a>
+						</li>
 					</ul>
 				</div>
 			</nav>

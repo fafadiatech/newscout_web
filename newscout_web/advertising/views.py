@@ -1,23 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import random
+import operator
+from functools import reduce
+from typing import Generic
+from django.db.models import Q
+from rest_framework import filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from django.views.generic.base import RedirectView
 
 from .serializers import  (AdvertisementSerializer, CampaignSerializer,
                            AdGroupSerializer, AdCreateSerializer, GetAdGroupSerializer, AdTypeSerializer, GetAdSerializer)
 
-from api.v1.views import create_response
 from api.v1.serializers import CategorySerializer
-
+from api.v1.views import create_response, PostpageNumberPagination
 from api.v1.exception_handler import (create_error_response,
                                       CampaignNotFoundException,
                                       AdGroupNotFoundException,
                                       AdvertisementNotFoundException)
-from advertising.models import (Campaign, AdGroup, AdType, Advertisement)
 from core.models import Category
+from advertising.models import (Campaign, AdGroup, AdType, Advertisement)
 
 
 class GetAds(APIView):
@@ -65,19 +70,91 @@ class CampaignCategoriesListView(APIView):
         return Response(create_response({"categories": categories.data, "campaigns": campaigns.data}))
 
 
+class GenericAdListAPIView(ListAPIView):
+    """
+    generic ad list api view
+    """
+    permission_classes = (AllowAny,)
+    pagination_class = PostpageNumberPagination
+    filter_backends = (filters.OrderingFilter,)
+    ordering = ('-id',)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            if serializer.data:
+                paginated_response = self.get_paginated_response(serializer.data)
+                return Response(create_response(paginated_response.data))
+            else:
+                return Response(create_error_response({"Msg" : "Objects Doesn't Exist"}), status=400)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(create_response(serializer.data))
+
+
+class CampaignListView(GenericAdListAPIView):
+    """
+    campaign list view
+    """
+    serializer_class = CampaignSerializer
+
+    def get_queryset(self):
+        q = self.request.GET.get("q","")
+        queryset = Campaign.objects.all()
+
+        if q:
+            q_list = q.split(" ")
+            condition_1 = reduce(operator.or_, [Q(name__icontains=s) for s in q_list])
+            queryset = queryset.filter(condition_1)
+
+        return queryset
+
+
+class AdGroupListView(GenericAdListAPIView):
+    """
+    AdGroup list view
+    """
+    serializer_class = GetAdGroupSerializer
+
+    def get_queryset(self):
+        q = self.request.GET.get("q","")
+        queryset = AdGroup.objects.all()
+
+        if q:
+            q_list = q.split(" ")
+            condition_1 = reduce(operator.or_, [Q(category__name__icontains=s) for s in q_list])
+            condition_2 = reduce(operator.or_, [Q(campaign__name__icontains=s) for s in q_list])
+            queryset = queryset.filter(condition_1|condition_2)
+
+        return queryset.distinct()
+
+
+class AdvertisementListView(GenericAdListAPIView):
+    """
+    Advertisement list view
+    """
+    serializer_class = GetAdSerializer
+
+    def get_queryset(self):
+        q = self.request.GET.get("q","")
+        queryset = Advertisement.objects.all()
+
+        if q:
+            q_list = q.split(" ")
+            condition_1 = reduce(operator.or_, [Q(ad_text__icontains=s) for s in q_list])
+            queryset = queryset.filter(condition_1)
+
+        return queryset
+
+
 class CampaignView(APIView):
     """
     this view is used to create,update,list and delete Campaign's
     """
     permission_classes = (AllowAny,)
-
-    def get(self, request):
-        """
-        get list of all campaigns
-        """
-        campaign_objs = Campaign.objects.all().order_by('-id')
-        serializer = CampaignSerializer(campaign_objs, many=True)
-        return Response(create_response(serializer.data))
 
     def post(self, request):
         """
@@ -124,14 +201,6 @@ class AdGroupView(APIView):
     this view is used to create,update,list and delete AdGroup's
     """
     permission_classes = (AllowAny,)
-
-    def get(self, request):
-        """
-        get list of all adgroups
-        """
-        adgroup_objs = AdGroup.objects.all().order_by('-id')
-        serializer = GetAdGroupSerializer(adgroup_objs, many=True)
-        return Response(create_response(serializer.data))
 
     def post(self, request):
         """
@@ -199,14 +268,6 @@ class AdvertisementView(APIView):
     this view is used to create, list and update advertisement
     """
     permission_classes = (AllowAny,)
-
-    def get(self, request):
-        """
-        get list of all Advertisements
-        """
-        advertisement_objs = Advertisement.objects.all().order_by('-id')
-        serializer = GetAdSerializer(advertisement_objs, many=True)
-        return Response(create_response(serializer.data))
 
     def post(self, request):
         """

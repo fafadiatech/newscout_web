@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import * as serviceWorker from './serviceWorker';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { ADVERTISEMENT_URL, GROUP_GROUPTYPE_URL } from '../../utils/Constants';
+import { ADVERTISEMENT_URL, ADVERTISEMENT_LIST_URL, GROUP_GROUPTYPE_URL } from '../../utils/Constants';
 import { getRequest, postRequest, fileUploadHeaders,  deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
@@ -23,6 +23,11 @@ class Advertisement extends React.Component {
 			groups: [],
 			grouptypes: [],
 			results: [],
+			next: null,
+			previous: null,
+			loading: false,
+			q: "",
+			page : 0
 		};
 	}
 
@@ -55,6 +60,24 @@ class Advertisement extends React.Component {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	handleQueryChange = (event) => {
+		var value = event.target.value;
+		this.setState({
+			q: value
+		})
+	}
+
+	handleKeyPress = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			this.setState({
+				results: []
+			})
+			var url = ADVERTISEMENT_LIST_URL + "?q=" + this.state.q;
+			getRequest(url, this.getAdvertisementData);
 		}
 	}
 
@@ -98,7 +121,8 @@ class Advertisement extends React.Component {
 
 	toggle = () => {
 		this.setState(prevState => ({
-			modal: !prevState.modal
+			modal: !prevState.modal,
+			fields: {}
 		}));
 	}
 
@@ -135,7 +159,7 @@ class Advertisement extends React.Component {
 	getGroupAndGroupType = (data) => {
 		let groups_array = []
 		let groupstype_array = []
-		
+
 		if(data.body.groups){
 			data.body.groups.map((item, index) => {
 				let group_dict = {}
@@ -163,20 +187,48 @@ class Advertisement extends React.Component {
 	}
 
 	getAdvertisements = (data) => {
-		var url = ADVERTISEMENT_URL;
+		var url = ADVERTISEMENT_LIST_URL;
 		getRequest(url, this.getAdvertisementData);
 	}
 
 	getAdvertisementData = (data) => {
+		var results = [
+			...this.state.results,
+			...data.body.results
+		]
 		this.setState({
-			'results': data.body
+			results: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getAdvertisementData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		this.getAdvertisements()
 		var group_type_url = GROUP_GROUPTYPE_URL;
 		getRequest(group_type_url, this.getGroupAndGroupType)
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render(){
@@ -189,7 +241,7 @@ class Advertisement extends React.Component {
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
-							<Select refs="adgroup" value={this.state.fields["adgroup"]} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
+							<Select refs="	" value={this.state.fields["adgroup"]} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
 							<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 						</React.Fragment>
 					:
@@ -284,7 +336,7 @@ class Advertisement extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" />
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
 											</Form>
 										</div>
 									</div>
@@ -309,6 +361,13 @@ class Advertisement extends React.Component {
 											{results}
 										</tbody>
 									</Table>
+									{
+										this.state.loading ?
+										<React.Fragment>
+											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+										</React.Fragment>
+										: ""
+									}
 								</div>
 							</main>
 						</div>

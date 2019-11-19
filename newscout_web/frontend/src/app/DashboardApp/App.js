@@ -15,9 +15,8 @@ class App extends React.Component {
 				<div className="container-fluid">
 					<div className="row">
 						<DashboardMenu />
-						
 						<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-							<h1 className="h2">Hello World</h1>
+							<h1 className="h2">Wel Come to NewsCout</h1>
 						</main>
 					</div>
 				</div>
