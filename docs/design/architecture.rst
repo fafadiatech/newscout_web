@@ -23,6 +23,8 @@ NewScout is a collections of code-bases that allow to create and operate a Newsr
 Technology Stack
 ````````````````
 
+.. image:: images/arch.png
+
 Following are some of the components that are used in NewScout
 
 1. `Django <https://www.djangoproject.com/>`_: Webframework of choice used to build Web Application 
