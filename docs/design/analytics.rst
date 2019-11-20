@@ -32,7 +32,7 @@ Following entities are important to consider when creating Analytics
 Metric Types
 ````````````
 
-While defining analytics, we can classifiy them into one of the following categories
+While defining analytics, we can classify them into one of the following categories
 
 1. `COUNT`: Aggregate Number/Count. Note: These get computed and stored on `Daily Basis`
 2. `TS`: Time series - Counts vs Time. Granularity can be either Daily, Weekly, Monthly or Quarterly. Line Chart(s) vs Time.
@@ -45,7 +45,7 @@ Editorial
 Editorial analytics are used to make content related decisions, it gives key information for making editorial decisions. Following is how we're organizing Editorial analytics
 
 1. Overview
-    1. [COUNT] Views: Count of all article opens (on ALL paltforms)
+    1. [COUNT] Views: Count of all article opens (on ALL platforms)
     2. [COUNT] Avg. Read Time: Read Time all `Sessions` / Total # of `Sessions`
     3. [COUNT] Avg. Articles / Session: # Count of Articles Read in `Sessions` / Total # of `Sessions`
     4. [COUNT] Avg. Interactions / Session
