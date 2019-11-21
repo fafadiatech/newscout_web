@@ -4,10 +4,10 @@ import ReactDOM from 'react-dom';
 import Datetime from 'react-datetime';
 import { ToastContainer } from 'react-toastify';
 import * as serviceWorker from './serviceWorker';
-import {CAMPAIGN_URL, CAMPAIGN_LIST_URL} from '../../utils/Constants';
+import {CAMPAIGN_URL} from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { getRequest, postRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -43,7 +43,7 @@ class Campaign extends React.Component {
 			this.setState({
 				results: []
 			})
-			var url = CAMPAIGN_LIST_URL + "?q=" + this.state.q;
+			var url = CAMPAIGN_URL + "?q=" + this.state.q;
 			getRequest(url, this.getCampaignsData);
 		}
 	}
@@ -120,8 +120,13 @@ class Campaign extends React.Component {
 		}
 	}
 
-	campaignSubmitResponse = (data) => {
-		this.setState({'formSuccess': true});
+	campaignSubmitResponse = (data, extra_data) => {
+		if (extra_data.clean_results) {
+			this.setState({'formSuccess': true, loading: true, results: []});
+		} else {
+			this.setState({'formSuccess': true});
+		}
+
 		setTimeout(() => {
 			this.setState({'modal': false, 'formSuccess': false, 'fields': {}});
 			this.getCampaigns()
@@ -133,7 +138,8 @@ class Campaign extends React.Component {
 
 		if(this.handleValidation()){
 			const body = JSON.stringify(this.state.fields)
-			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST");
+			var extra_data = {"clean_results": true};
+			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", false, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -141,7 +147,8 @@ class Campaign extends React.Component {
 
 	toggle = () => {
 		this.setState(prevState => ({
-			modal: !prevState.modal
+			modal: !prevState.modal,
+			fields: {}
 		}));
 	}
 
@@ -150,17 +157,23 @@ class Campaign extends React.Component {
 
 		if(this.handleValidation()){
 			const body = JSON.stringify(this.state.fields)
-			postRequest(CAMPAIGN_URL, body, this.campaignUpdateResponse, "PUT");
+			var url = CAMPAIGN_URL + this.state.fields.id + "/";
+			var extra_data = {"clean_results": true};
+			putRequest(url, body, this.campaignUpdateResponse, "PUT", false, extra_data);
 		}
 	}
 
-	campaignUpdateResponse = (data) => {
+	campaignUpdateResponse = (data, extra_data) => {
 		notify("Campaign Updated successfully")
 		let dataindex = data.body.id;
 		let rows = this.state.rows;
 		rows[dataindex] = false;
+		if(extra_data.clean_results) {
+			this.setState({rows: rows, results: [], loading: true, fields: {}});
+		} else {
+			this.setState({rows: rows});
+		}
 		this.getCampaigns();
-		this.setState({rows});
 	}
 
 	editRow = (e) => {
@@ -181,6 +194,7 @@ class Campaign extends React.Component {
 	}
 
 	deleteCampaignResponse = (data) => {
+		this.setState({results: [], loading: true})
 		this.getCampaigns();
 		notify(data.body.Msg)
 	}
@@ -190,15 +204,10 @@ class Campaign extends React.Component {
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = CAMPAIGN_URL + dataindex + "/";
 		deleteRequest(url, this.deleteCampaignResponse)
-		setTimeout(function() {
-			findrow.style.transition = '0.8s';
-			findrow.style.opacity = '0';
-			document.getElementById("campaign-table").deleteRow(findrow.rowIndex);
-		}, 1000);
 	}
 
 	getCampaigns = () => {
-		var url = CAMPAIGN_LIST_URL;
+		var url = CAMPAIGN_URL;
 		getRequest(url, this.getCampaignsData);
 	}
 

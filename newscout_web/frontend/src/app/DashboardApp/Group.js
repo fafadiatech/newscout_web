@@ -5,8 +5,8 @@ import { ToastContainer } from 'react-toastify';
 import * as serviceWorker from './serviceWorker';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { GROUP_URL, GROUP_LIST_URL, CATEGORIES_CAMPAIGN_URL } from '../../utils/Constants';
-import { getRequest, postRequest, deleteRequest, notify } from '../../utils/Utils';
+import { GROUP_URL, CATEGORIES_CAMPAIGN_URL } from '../../utils/Constants';
+import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -44,7 +44,7 @@ class Group extends React.Component {
 			this.setState({
 				results: []
 			})
-			var url = GROUP_LIST_URL + "?q=" + this.state.q;
+			var url = GROUP_URL + "?q=" + this.state.q;
 			getRequest(url, this.getGroupsData);
 		}
 	}
@@ -110,12 +110,19 @@ class Group extends React.Component {
 		}
 	}
 
-	groupSubmitResponse = (data) => {
+	groupSubmitResponse = (data, extra_data) => {
 		this.setState({'formSuccess': true});
-		setTimeout(() => {
-			this.setState({'modal': false, 'formSuccess': false});
-			this.getGroups()
-        }, 3000);
+		if (extra_data.clean_results) {
+			setTimeout(() => {
+				this.setState({'modal': false, 'formSuccess': false, results: [], loading: true});
+				this.getGroups()
+			}, 3000);
+		} else {
+			setTimeout(() => {
+				this.setState({'modal': false, 'formSuccess': false});
+				this.getGroups()
+			}, 3000);
+		}
 	}
 
 	groupSubmit = (e) => {
@@ -123,7 +130,8 @@ class Group extends React.Component {
 
 		if(this.handleValidation()){
 			const body = JSON.stringify(this.state.fields)
-			postRequest(GROUP_URL, body, this.groupSubmitResponse, "POST");
+			var extra_data = {"clean_results": true};
+			postRequest(GROUP_URL, body, this.groupSubmitResponse, "POST", false, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -142,17 +150,23 @@ class Group extends React.Component {
 			var final_category = [];
 			this.state.fields['category'].map(function(i, x){final_category.push(i.value)})
 			var body = {'campaign': this.state.fields['campaign'].value, 'category': final_category, 'id': this.state.fields.id}
-			postRequest(GROUP_URL, JSON.stringify(body), this.groupUpdateResponse, "PUT");
+			var url = GROUP_URL + this.state.fields.id + "/";
+			var extra_data = {"clean_results": true};
+			putRequest(url, JSON.stringify(body), this.groupUpdateResponse, "PUT", false, extra_data);
 		}
 	}
 
-	groupUpdateResponse = (data) => {
+	groupUpdateResponse = (data, extra_data) => {
 		notify("Group Updated successfully")
 		let dataindex = data.body.id;
 		let rows = this.state.rows;
 		rows[dataindex] = false
 		this.getGroups();
-		this.setState({rows});
+		if(extra_data.clean_results){
+			this.setState({rows: rows, results: [], loading: true});
+		} else {
+			this.setState({rows});
+		}
 	}
 
 	editRow = (e) => {
@@ -165,7 +179,7 @@ class Group extends React.Component {
 		if(fields['category'] !== null){
 			fields['category'].map((item, index) => {
 				let category_dict = {}
-				category_dict['value'] = item.id
+				category_dict['value'] = item.id || item.value;
 				category_dict['label'] = item.name
 				category_dict['name'] = item.name
 				selected_category_array.push(category_dict)
@@ -242,7 +256,7 @@ class Group extends React.Component {
 	}
 
 	getGroups = (data) => {
-		var url = GROUP_LIST_URL;
+		var url = GROUP_URL;
 		getRequest(url, this.getGroupsData);
 	}
 

@@ -3,13 +3,10 @@ export const AD_API_URL = BASE_URL + "/ads/";
 export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
 
 export const CAMPAIGN_URL = AD_API_URL + "campaigns/";
-export const CAMPAIGN_LIST_URL = AD_API_URL + "campaigns/list/";
 export const GROUP_URL = AD_API_URL + "adgroups/";
-export const GROUP_LIST_URL = AD_API_URL + "adgroups/list/";
-export const CATEGORIES_CAMPAIGN_URL = AD_API_URL + "campaigns/categories/";
+export const CATEGORIES_CAMPAIGN_URL = AD_API_URL + "categories/";
 export const GROUP_GROUPTYPE_URL = AD_API_URL + "grouptypes/";
-export const ADVERTISEMENT_URL = AD_API_URL + "advertisement/";
-export const ADVERTISEMENT_LIST_URL = AD_API_URL + "advertisement/list/";
+export const ADVERTISEMENT_URL = AD_API_URL + "advertisements/";
 export const ARTICLE_LIST_URL = ARTICLE_API_URL + "articles/";
 export const ARTICLE_SOURCE_LIST_URL = ARTICLE_API_URL + "source/";
 export const ARTICLE_CATEGORY_LIST_URL = ARTICLE_API_URL + "categories/";
