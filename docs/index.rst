@@ -6,6 +6,9 @@
 NewScout's Documentation
 ========================
 
+Technical Design
+````````````````
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -14,6 +17,14 @@ NewScout's Documentation
    design/analytics
 
 
+Developer
+`````````
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   dev/contributing
 
 Indices and tables
 ==================
