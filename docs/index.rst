@@ -11,6 +11,7 @@ NewScout's Documentation
    :caption: Contents:
 
    design/architecture
+   design/analytics
 
 
 
