@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
 import { ADVERTISEMENT_URL, GROUP_GROUPTYPE_URL } from '../../utils/Constants';
-import { getRequest, postRequest, fileUploadHeaders,  deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, fileUploadHeaders, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -23,6 +23,11 @@ class Advertisement extends React.Component {
 			groups: [],
 			grouptypes: [],
 			results: [],
+			next: null,
+			previous: null,
+			loading: false,
+			q: "",
+			page : 0
 		};
 	}
 
@@ -58,10 +63,28 @@ class Advertisement extends React.Component {
 		}
 	}
 
+	handleQueryChange = (event) => {
+		var value = event.target.value;
+		this.setState({
+			q: value
+		})
+	}
+
+	handleKeyPress = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			this.setState({
+				results: []
+			})
+			var url = ADVERTISEMENT_URL + "?q=" + this.state.q;
+			getRequest(url, this.getAdvertisementData);
+		}
+	}
+
 	handleChange = (field, e) => {
 		let fields = this.state.fields;
 		if(field === "adgroup" || field === "ad_type"){
-			fields[field] = e.value;
+			fields[field] = {value: e.value, label: e.label};
 		} else if(e.target.files) {
 			fields[field] = e.target.files[0];
 		} else {
@@ -72,8 +95,14 @@ class Advertisement extends React.Component {
 		}
 	}
 
-	advertisementSubmitResponse = (data) => {
-		this.setState({'formSuccess': true});
+	advertisementSubmitResponse = (data, extra_data) => {
+		let rows = this.state.rows;
+		rows[data.body.id] = false;
+		if (extra_data.clean_results){
+			this.setState({formSuccess: true, results: [], loading: true, rows: rows, fields: {}});
+		} else {
+			this.setState({'formSuccess': true, rows: rows, fields: {}});
+		}
 		setTimeout(() => {
 			this.setState({'modal': false, 'formSuccess': false});
 			this.getAdvertisements()
@@ -85,12 +114,32 @@ class Advertisement extends React.Component {
 
 		if(this.handleValidation()){
 			const body = new FormData();
-			body.set('adgroup', this.state.fields.adgroup)
-			body.set('ad_type', this.state.fields.ad_type)
+			body.set('adgroup', this.state.fields.adgroup.value)
+			body.set('ad_type', this.state.fields.ad_type.value)
 			body.set('ad_text', this.state.fields.ad_text)
 			body.set('ad_url', this.state.fields.ad_url)
 			body.set('file', this.state.fields.media)
-			postRequest(ADVERTISEMENT_URL, body, this.advertisementSubmitResponse, "POST", fileUploadHeaders);
+			var extra_data = {"clean_results": true};
+			postRequest(ADVERTISEMENT_URL, body, this.advertisementSubmitResponse, "POST", fileUploadHeaders, extra_data);
+		}else{
+			this.setState({'formSuccess': false});
+		}
+	}
+
+	updateAdvertisementSubmit = (e) => {
+		e.preventDefault();
+
+		if(this.handleValidation()){
+			const body = new FormData();
+			let id = e.target.getAttribute('data-index');
+			body.set('adgroup', this.state.fields.adgroup.value)
+			body.set('ad_type', this.state.fields.ad_type.value)
+			body.set('ad_text', this.state.fields.ad_text)
+			body.set('ad_url', this.state.fields.ad_url)
+			body.set('file', this.state.fields.media)
+			var extra_data = {"clean_results": true};
+			var url = ADVERTISEMENT_URL + id + "/";
+			putRequest(url, body, this.advertisementSubmitResponse, "PUT", fileUploadHeaders, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -98,7 +147,8 @@ class Advertisement extends React.Component {
 
 	toggle = () => {
 		this.setState(prevState => ({
-			modal: !prevState.modal
+			modal: !prevState.modal,
+			fields: {}
 		}));
 	}
 
@@ -106,14 +156,24 @@ class Advertisement extends React.Component {
 		let dataindex = e.target.getAttribute('data-index');
 		let rows = this.state.rows;
 		rows[dataindex] = true
-		this.setState({rows});
+		let fields = {}
+		this.state.results.map((item, index) => {
+			if (item.id === parseInt(dataindex)) {
+				fields["adgroup"] = {value: item.adgroup.campaign.id, label: item.adgroup.campaign.name}
+				fields["ad_type"] = {value: item.ad_type.id, label: item.ad_type.type}
+				fields["ad_text"] = item.ad_text
+				fields["ad_url"] = item.ad_url
+				fields["is_active"] = item.is_active
+			}
+		})
+		this.setState({rows: rows, fields: fields});
 	}
 
 	cancelRow = (e) => {
 		var dataindex = e.target.getAttribute('data-index');
 		let rows = this.state.rows;
 		rows[dataindex] = false
-		this.setState({rows});
+		this.setState({rows: rows, fields: {}});
 	}
 
 	deleteAdvertisementResponse = (data) => {
@@ -135,7 +195,7 @@ class Advertisement extends React.Component {
 	getGroupAndGroupType = (data) => {
 		let groups_array = []
 		let groupstype_array = []
-		
+
 		if(data.body.groups){
 			data.body.groups.map((item, index) => {
 				let group_dict = {}
@@ -163,33 +223,94 @@ class Advertisement extends React.Component {
 	}
 
 	getAdvertisements = (data) => {
+		this.setState({
+			loading: true
+		})
 		var url = ADVERTISEMENT_URL;
 		getRequest(url, this.getAdvertisementData);
 	}
 
 	getAdvertisementData = (data) => {
+		var results = [
+			...this.state.results,
+			...data.body.results
+		]
 		this.setState({
-			'results': data.body
+			results: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getAdvertisementData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		this.getAdvertisements()
 		var group_type_url = GROUP_GROUPTYPE_URL;
 		getRequest(group_type_url, this.getGroupAndGroupType)
 	}
 
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
+	}
+
 	render(){
 		let result_array = this.state.results
 		let results = []
+		let state = this.state;
 
 		result_array.map((el, index) => {
+			if(state.fields.adgroup === undefined) {
+				var adgroup_value = {value: el.adgroup.campaign.id, label: el.adgroup.campaign.name}
+			} else {
+				var adgroup_value = state.fields.adgroup;
+			}
+
+			if(state.fields.adgroup === undefined) {
+				var adtype_value = {value: el.ad_type.id, label: el.ad_type.type}
+			} else {
+				var adtype_value = state.fields.ad_type;
+			}
+
+			if(state.fields.ad_text === undefined) {
+				var ad_text_value = el.ad_text;
+			} else {
+				var ad_text_value = state.fields.ad_text;
+			}
+
+			if(state.fields.ad_url === undefined) {
+				var ad_url_value = el.ad_url;
+			} else {
+				var ad_url_value = state.fields.ad_url;
+			}
+
+			if(state.fields.is_active === undefined) {
+				var is_active_value = el.is_active;
+			} else {
+				var is_active_value = state.fields.is_active;
+			}
 			var data = <tr key={index} data-row={el.id}>
 				<th scope="row">{index+1}</th>
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
-							<Select refs="adgroup" value={this.state.fields["adgroup"]} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
+							<Select refs="adgroup" value={adgroup_value} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
 							<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 						</React.Fragment>
 					:
@@ -199,7 +320,7 @@ class Advertisement extends React.Component {
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
-							<Select refs="adgroup" value={this.state.fields["ad_type"]} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptype} />
+							<Select refs="ad_type" value={adtype_value} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptypes} />
 							<FormText color="danger">{this.state.errors["ad_type"]}</FormText>
 						</React.Fragment>
 					:
@@ -209,7 +330,7 @@ class Advertisement extends React.Component {
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
-							<input refs="ad_text" type="text" name="ad_text" className="form-control" placeholder="Advertisement Title" id="advertisementtext" onChange={(e) => this.handleChange("ad_text", e)} value={`Test${el}`} />
+							<input refs="ad_text" type="text" name="ad_text" className="form-control" placeholder="Advertisement Title" id="advertisementtext" onChange={(e) => this.handleChange("ad_text", e)} value={ad_text_value} />
 							<FormText color="danger">{this.state.errors["ad_text"]}</FormText>
 						</React.Fragment>
 					:
@@ -219,7 +340,7 @@ class Advertisement extends React.Component {
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
-							<input refs="ad_url" type="text" name="ad_url" className="form-control" placeholder="Advertisement Url" id="ad-url" onChange={(e) => this.handleChange("ad_url", e)} value={`Test${el}`} />
+							<input refs="ad_url" type="text" name="ad_url" className="form-control" placeholder="Advertisement Url" id="ad-url" onChange={(e) => this.handleChange("ad_url", e)} value={ad_url_value} />
 							<FormText color="danger">{this.state.errors["ad_url"]}</FormText>
 						</React.Fragment>
 					:
@@ -227,12 +348,12 @@ class Advertisement extends React.Component {
 					}
 				</td>
 				{this.state.rows[el.id] ?
-					<td><input refs="media" type="file" name="media" id="ad-media" /></td>
+					<td><input refs="media" type="file" name="media" id="ad-media" />{el.media}</td>
 				:
 					<td className="text-primary">{el.media}</td>
 				}
 				{this.state.rows[el.id] ?
-					<td><input type="checkbox" name="is_active" /></td>
+					<td><input type="checkbox" checked={is_active_value} name="is_active" /></td>
 				:
 					<React.Fragment>
 						{el.is_active ?
@@ -250,8 +371,7 @@ class Advertisement extends React.Component {
 					<ul className="list-inline m-0">
 						{this.state.rows[el.id] ?
 							<React.Fragment>
-								<li className="list-inline-item">
-									<a href="" className="btn btn-sm btn-success">Save</a>
+								<li className="list-inline-item btn btn-sm btn-success" data-index={el.id} onClick={this.updateAdvertisementSubmit}>Save
 								</li>
 								<li className="list-inline-item btn btn-sm btn-danger" data-index={el.id} onClick={this.cancelRow}>Cancel</li>
 							</React.Fragment>
@@ -284,7 +404,7 @@ class Advertisement extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" />
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
 											</Form>
 										</div>
 									</div>
@@ -309,6 +429,13 @@ class Advertisement extends React.Component {
 											{results}
 										</tbody>
 									</Table>
+									{
+										this.state.loading ?
+										<React.Fragment>
+											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+										</React.Fragment>
+										: ""
+									}
 								</div>
 							</main>
 						</div>
@@ -320,12 +447,12 @@ class Advertisement extends React.Component {
 							<Form>
 								<FormGroup>
 									<Label for="adgroup">Select Group</Label>
-									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"].value : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
+									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
 									<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 								</FormGroup>
 								<FormGroup>
 									<Label for="ad_type">Select Group Type</Label>
-									<Select refs="ad_type" value={this.state.fields["ad_type"] ? this.state.fields["ad_type"].value : ''} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptypes} />
+									<Select refs="ad_type" value={this.state.fields["ad_type"] ? this.state.fields["ad_type"] : ''} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptypes} />
 									<FormText color="danger">{this.state.errors["ad_type"]}</FormText>
 								</FormGroup>
 								<FormGroup>

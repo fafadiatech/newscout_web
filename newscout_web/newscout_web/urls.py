@@ -17,10 +17,12 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from ajax_select import urls as ajax_select_urls
+from dashboard.views import MainIndexView
 
 app_name = 'newscout_web'
 
 urlpatterns = [
+    url(r'^$', MainIndexView.as_view(), name="index"),
     url(r'^analytics/', include('analytics.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
     url(r'^ajax_select/', include(ajax_select_urls)),

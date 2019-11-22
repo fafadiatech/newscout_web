@@ -7,7 +7,7 @@ import * as serviceWorker from './serviceWorker';
 import {CAMPAIGN_URL} from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { getRequest, postRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -21,8 +21,31 @@ class Campaign extends React.Component {
 			errors: {},
 			rows: {},
 			formSuccess: false,
-			results: []
+			results: [],
+			next: null,
+			previous: null,
+			loading: false,
+			q: "",
+			page : 0
 		};
+	}
+
+	handleQueryChange = (event) => {
+		var value = event.target.value;
+		this.setState({
+			q: value
+		})
+	}
+
+	handleKeyPress = (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			this.setState({
+				results: []
+			})
+			var url = CAMPAIGN_URL + "?q=" + this.state.q;
+			getRequest(url, this.getCampaignsData);
+		}
 	}
 
 	handleValidation = () => {
@@ -97,8 +120,13 @@ class Campaign extends React.Component {
 		}
 	}
 
-	campaignSubmitResponse = (data) => {
-		this.setState({'formSuccess': true});
+	campaignSubmitResponse = (data, extra_data) => {
+		if (extra_data.clean_results) {
+			this.setState({'formSuccess': true, loading: true, results: []});
+		} else {
+			this.setState({'formSuccess': true});
+		}
+
 		setTimeout(() => {
 			this.setState({'modal': false, 'formSuccess': false, 'fields': {}});
 			this.getCampaigns()
@@ -110,7 +138,8 @@ class Campaign extends React.Component {
 
 		if(this.handleValidation()){
 			const body = JSON.stringify(this.state.fields)
-			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST");
+			var extra_data = {"clean_results": true};
+			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", false, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -118,7 +147,8 @@ class Campaign extends React.Component {
 
 	toggle = () => {
 		this.setState(prevState => ({
-			modal: !prevState.modal
+			modal: !prevState.modal,
+			fields: {}
 		}));
 	}
 
@@ -127,17 +157,23 @@ class Campaign extends React.Component {
 
 		if(this.handleValidation()){
 			const body = JSON.stringify(this.state.fields)
-			postRequest(CAMPAIGN_URL, body, this.campaignUpdateResponse, "PUT");
+			var url = CAMPAIGN_URL + this.state.fields.id + "/";
+			var extra_data = {"clean_results": true};
+			putRequest(url, body, this.campaignUpdateResponse, "PUT", false, extra_data);
 		}
 	}
 
-	campaignUpdateResponse = (data) => {
+	campaignUpdateResponse = (data, extra_data) => {
 		notify("Campaign Updated successfully")
 		let dataindex = data.body.id;
 		let rows = this.state.rows;
 		rows[dataindex] = false;
+		if(extra_data.clean_results) {
+			this.setState({rows: rows, results: [], loading: true, fields: {}});
+		} else {
+			this.setState({rows: rows});
+		}
 		this.getCampaigns();
-		this.setState({rows});
 	}
 
 	editRow = (e) => {
@@ -158,6 +194,7 @@ class Campaign extends React.Component {
 	}
 
 	deleteCampaignResponse = (data) => {
+		this.setState({results: [], loading: true})
 		this.getCampaigns();
 		notify(data.body.Msg)
 	}
@@ -167,11 +204,6 @@ class Campaign extends React.Component {
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = CAMPAIGN_URL + dataindex + "/";
 		deleteRequest(url, this.deleteCampaignResponse)
-		setTimeout(function() {
-			findrow.style.transition = '0.8s';
-			findrow.style.opacity = '0';
-			document.getElementById("campaign-table").deleteRow(findrow.rowIndex);
-		}, 1000);
 	}
 
 	getCampaigns = () => {
@@ -180,23 +212,51 @@ class Campaign extends React.Component {
 	}
 
 	getCampaignsData = (data) => {
+		var results = [
+			...this.state.results,
+			...data.body.results
+		]
 		this.setState({
-			'results': data.body
+			results: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getCampaignsData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		this.getCampaigns()
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render(){
 		let result_array = this.state.results
 		let results = []
-		
+
 		result_array.map((el, index) => {
 			var start_date = moment(el.start_date).format('YYYY-MM-DD m:ss A');
 			var end_date = moment(el.end_date).format('YYYY-MM-DD m:ss A');
-			
+
 			var data = <tr key={index} data-row={el.id}>
 				<th scope="row">{index+1}</th>
 				<td>
@@ -291,7 +351,7 @@ class Campaign extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" />
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
 											</Form>
 										</div>
 									</div>
@@ -316,6 +376,13 @@ class Campaign extends React.Component {
 											{results}
 										</tbody>
 									</Table>
+									{
+										this.state.loading ?
+										<React.Fragment>
+											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+										</React.Fragment>
+										: ""
+									}
 								</div>
 							</main>
 						</div>

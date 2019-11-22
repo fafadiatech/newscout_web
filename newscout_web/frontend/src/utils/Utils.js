@@ -144,6 +144,50 @@ export const postRequest = function postRequest(url, body, successFunc, method =
         });
 };
 
+export const putRequest = function putRequest(url, body, successFunc, method = "PUT", headers = false, extra_data = false) {
+    if (!headers) {
+        headers = postHeaders;
+    }
+
+    return fetch(url, {
+            headers,
+            body,
+            method: method
+        })
+        .then((response) => {
+            if (response.status === 200 || response.status === 201 || response.status === 400) {
+                return response.json().then(data => {
+                    if (!extra_data) {
+                        return successFunc(data);
+                    } else {
+                        return successFunc(data, extra_data);
+                    }
+                })
+            }
+            // for entity already exists
+            if (response.status === 422) {
+                return response.json().then(data => {
+                    if (!extra_data) {
+                        return successFunc(data);
+                    } else {
+                        return successFunc(data, extra_data);
+                    }
+                })
+            }
+            if (response.status === 401 || response.status === 403) {
+                window.location = getLoginURL();
+            }
+            if (response.status >= 500) {
+                notify("Something went wrong", "error")
+                throw Error("Internal Server Error");
+            }
+        }).catch((err) => {
+            // setState({ "server_error": true })
+            console.log(err);
+            notify("Internal Server Error", "error");
+        });
+};
+
 export const deleteRequest = function deleteRequest(url, successFunc, headers = false, extra_data = false) {
     if (!headers) {
         headers = deleteHeaders;

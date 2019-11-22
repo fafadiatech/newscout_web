@@ -1,9 +1,15 @@
 export const BASE_URL = window.location.origin;
-export const AD_API_URL = BASE_URL + "/ad/";
+export const AD_API_URL = BASE_URL + "/ads/";
+export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
 
-// expert urls
-export const CAMPAIGN_URL = AD_API_URL + "campaign/";
-export const GROUP_URL = AD_API_URL + "adgroup/";
-export const CATEGORIES_CAMPAIGN_URL = AD_API_URL + "campaign-categories/";
-export const GROUP_GROUPTYPE_URL = AD_API_URL + "group-type/";
-export const ADVERTISEMENT_URL = AD_API_URL + "advertisement/";
+export const CAMPAIGN_URL = AD_API_URL + "campaigns/";
+export const GROUP_URL = AD_API_URL + "adgroups/";
+export const CATEGORIES_CAMPAIGN_URL = AD_API_URL + "categories/";
+export const GROUP_GROUPTYPE_URL = AD_API_URL + "grouptypes/";
+export const ADVERTISEMENT_URL = AD_API_URL + "advertisements/";
+export const ARTICLE_LIST_URL = ARTICLE_API_URL + "articles/";
+export const ARTICLE_SOURCE_LIST_URL = ARTICLE_API_URL + "source/";
+export const ARTICLE_CATEGORY_LIST_URL = ARTICLE_API_URL + "categories/";
+export const ARTICLE_CREATE_URL = ARTICLE_API_URL + "article/create-update/";
+export const ARTICLE_DETAIL_URL = ARTICLE_API_URL + "articles/";
+export const ARTICLE_STATUS_URL = ARTICLE_API_URL + "article/status/";

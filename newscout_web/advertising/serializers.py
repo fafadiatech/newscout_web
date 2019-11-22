@@ -50,7 +50,6 @@ class CampaignNameIdSerializer(serializers.ModelSerializer):
 
 
 class AdGroupSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = AdGroup
@@ -79,18 +78,14 @@ class GetAdSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'media', 'is_active', 'impsn_limit')
+        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'media',
+        'is_active', 'impsn_limit')
 
 
 class AdSerializer(serializers.ModelSerializer):
+    media = serializers.ImageField(allow_null=True, max_length=250, required=False)
 
     class Meta:
         model = Advertisement
-        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'media', 'is_active', 'impsn_limit')
-
-
-class AdCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Advertisement
-        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'is_active', 'impsn_limit')
+        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'is_active',
+        'media', 'impsn_limit')
