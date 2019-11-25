@@ -188,8 +188,8 @@ class CategoryListAPIView(APIView):
         """
         if request.user.is_authenticated:
             _id = request.data.get("id")
-            obj = Category.objects.get(id=_id)
-            serializer = CategorySerializer(obj, data=request.data)
+            category_obj = Category.objects.get(id=_id)
+            serializer = CategorySerializer(category_obj, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(create_response(serializer.data))
@@ -1034,9 +1034,9 @@ class ArticleCreateUpdateView(APIView):
         _id = request.data.get("id")
         publish = request.data.get("publish")
         context = {"publish": publish, "user": request.user}
-        obj = Article.objects.get(id=_id)
+        article_obj = Article.objects.get(id=_id)
         serializer = ArticleCreateUpdateSerializer(
-            obj, data=request.data, context=context)
+            article_obj, data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
             if publish:
