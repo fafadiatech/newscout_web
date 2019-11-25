@@ -174,23 +174,27 @@ class CategoryListAPIView(APIView):
         """
         Save new category to database
         """
-        serializer = CategorySerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        if request.user.is_authenticated:
+            serializer = CategorySerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
 
     def put(self, request, format=None):
         """
         update category in database
         """
-        _id = request.data.get("id")
-        obj = Category.objects.get(id=_id)
-        serializer = CategorySerializer(obj, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        if request.user.is_authenticated:
+            _id = request.data.get("id")
+            category = Category.objects.get(id=_id)
+            serializer = CategorySerializer(category, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
 
 
 class SourceListAPIView(APIView):
@@ -309,9 +313,9 @@ class ArticleDetailAPIView(APIView):
                         user=user, article=article)
                     article_like.is_like = is_like
                     article_like.save()
-                    article_obj = ArtilcleLikeSerializer(article_like)
+                    serializer = ArtilcleLikeSerializer(article_like)
                     return Response(create_response({
-                        "Msg": "Article like status changed", "article": article_obj.data
+                        "Msg": "Article like status changed", "article": serializer.data
                     }))
                 else:
                     return Response(create_error_response({
@@ -698,15 +702,15 @@ class MenuAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        domain = self.request.GET.get("domain")
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
         if not domain:
             return Response(create_error_response({"domain": ["Domain id is required"]}))
 
-        domain_obj = Domain.objects.filter(domain_id=domain).first()
-        if not domain_obj:
-            return Response(create_error_response({"domain": ["Domain id is required"]}))
-
-        menus = MenuSerializer(Menu.objects.filter(domain=domain_obj), many=True)
+        menus = MenuSerializer(Menu.objects.filter(domain=domain), many=True)
         menus_list = menus.data
         new_menulist = []
         for menu in menus_list:
@@ -721,7 +725,7 @@ class DevicesAPIView(APIView):
     """
     this api will add device_id and device_name
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
@@ -995,7 +999,7 @@ class ArticleCreateUpdateView(APIView):
     """
     Article create update view
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1009,8 +1013,6 @@ class ArticleCreateUpdateView(APIView):
     def publish(self, obj):
         serializer = ArticleSerializer(obj)
         json_data = serializer.data
-        # delete_from_elastic([json_data], "article", "article", "id")
-
         if json_data["hash_tags"]:
             tag_list = self.get_tags(json_data["hash_tags"])
             json_data["hash_tags"] = tag_list
@@ -1018,7 +1020,7 @@ class ArticleCreateUpdateView(APIView):
 
     def post(self, request):
         publish = request.data.get("publish")
-        context = {"publish": publish}
+        context = {"publish": publish, "user": request.user}
         serializer = ArticleCreateUpdateSerializer(
             data=request.data, context=context)
         if serializer.is_valid():
@@ -1031,10 +1033,10 @@ class ArticleCreateUpdateView(APIView):
     def put(self, request):
         _id = request.data.get("id")
         publish = request.data.get("publish")
-        context = {"publish": publish}
-        obj = Article.objects.get(id=_id)
+        context = {"publish": publish, "user": request.user}
+        article = Article.objects.get(id=_id)
         serializer = ArticleCreateUpdateSerializer(
-            obj, data=request.data, context=context)
+            article, data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
             if publish:
@@ -1047,7 +1049,7 @@ class ChangeArticleStatusView(APIView):
     """
     this view is used to update status of given article activate or deactivate
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1061,7 +1063,6 @@ class ChangeArticleStatusView(APIView):
     def publish(self, obj):
         serializer = ArticleSerializer(obj)
         json_data = serializer.data
-
         if obj.active:
             if json_data["hash_tags"]:
                 tag_list = self.get_tags(json_data["hash_tags"])
@@ -1073,15 +1074,15 @@ class ChangeArticleStatusView(APIView):
     def post(self, request):
         _id = request.data.get("id")
         active_status = request.data.get("activate")
-        article_obj = Article.objects.filter(id=_id).first()
-        if not article_obj:
+        article = Article.objects.filter(id=_id).first()
+        if not article:
             return Response(create_error_response({"error": "Article does not exists"}), status=400)
-        article_obj.active = active_status
-        article_obj.save()
-        self.publish(article_obj)
+        article.active = active_status
+        article.save()
+        self.publish(article)
         return Response(create_response({
-            "id": article_obj.id,
-            "active": article_obj.active
+            "id": article.id,
+            "active": article.active
             }))
 
 
@@ -1089,7 +1090,7 @@ class CategoryBulkUpdate(APIView):
     """
     update whole bunch of articles in one go
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1120,7 +1121,7 @@ class CategoryBulkUpdate(APIView):
 
 class GetDailyDigestView(ListAPIView):
     serializer_class = ArticleSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def format_response(self, response):
         results = []
