@@ -188,8 +188,8 @@ class CategoryListAPIView(APIView):
         """
         if request.user.is_authenticated:
             _id = request.data.get("id")
-            category_obj = Category.objects.get(id=_id)
-            serializer = CategorySerializer(category_obj, data=request.data)
+            category = Category.objects.get(id=_id)
+            serializer = CategorySerializer(category, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(create_response(serializer.data))
@@ -313,9 +313,9 @@ class ArticleDetailAPIView(APIView):
                         user=user, article=article)
                     article_like.is_like = is_like
                     article_like.save()
-                    article_obj = ArtilcleLikeSerializer(article_like)
+                    serializer = ArtilcleLikeSerializer(article_like)
                     return Response(create_response({
-                        "Msg": "Article like status changed", "article": article_obj.data
+                        "Msg": "Article like status changed", "article": serializer.data
                     }))
                 else:
                     return Response(create_error_response({
@@ -702,15 +702,15 @@ class MenuAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        domain = self.request.GET.get("domain")
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
         if not domain:
             return Response(create_error_response({"domain": ["Domain id is required"]}))
 
-        domain_obj = Domain.objects.filter(domain_id=domain).first()
-        if not domain_obj:
-            return Response(create_error_response({"domain": ["Domain id is required"]}))
-
-        menus = MenuSerializer(Menu.objects.filter(domain=domain_obj), many=True)
+        menus = MenuSerializer(Menu.objects.filter(domain=domain), many=True)
         menus_list = menus.data
         new_menulist = []
         for menu in menus_list:
@@ -1034,9 +1034,9 @@ class ArticleCreateUpdateView(APIView):
         _id = request.data.get("id")
         publish = request.data.get("publish")
         context = {"publish": publish, "user": request.user}
-        article_obj = Article.objects.get(id=_id)
+        article = Article.objects.get(id=_id)
         serializer = ArticleCreateUpdateSerializer(
-            article_obj, data=request.data, context=context)
+            article, data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
             if publish:
@@ -1074,15 +1074,15 @@ class ChangeArticleStatusView(APIView):
     def post(self, request):
         _id = request.data.get("id")
         active_status = request.data.get("activate")
-        article_obj = Article.objects.filter(id=_id).first()
-        if not article_obj:
+        article = Article.objects.filter(id=_id).first()
+        if not article:
             return Response(create_error_response({"error": "Article does not exists"}), status=400)
-        article_obj.active = active_status
-        article_obj.save()
-        self.publish(article_obj)
+        article.active = active_status
+        article.save()
+        self.publish(article)
         return Response(create_response({
-            "id": article_obj.id,
-            "active": article_obj.active
+            "id": article.id,
+            "active": article.active
             }))
 
 
