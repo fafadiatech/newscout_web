@@ -6,7 +6,8 @@ class DashboardMenu extends React.Component {
 		super(props);
 
 		this.state = {
-			active_page: ACTIVE_PAGE
+			active_page: ACTIVE_PAGE,
+			is_anonymous: isAnonymous
 		};
 	}
 
@@ -30,6 +31,14 @@ class DashboardMenu extends React.Component {
 						<li className="nav-item">
 							<a className={`${this.state.active_page === "articles" ? 'active' : ''} nav-link `} href="/dashboard/articles/">Articles</a>
 						</li>
+						{
+							!this.state.isAnonymous ?
+								<li className="nav-item">
+									<a className="nav-link" href="/logout/">Logout</a>
+								</li>
+							:
+								""
+						}
 					</ul>
 				</div>
 			</nav>

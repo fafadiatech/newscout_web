@@ -181,6 +181,11 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
         hash_tags = validated_data.pop("hash_tags")
         article_media = validated_data.pop("article_media")
         article = Article.objects.create(**validated_data)
+        user = self.context.get("user")
+
+        if not article.domain:
+            article.domain = user.domain
+            article.save()
 
         if hash_tags:
             hash_tags = [HashTag.objects.get_or_create(name=name)[0] for name in hash_tags]
@@ -204,6 +209,7 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         hash_tags = validated_data.pop("hash_tags")
         article_media = validated_data.pop("article_media")
+        user = self.context.get("user")
 
         instance.title = validated_data.get("title", instance.title)
         instance.source = validated_data.get("source", instance.source)
@@ -215,6 +221,10 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
         instance.published_on = validated_data.get("published_on", instance.published_on)
         instance.spam = validated_data.get("spam", instance.spam)
         instance.save()
+
+        if not instance.domain:
+            instance.domain = user.domain
+            instance.save()
 
         if hash_tags:
             hash_tags = [HashTag.objects.get_or_create(name=name)[0] for name in hash_tags]

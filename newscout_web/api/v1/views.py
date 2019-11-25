@@ -174,23 +174,27 @@ class CategoryListAPIView(APIView):
         """
         Save new category to database
         """
-        serializer = CategorySerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        if request.user.is_authenticated:
+            serializer = CategorySerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
 
     def put(self, request, format=None):
         """
         update category in database
         """
-        _id = request.data.get("id")
-        obj = Category.objects.get(id=_id)
-        serializer = CategorySerializer(obj, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        if request.user.is_authenticated:
+            _id = request.data.get("id")
+            obj = Category.objects.get(id=_id)
+            serializer = CategorySerializer(obj, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
 
 
 class SourceListAPIView(APIView):
@@ -721,7 +725,7 @@ class DevicesAPIView(APIView):
     """
     this api will add device_id and device_name
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
@@ -995,7 +999,7 @@ class ArticleCreateUpdateView(APIView):
     """
     Article create update view
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1009,8 +1013,6 @@ class ArticleCreateUpdateView(APIView):
     def publish(self, obj):
         serializer = ArticleSerializer(obj)
         json_data = serializer.data
-        # delete_from_elastic([json_data], "article", "article", "id")
-
         if json_data["hash_tags"]:
             tag_list = self.get_tags(json_data["hash_tags"])
             json_data["hash_tags"] = tag_list
@@ -1018,7 +1020,7 @@ class ArticleCreateUpdateView(APIView):
 
     def post(self, request):
         publish = request.data.get("publish")
-        context = {"publish": publish}
+        context = {"publish": publish, "user": request.user}
         serializer = ArticleCreateUpdateSerializer(
             data=request.data, context=context)
         if serializer.is_valid():
@@ -1031,7 +1033,7 @@ class ArticleCreateUpdateView(APIView):
     def put(self, request):
         _id = request.data.get("id")
         publish = request.data.get("publish")
-        context = {"publish": publish}
+        context = {"publish": publish, "user": request.user}
         obj = Article.objects.get(id=_id)
         serializer = ArticleCreateUpdateSerializer(
             obj, data=request.data, context=context)
@@ -1047,7 +1049,7 @@ class ChangeArticleStatusView(APIView):
     """
     this view is used to update status of given article activate or deactivate
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1061,7 +1063,6 @@ class ChangeArticleStatusView(APIView):
     def publish(self, obj):
         serializer = ArticleSerializer(obj)
         json_data = serializer.data
-
         if obj.active:
             if json_data["hash_tags"]:
                 tag_list = self.get_tags(json_data["hash_tags"])
@@ -1089,7 +1090,7 @@ class CategoryBulkUpdate(APIView):
     """
     update whole bunch of articles in one go
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1120,7 +1121,7 @@ class CategoryBulkUpdate(APIView):
 
 class GetDailyDigestView(ListAPIView):
     serializer_class = ArticleSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def format_response(self, response):
         results = []

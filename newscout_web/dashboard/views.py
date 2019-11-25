@@ -1,12 +1,31 @@
+# -*- coding: utf-8 -*-
 
-from django.views.generic.base import TemplateView
+from django.views.generic import FormView
+from django.http import HttpResponseRedirect
+from django.contrib.auth import login, authenticate, logout
+from django.views.generic.base import TemplateView, RedirectView
+from braces.views import LoginRequiredMixin
+
+from .forms import LoginForm
+
+
+class EditorTemplateView(TemplateView):
+    """
+    custom view to restrict view only for news editors
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_editor:
+            return HttpResponseRedirect("/")
+        return super(EditorTemplateView, self).dispatch(
+            request, *args, **kwargs)
 
 
 class MainIndexView(TemplateView):
     	template_name = "index.html"
 
 
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin, EditorTemplateView):
     template_name = "dashboard-index.html"
 
     def get_context_data(self, **kwargs):
@@ -15,7 +34,7 @@ class IndexView(TemplateView):
         return context
 
 
-class CampaignView(TemplateView):
+class CampaignView(EditorTemplateView):
 	template_name = "dashboard-campaign.html"
 
 	def get_context_data(self, **kwargs):
@@ -24,7 +43,7 @@ class CampaignView(TemplateView):
 		return context
 
 
-class GroupView(TemplateView):
+class GroupView(EditorTemplateView):
 	template_name = "dashboard-group.html"
 
 	def get_context_data(self, **kwargs):
@@ -33,7 +52,7 @@ class GroupView(TemplateView):
 		return context
 
 
-class AdvertisementView(TemplateView):
+class AdvertisementView(EditorTemplateView):
 	template_name = "dashboard-advertisement.html"
 
 	def get_context_data(self, **kwargs):
@@ -42,7 +61,7 @@ class AdvertisementView(TemplateView):
 		return context
 
 
-class ArticleView(TemplateView):
+class ArticleView(EditorTemplateView):
 	template_name = "dashboard-article.html"
 
 	def get_context_data(self, **kwargs):
@@ -51,7 +70,7 @@ class ArticleView(TemplateView):
 		return context
 
 
-class ArticleCreateView(TemplateView):
+class ArticleCreateView(EditorTemplateView):
 	template_name = "dashboard-article-create.html"
 
 	def get_context_data(self, **kwargs):
@@ -60,7 +79,7 @@ class ArticleCreateView(TemplateView):
 		return context
 
 
-class ArticleEditView(TemplateView):
+class ArticleEditView(EditorTemplateView):
     template_name = "dashboard-article-edit.html"
 
     def get_context_data(self, **kwargs):
@@ -68,3 +87,43 @@ class ArticleEditView(TemplateView):
         context['active_page'] = 'article-edit'
         context['article_id'] = kwargs.get('article_id')
         return context
+
+
+class LoginView(FormView):
+    template_name = "login.html"
+    form_class = LoginForm
+    success_url = "/dashboard/"
+
+    def dispatch(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_authenticated:
+            if user.is_editor:
+                return HttpResponseRedirect("/dashboard/")
+            else:
+                return HttpResponseRedirect("/")
+        return super(LoginView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        next_url = self.request.GET.get("next")
+        user = authenticate(request=None, username=email, password=password)
+        if user and user.is_active:
+            login(self.request, user)
+            if next_url:
+                return HttpResponseRedirect(next_url)
+            else:
+                return HttpResponseRedirect(self.get_success_url())
+
+        return self.form_invalid(form)
+
+
+class LogOutView(RedirectView):
+    """
+    logout view
+    """
+
+    def get_redirect_url(self):
+        url = "/"
+        logout(self.request)
+        return url

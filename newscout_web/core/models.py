@@ -101,6 +101,9 @@ class HashTag(models.Model):
 
 class BaseUserProfile(AbstractUser):
     passion = models.ManyToManyField(HashTag, blank=True)
+    is_editor = models.BooleanField(default=False)
+    domain = models.ForeignKey(
+        Domain, blank=True, null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "%s > %s" % (self.email, self.passion.all())
