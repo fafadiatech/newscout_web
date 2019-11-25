@@ -54,6 +54,29 @@ Developer Setup
         sudo apt install elasticsearch
 12. Ingest data into elasticsearch `python manage.py ingest_data_to_elastic`
 13. Install MongoDB following `Official Docs <https://docs.mongodb.com/manual/installation/>`_. MongoDB is required for Analytics
+14. Install pre-commit for formatting and linting
+    .. code-block:: sh
+
+        pip install pre-commit
+    
+    1. Add pre-commit to requirements.txt
+    2. Define .pre-commit-config.yaml with the hooks you want to include
+    3. Hooks Included
+        .. code-block:: sh
+            
+            repos:
+            -   repo: https://github.com/ambv/black
+            rev: stable
+                hooks:
+                - id: black
+                language_version: python3.6
+            -   repo: https://github.com/pre-commit/pre-commit-hooks
+                rev: v1.2.3
+                hooks:
+                - id: flake8
+    4. Run pre-commit install to install git hooks
+
+
 
 Submitting a PR
 ````````````````
