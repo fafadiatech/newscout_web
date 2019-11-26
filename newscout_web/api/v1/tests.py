@@ -636,7 +636,6 @@ class TestNewDevice(APITestCase):
     """
 
     def setUp(self):
-        self.newclient = APIClient()
         Devices.objects.create(device_id=123, device_name="AndroidOreo")
 
     def test_post_new_device(self):
@@ -659,47 +658,6 @@ class TestNewDevice(APITestCase):
         }
         res = client.post(url, data)
         self.assertEqual(res.data["body"]["Msg"], "Device successfully created")
-        self.assertEqual(res.status_code, 200)
-
-    def test_post_error_existing_devices(self):
-        """
-        Method:
-            POST
-
-        POST Data:
-            DEVICE_ID : ID (INT)
-            DEVICE_NAME : DEVICE_NAME (STRING)
-
-        Assert:
-            RESPONSE_STATUS_CODE: 200
-            RESPONSE_MESSAGE: ERROR MSG (STRING)
-        """
-        url = "/api/v1/device/"
-        data = {
-            "device_id": 123,
-            "device_name": "AndroidOreo",
-        }
-        res = self.newclient.post(url, data)
-        self.assertEqual(res.data["body"]["Msg"], "Device already exist")
-        self.assertEqual(res.status_code, 200)
-
-    def test_post_missing_fields(self):
-        """
-        Method:
-            POST
-
-        POST Data:
-            NONE
-
-        Assert:
-            RESPONSE_STATUS_CODE: 200
-            RESPONSE_MESSAGE: ERROR MSG (STRING)
-        """
-        url = "/api/v1/device/"
-        res = self.newclient.post(url)
-        self.assertEqual(
-            res.data["errors"]["Msg"], "device_id and device_name field are required"
-        )
         self.assertEqual(res.status_code, 200)
 
 
@@ -822,6 +780,57 @@ class TestCreateNewArticle(APITestCase):
         self.assertEqual(res.data["body"]["spam"], data["spam"])
         self.assertEqual(res.data["body"]["domain"], data["domain"])
         self.assertEqual(res.status_code, 200)
+
+class TestChangeArticleStatus(APITestCase):
+    """
+    this testcase is used to test POST request to change status of an article(activate or deactivate)
+    """
+    def setUp(self):
+        self.article = Article.objects.filter(active=True).last()
+
+    def test_post_change_status(self):
+        """
+        Method:
+            POST
+        
+        POST DATA:
+            ARTICALE : ID (INT)
+            ACTIVATE : (BOOLEAN)
+
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            ARTICLE : ID (INT)
+            STATUS: (BOOLEAN)
+        """
+        url = "/api/v1/article/status/"
+        data = {
+            "id": self.article.id,
+            "activate" : False
+        }
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["id"], self.article.id)
+        self.assertNotEqual(res.data["body"]["active"], self.article.active)
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_error_change_status(self):
+        """
+        Method:
+            POST
+        
+        POST DATA:
+            ACTIVATE : (BOOLEAN)
+
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            RESPONSE_MESSAGE : ERROR MSG (STRING)
+        """
+        url = "/api/v1/article/status/"
+        data = {
+            "activate" : False
+        }
+        res = client.post(url, data)
+        self.assertEqual(res.data['errors']['error'], "Article does not exists")
+        self.assertEqual(res.status_code, 400)    
 
 
 class TestUpdateArticle(APITestCase):
@@ -999,7 +1008,7 @@ class TestGetCampaignCategories(APITestCase):
             CATEGORIES: NAME (STRING)
             CAMPAIGNS: NAME (STRING)
         """
-        url = "/ads/campaigns/categories/"
+        url = "/ads/categories/"
         res = client.get(url)
         for cat in res.data["body"]["categories"]:
             self.assertIn(cat["name"], self.test_categories)
@@ -1083,7 +1092,7 @@ class TestUpdateCampaign(APITestCase):
             CAMPAIGN_DAILY_BUDGET: NUMBER (STRING)
             CAMPAIGN_MAX_BID: NUMBER (STRING)
         """
-        url = "/ads/campaigns/"
+        url = "/ads/campaigns/{0}/".format(self.campaign.id)
         data = {
             "id": self.campaign.id,
             "name": "TestCampaignChanged",
@@ -1127,7 +1136,7 @@ class TestGetCampaign(APITestCase):
         """
         url = "/ads/campaigns/"
         res = client.get(url)
-        for campaign in res.data["body"]:
+        for campaign in res.data['body']["results"]:
             self.assertIn(campaign["name"], self.test_campaigns)
         self.assertGreater(len(res.data["body"]), 0)
         self.assertEqual(res.status_code, 200)
@@ -1247,9 +1256,9 @@ class TestFetchAllAdvertisement(APITestCase):
             COUNT OF ADVERTISEMENTS: COUNT (STRING)
             ADVERTISEMENT_TEXT: NAME (STRING)
         """
-        url = "/ads/advertisement/"
+        url = "/ads/advertisements/"
         res = client.get(url)
-        for ads in res.data["body"]:
+        for ads in res.data["body"]['results']:
             self.assertIn(ads["ad_text"], self.test_ads)
         self.assertGreater(len(res.data["body"]), 0)
         self.assertEqual(res.status_code, 200)
@@ -1287,7 +1296,7 @@ class TestCreateAdvertisement(APITestCase):
             ADVERTISEMENT_IS_ACTIVE: (BOOLEAN)
             ADVERTISEMENT_IMPSN_LIMIT: (INT)
         """
-        url = "/ads/advertisement/"
+        url = "/ads/advertisements/"
         data = {
             "adgroup": self.adgroup.id,
             "ad_type": self.adtype.id,
@@ -1341,7 +1350,7 @@ class TestUpdateAdvertisement(APITestCase):
             ADVERTISEMENT_AD_URL: URL (STRING)
             ADVERTISEMENT_IMPSN_LIMIT: (INT)
         """
-        url = "/ads/advertisement/"
+        url = "/ads/advertisements/{0}/".format(self.advertisement.id)
         data = {
             "id": self.advertisement.id,
             "file": "/home/rushikesh/Downloads/20191107_174950.jpg",
@@ -1385,7 +1394,7 @@ class TestDeleteAdvertisement(APITestCase):
             RESPONSE_STATUS_CODE: 200
             RESPONSE_MESSAGE: MSG (STRING)
         """
-        url = "/ads/advertisement/{0}/".format(self.advertisement.id)
+        url = "/ads/advertisements/{0}/".format(self.advertisement.id)
         res = client.delete(url)
         self.assertEqual(res.data["body"]["Msg"], "Advertisement deleted successfully")
         self.assertEqual(res.status_code, 200)
@@ -1414,13 +1423,13 @@ class TestGetAdGroup(APITestCase):
         url = "/ads/adgroups/"
         res = client.get(url)
         self.assertEqual(
-            self.adgroup.campaign.id, res.data["body"][0]["campaign"]["id"]
+            self.adgroup.campaign.id, res.data["body"]['results'][0]["campaign"]["id"]
         )
         self.assertEqual(
-            self.adgroup.campaign.name, res.data["body"][0]["campaign"]["name"]
+            self.adgroup.campaign.name, res.data["body"]['results'][0]["campaign"]["name"]
         )
         self.assertEqual(
-            self.adgroup.campaign.is_active, res.data["body"][0]["is_active"]
+            self.adgroup.campaign.is_active, res.data["body"]['results'][0]["is_active"]
         )
         self.assertGreater(len(res.data["body"]), 0)
         self.assertEqual(res.status_code, 200)
@@ -1460,7 +1469,7 @@ class TestCreateAdGroup(APITestCase):
         }
         res = client.post(url, data)
         for cat in res.data["body"]["category"]:
-            self.assertIn(cat["id"], data["category"])
+            self.assertIn(cat, data["category"])
         self.assertEqual(res.data["body"]["campaign"], data["campaign"])
         self.assertEqual(res.data["body"]["is_active"], data["is_active"])
         self.assertEqual(res.status_code, 200)
@@ -1493,7 +1502,7 @@ class TestUpdateAdGroup(APITestCase):
             ADGROUP_CATEGORY_ID: ID (INT)
             ADGROUP_CAMPAIGN_IS_ACTIVE: (BOOLEAN)
         """
-        url = "/ads/adgroups/"
+        url = "/ads/adgroups/{0}/".format(self.adgroup.id)
         data = {
             "id": self.adgroup.id,
             "campaign": self.campaign.id,
@@ -1502,7 +1511,7 @@ class TestUpdateAdGroup(APITestCase):
         }
         res = client.put(url, data)
         for cat in res.data["body"]["category"]:
-            self.assertIn(cat["id"], data["category"])
+            self.assertIn(cat, data["category"])
         self.assertEqual(res.data["body"]["campaign"], data["campaign"])
         self.assertEqual(res.data["body"]["is_active"], data["is_active"])
         self.assertEqual(res.status_code, 200)
