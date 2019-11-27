@@ -119,3 +119,170 @@ Testing & Documentation
 2. Update Documents:
     1. API Documents: if API has been changed in significant way
     2. User Manual: if you're implementing New Feature
+
+
+Designing good APIs
+```````````````````
+
+NewScout is developed using `Django rest framework <https://www.django-rest-framework.org/>`_. We are using existing features of Django rest framework, like `Generic <https://www.django-rest-framework.org/api-guide/generic-views/>`_ classes and `serialization <https://www.django-rest-framework.org/api-guide/serializers/>`_.
+
+
+Implement GET request
+~~~~~~~~~~~~~~~~~~~~~
+
+A good way to implement GET request would be, `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+
+.. code-block:: python
+
+    class UserAPIView(APIView):
+        def get(self, request):
+            usernames = [user.username for user in User.objects.all()]
+            return Response(create_response(usernames))
+
+
+Implement POST request
+~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to implement POST request, you can use `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+
+.. code-block:: python
+
+    class UserAPIView(APIView):
+        def post(self, request):
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data), status=status.HTTP_201_CREATED)
+            return Response(create_error_response(serializer.errors), status=status.HTTP_400_BAD_REQUEST)
+
+
+Implement PUT request
+~~~~~~~~~~~~~~~~~~~~~
+
+You can implement PUT request using `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+
+.. code-block:: python
+
+    class UserAPIView(APIView):
+        def put(self, request, pk=None):
+            snippet = self.get_object(pk)
+            serializer = UserSerializer(snippet, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data), status=status.HTTP_201_CREATED)
+            return Response(create_error_response(serializer.errors), status=status.HTTP_400_BAD_REQUEST)
+
+
+Implement DELETE request
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+DELETE request can be implemented by using `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+
+.. code-block:: python
+
+    class UserAPIView(APIView):
+        def delete(self, request, pk=None):
+            snippet = self.get_object(pk)
+            snippet.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+Implement LIST or RETRIEVE methods for specific model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Implementing LIST or RETRIEVE method for specific model, you can use `viewset <https://www.django-rest-framework.org/api-guide/viewsets/>`_.
+
+.. code-block:: python
+
+    class UserViewSet(viewsets.ViewSet):
+        """
+        A simple ViewSet for listing or retrieving users.
+        """
+        def list(self, request):
+            queryset = User.objects.all()
+            serializer = UserSerializer(queryset, many=True)
+            return Response(create_response(serializer.data))
+
+        def retrieve(self, request, pk=None):
+            queryset = User.objects.all()
+            user = get_object_or_404(queryset, pk=pk)
+            serializer = UserSerializer(user)
+            return Response(create_response(serializer.data))
+
+
+Implement router for viewset
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Router allows you to quickly declare all of the common routes for a given viewset. Instead of declaring separate routes for your views, a router declares them in a single line of code. For above viewset example we need to map this viewset to specific url `router <https://www.django-rest-framework.org/api-guide/routers/>`_.
+
+.. code-block:: python
+
+    from rest_framework import routers
+    router = routers.SimpleRouter()
+    router.register(r'users', UserViewSet)
+    urlpatterns = router.urls
+
+
+Implement authentication for views
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NewScout uses token and session authentication for api's mobile client uses `token <https://www.django-rest-framework.org/api-guide/authentication/>`_ authentication and webclient
+uses `session <https://www.django-rest-framework.org/api-guide/authentication/>`_ based django authentication. You have to add authenticated permission class to your view.
+
+.. code-block:: python
+
+    permission_classes = (IsAuthenticated,)
+
+
+Output format
+~~~~~~~~~~~~~
+
+NewScout follows specific format for output data. You can create_response and create_error_response to format output data. Following is example format of success response and error response.
+
+.. code-block:: json
+
+    {
+        "header": {
+            "status": "1"
+        },
+        "body": {
+            "results": [
+                {
+                    "id": 11,
+                    "title": "test title",
+                    "source": "test source",
+                    "category": "test category",
+                    "hash_tags": [
+                    "test hashtag 1",
+                    "test hashtag 2"
+                    ]
+                },
+                {
+                    "id": 12,
+                    "title": "test title",
+                    "source": "test source",
+                    "category": "test category",
+                    "hash_tags": [
+                    "test hashtag 1",
+                    "test hashtag 2"
+                    ]
+                }
+            ]
+        }
+    }
+
+.. code-block:: json
+
+    {
+        "header": {
+            "status": "0"
+        },
+        "errors": {
+            "errorList": [
+                {
+                    "field": "domain",
+                    "field_error": "Domain id is required"
+                }
+            ]
+        }
+    }
