@@ -143,7 +143,7 @@ A good way to implement GET request would be, `APIView <https://www.django-rest-
 Implement POST request
 ~~~~~~~~~~~~~~~~~~~~~~
 
-A good way to implement POST request would be, `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+If you want to implement POST request, you can use `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
 
 .. code-block:: python
 
@@ -159,7 +159,7 @@ A good way to implement POST request would be, `APIView <https://www.django-rest
 Implement PUT request
 ~~~~~~~~~~~~~~~~~~~~~
 
-A good way to implement PUT request would be, `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+You can implement PUT request using `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
 
 .. code-block:: python
 
@@ -176,7 +176,7 @@ A good way to implement PUT request would be, `APIView <https://www.django-rest-
 Implement DELETE request
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-A good way to implement DELETE request would be, `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
+DELETE request can be implemented by using `APIView <https://www.django-rest-framework.org/tutorial/3-class-based-views/>`_ provided by django rest framework.
 
 .. code-block:: python
 
