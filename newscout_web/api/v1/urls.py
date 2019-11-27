@@ -13,7 +13,8 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     ArtilcleLikeAPIView, HashTagAPIView, ArticleSearchAPI, MenuAPIView,
                     DevicesAPIView, NotificationAPIView, SocialLoginView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
-                    CategoryBulkUpdate, GetDailyDigestView, ChangeArticleStatusView)
+                    CategoryBulkUpdate, GetDailyDigestView,
+                    ChangeArticleStatusView, DraftMediaUploadView)
 
 urlpatterns = [
     url(r'^documentation/', schema_view),
@@ -67,6 +68,8 @@ urlpatterns = [
         name='article-create-update'),
     url(r'^article/status/$', ChangeArticleStatusView.as_view(),
         name='article-status'),
-    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest')
+    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
+    url(r'article/draft-image/$', DraftMediaUploadView.as_view(), name='draft-image'),
+    url(r'article/draft-image/(?P<pk>[-\d]+)/$', DraftMediaUploadView.as_view(), name='draft-image'),
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)

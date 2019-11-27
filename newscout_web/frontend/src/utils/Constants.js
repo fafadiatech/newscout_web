@@ -13,3 +13,4 @@ export const ARTICLE_CATEGORY_LIST_URL = ARTICLE_API_URL + "categories/";
 export const ARTICLE_CREATE_URL = ARTICLE_API_URL + "article/create-update/";
 export const ARTICLE_DETAIL_URL = ARTICLE_API_URL + "articles/";
 export const ARTICLE_STATUS_URL = ARTICLE_API_URL + "article/status/";
+export const ARTICLE_DRAFTIMAGE_URL = ARTICLE_API_URL + "article/draft-image/";

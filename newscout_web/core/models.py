@@ -22,6 +22,9 @@ class NewsSiteBaseModel(models.Model):
 class Domain(NewsSiteBaseModel):
     domain_name = models.CharField(max_length=255, blank=True, null=True)
     domain_id = models.CharField(max_length=255, blank=True, null=True)
+    default_image = models.ImageField(
+        upload_to="static/images/domain/",
+        default="static/images/domain/default.png")
 
     class Meta:
         verbose_name_plural = "Domain"
@@ -311,3 +314,13 @@ class DailyDigest(NewsSiteBaseModel):
 
     def __unicode__(self):
         return self.device
+
+
+class DraftMedia(NewsSiteBaseModel):
+    """
+    this model is used to store draft article images
+    """
+    image = models.ImageField(upload_to="static/images/article-media/")
+
+    def __unicode__(self):
+        return self.image

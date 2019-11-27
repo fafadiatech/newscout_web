@@ -5,7 +5,7 @@ from django.http import Http404
 from core.models import (Category, Article, Source, BaseUserProfile,
                               BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
                               SocialAccount, Category, CategoryAssociation,
-                              TrendingArticle, Domain, DailyDigest)
+                              TrendingArticle, Domain, DailyDigest, DraftMedia)
 
 from rest_framework.authtoken.models import Token
 
@@ -15,7 +15,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
                           BookmarkArticleSerializer, ArtilcleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
-                          ArticleCreateUpdateSerializer)
+                          ArticleCreateUpdateSerializer, DraftMediaSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -1020,6 +1020,15 @@ class ArticleCreateUpdateView(APIView):
 
     def post(self, request):
         publish = request.data.get("publish")
+        origin = request.META.get("HTTP_ORIGIN")
+        cover_image_id = request.data.get("cover_image_id")
+
+        if cover_image_id:
+            DraftMedia.objects.filter(id=cover_image_id).delete()
+
+        if not request.data.get("cover_image"):
+            request.data["cover_image"] = "/".join(
+                [origin, request.user.domain.default_image.url])
         context = {"publish": publish, "user": request.user}
         serializer = ArticleCreateUpdateSerializer(
             data=request.data, context=context)
@@ -1033,6 +1042,14 @@ class ArticleCreateUpdateView(APIView):
     def put(self, request):
         _id = request.data.get("id")
         publish = request.data.get("publish")
+        origin = request.META.get("HTTP_ORIGIN")
+        cover_image_id = request.data.get("cover_image_id")
+        if cover_image_id:
+            DraftMedia.objects.filter(id=cover_image_id).delete()
+
+        if not request.data.get("cover_image"):
+            request.data["cover_image"] = "/".join(
+                [origin, request.user.domain.default_image.url])
         context = {"publish": publish, "user": request.user}
         article = Article.objects.get(id=_id)
         serializer = ArticleCreateUpdateSerializer(
@@ -1160,3 +1177,41 @@ class GetDailyDigestView(ListAPIView):
             return Response(create_response(serializer.data))
         else:
             return Response(create_error_response({"Msg" : "Daily Digest Doesn't Exist"}), status=400)
+
+
+class DraftMediaUploadView(APIView):
+    """
+    this view is used to upload article images
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        image_file = request.data.get("image")
+        if not image_file:
+            return Response(create_error_response({"error": "Image file is required."}))
+
+        draft_image = DraftMedia.objects.create(image=image_file)
+        serializer = DraftMediaSerializer(draft_image)
+        return Response(create_response(serializer.data))
+
+    def put(self, request, pk):
+        image_file = request.data.get("image")
+        if not image_file:
+            return Response(create_error_response({"error": "Image file is required."}))
+
+        draft_image = DraftMedia.objects.get(id=pk)
+        if not draft_image:
+            return Http404
+
+        draft_image.image = image_file
+        draft_image.save()
+        serializer = DraftMediaSerializer(draft_image)
+        return Response(create_response(serializer.data))
+
+    def delete(self, request, pk):
+        draft_image = DraftMedia.objects.get(id=pk)
+        if not draft_image:
+            return Http404
+
+        draft_image.delete()
+        return Response(create_response({"Msg": "Image deleted successfully"}))

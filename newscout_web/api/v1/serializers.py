@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
                               ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
-                              Devices, Notification,TrendingArticle)
+                              Devices, Notification, TrendingArticle, DraftMedia)
 from django.contrib.auth import authenticate
 from rest_framework import exceptions
 from rest_framework.validators import UniqueValidator
@@ -210,7 +210,6 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
         hash_tags = validated_data.pop("hash_tags")
         article_media = validated_data.pop("article_media")
         user = self.context.get("user")
-
         instance.title = validated_data.get("title", instance.title)
         instance.source = validated_data.get("source", instance.source)
         instance.category = validated_data.get("category", instance.category)
@@ -245,3 +244,12 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
+
+
+class DraftMediaSerializer(serializers.ModelSerializer):
+    """
+    serializer for draftmedia model
+    """
+    class Meta:
+        model = DraftMedia
+        fields = '__all__'

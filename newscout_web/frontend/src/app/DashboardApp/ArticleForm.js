@@ -6,10 +6,12 @@ import Datetime from 'react-datetime';
 import { ToastContainer } from 'react-toastify';
 import * as serviceWorker from './serviceWorker';
 import {ARTICLE_SOURCE_LIST_URL, ARTICLE_CATEGORY_LIST_URL,
-    ARTICLE_CREATE_URL, ARTICLE_DETAIL_URL} from '../../utils/Constants';
+    ARTICLE_CREATE_URL, ARTICLE_DETAIL_URL,
+    ARTICLE_DRAFTIMAGE_URL} from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { getRequest, postRequest, putRequest } from '../../utils/Utils';
+import { getRequest, postRequest, putRequest, fileUploadHeaders,
+    deleteRequest } from '../../utils/Utils';
 import { Button, Form, FormGroup, Label, FormText, Row, Col } from 'reactstrap';
 import Summernote from '../../components/Summernote';
 
@@ -25,7 +27,8 @@ class ArticleForm extends React.Component {
                 source: "",
                 category: "",
                 published_on: "",
-                blurb: ""
+                blurb: "",
+                cover_image: ""
             },
             sources: [],
             categories: [],
@@ -34,7 +37,10 @@ class ArticleForm extends React.Component {
 			formSuccess: false,
             results: [],
             active_page: ACTIVE_PAGE,
-            article_id: ARTICLE_ID
+            article_id: ARTICLE_ID,
+            cover_image: "",
+            cover_image_name: "",
+            cover_image_id: ""
 		};
     }
 
@@ -48,6 +54,16 @@ class ArticleForm extends React.Component {
 
         if (value_type == "article_category") {
             state.fields.category = {value: value, label: label}
+        }
+
+        if (value_type == "cover_image") {
+            var imageFile = e.target.files[0];
+            var imageURL = URL.createObjectURL(imageFile);
+            state.fields.cover_image = imageFile;
+            state.cover_image = imageURL;
+            state.loading = true;
+            state.cover_image_name = e.target.value;
+            this.uploadImage(imageFile);
         }
         this.setState(state)
     }
@@ -67,6 +83,11 @@ class ArticleForm extends React.Component {
         let fields = this.state.fields;
         fields.blurb = content;
         this.setState(fields);
+    }
+
+    onSummernoteImageUpload = (files) => {
+        var image_file = files[0];
+        return URL.createObjectURL(image_file)
     }
 
     setSources = (data) => {
@@ -93,6 +114,8 @@ class ArticleForm extends React.Component {
         state.fields.source = {label: article_detail.source, value: article_detail.source_id};
         state.fields.blurb = article_detail.blurb;
         state.fields.published_on = moment(article_detail.published_on).format('YYYY-MM-DD m:ss A');
+        state.fields.cover_image = article_detail.cover_image;
+        state.cover_image = article_detail.cover_image;
         this.setState(state);
     }
 
@@ -121,7 +144,7 @@ class ArticleForm extends React.Component {
         var fields = this.state.fields;
         fields.category = fields.category.value
         fields.source_url = "http://" + fields.source.label
-        fields.cover_image = fields.source_url
+        fields.cover_image = fields.cover_image
         fields.source = fields.source.value
         if (method == "post"){
             var body = JSON.stringify(fields)
@@ -164,10 +187,55 @@ class ArticleForm extends React.Component {
                     "source": "",
                     "category": "",
                     "published_on": "",
-                    "blurb": ""
-                }
+                    "blurb": "",
+                    "cover_image": "",
+                },
+                "cover_image": "",
+                "cover_image_id": "",
+                "cover_image_name": ""
             });
         }, 3000);
+    }
+
+    uploadImage = (imageFile) => {
+        if (this.state.cover_image_id == ""){
+            const body = new FormData();
+            body.set('image', imageFile)
+            postRequest(ARTICLE_DRAFTIMAGE_URL, body, this.hanleUploadImageResponse, "POST", fileUploadHeaders);
+        } else {
+            const body = new FormData();
+            body.set('image', imageFile);
+            var url = ARTICLE_DRAFTIMAGE_URL + this.state.cover_image_id + "/";
+            putRequest(url, body, this.hanleUploadImageResponse, "PUT", fileUploadHeaders);
+        }
+    }
+
+    hanleUploadImageResponse = (data) => {
+        var state = this.state;
+        state.fields.cover_image = window.location.origin + "/" + data.body.image;
+        state.cover_image = window.location.origin + "/" + data.body.image;
+        state.cover_image_id = data.body.id;
+        state.loading = false;
+        this.setState(state);
+    }
+
+    handleDeleteImageResponse = (data) => {
+        var state = this.state;
+        state.fields.cover_image = "";
+        state.cover_image = "";
+        state.fields.cover_image_id = "";
+        state.cover_image_name = "";
+        this.setState(state);
+    }
+
+    deleteImage = (e) => {
+        var image_id = this.state.cover_image_id;
+        if(image_id){
+            var url = ARTICLE_DRAFTIMAGE_URL + image_id + "/";
+            deleteRequest(url, this.handleDeleteImageResponse);
+        } else {
+            this.handleDeleteImageResponse({})
+        }
     }
 
     componentDidMount() {
@@ -198,63 +266,98 @@ class ArticleForm extends React.Component {
 								<div className="mb-3">
 									<h1 className="h2">{page_title}</h1>
                                     <Form>
-                                        <Row form>
-                                            <Col md={4}>
-                                                <FormGroup>
-                                                    <Label for="name">Article Title</Label>
-                                                    <input refs="name" type="textarea" name="name" className="form-control" placeholder="Article Title" id="title" value={this.state.fields.title} onChange={(e) => this.onChange("title", e)} />
-                                                    <FormText color="danger">{this.state.errors["name"]}</FormText>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row form>
-                                            <Col md={4}>
-                                                <FormGroup>
-                                                    <Label for="article_source">Article Source</Label>
-                                                    <Select refs="source" options={this.state.sources} value={this.state.fields.source} onChange={(e) => this.handleChange("article_source", e)} />
-                                                    <FormText color="danger">{this.state.errors["article_source"]}</FormText>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row form>
-                                            <Col md={4}>
-                                                <FormGroup>
-                                                    <Label for="article_category">Article Category</Label>
-                                                    <Select refs="category" value={this.state.fields.category}  options={this.state.categories} onChange={(e) => this.handleChange("article_category", e)} />
-                                                    <FormText color="danger">{this.state.errors["article_category"]}</FormText>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row form>
-                                            <Col md={4}>
-                                                <FormGroup>
-                                                    <Label for="published_on">Published On</Label>
-                                                    <Datetime refs="published_on" value={this.state.fields.published_on}  dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="published_on" onChange={(e) => this.onChange("published_on", e)} />
-                                                    <FormText color="danger">{this.state.errors["published_on"]}</FormText>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row form>
-                                            <Col md={10}>
-                                                <FormGroup>
-                                                    <Summernote
-                                                        changedValue={this.onSummernoteChange}
-                                                        value={this.state.fields.blurb}
-                                                        isletter={true}
-                                                    />
-                                                </FormGroup>
+                                        <Row>
+                                            <Col md={5}>
+                                                <Row form>
+                                                    <Col md={12}>
+                                                        <FormGroup>
+                                                            <Label for="name">Article Title</Label>
+                                                            <input refs="name" type="textarea" name="name" className="form-control" placeholder="Article Title" id="title" value={this.state.fields.title} onChange={(e) => this.onChange("title", e)} />
+                                                            <FormText color="danger">{this.state.errors["name"]}</FormText>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row form>
+                                                    <Col md={12}>
+                                                        <FormGroup>
+                                                            <Label for="article_source">Article Source</Label>
+                                                            <Select refs="source" options={this.state.sources} value={this.state.fields.source} ></Select>  <FormText color="danger">{this.state.errors["article_source"]}</FormText>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col md={3}>
-                                                <Button color="success" onClick={(e) => this.articleSave(method)} type="button">Save</Button>&nbsp;&nbsp;
-                                                <Button color="success" onClick={(e) => this.articlePublish(method)} type="button">Save & Publish</Button>&nbsp;&nbsp;
-                                                <Button color="secondary" onClick={this.redirecttoArticleList} type="button">Cancel</Button>
+                                            <Col md={5}>
+                                                <Row form>
+                                                    <Col md={12}>
+                                                        <FormGroup>
+                                                            <Label for="article_category">Article Category</Label>
+                                                            <Select refs="category" value={this.state.fields.category}  options={this.state.categories} onChange={(e) => this.handleChange("article_category", e)} />
+                                                            <FormText color="danger">{this.state.errors["article_category"]}</FormText>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row form>
+                                                    <Col md={12}>
+                                                        <FormGroup>
+                                                            <Label for="published_on">Published On</Label>
+                                                            <Datetime refs="published_on" value={this.state.fields.published_on}  dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="published_on" onChange={(e) => this.onChange("published_on", e)} />
+                                                            <FormText color="danger">{this.state.errors["published_on"]}</FormText>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row form>
+                                                    <Col md={12}>
+                                                        <FormGroup>
+                                                        <Label for="cover_image">Cover Image</Label>
+                                                            <input refs="cover_image" type="file" name="cover_image" className="form-control" placeholder="Cover Image" id="cover_image" onChange={(e) => this.handleChange("cover_image", e)} value={this.state.cover_image_name} />
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
                                             </Col>
-                                            <Col md={6}>
-                                                {this.state.formSuccess ?
-                                                    <h6 className="text-success mt-2">Article submitted successfully.</h6>
-                                                : ""}
+                                            <Col md={4}>
+                                                <div className="image-view">
+                                                    { this.state.loading ?
+                                                        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+                                                    :
+                                                        ""
+                                                    }
+                                                    {
+                                                        this.state.fields.cover_image != "" ?
+                                                            <div className="float-right mb-2 text-right text-danger cursor-pointer" onClick={(e) => this.deleteImage(e)} data_id={this.state.cover_image_id} title="Remove Image">X</div>
+                                                        :
+                                                            ""
+                                                    }
+                                                    <img src={this.state.cover_image} className="img-fluid"/>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col md={12}>
+                                                <Row form>
+                                                    <Col md={10}>
+                                                        <FormGroup>
+                                                            <Summernote
+                                                                changedValue={this.onSummernoteChange}
+                                                                value={this.state.fields.blurb}
+                                                                isletter={true}
+                                                            />
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col md={3}>
+                                                        <Button color="success" onClick={(e) => this.articleSave(method)} type="button">Save</Button>&nbsp;&nbsp;
+                                                        <Button color="success" onClick={(e) => this.articlePublish(method)} type="button">Save & Publish</Button>&nbsp;&nbsp;
+                                                        <Button color="secondary" onClick={this.redirecttoArticleList} type="button">Cancel</Button>
+                                                    </Col>
+                                                    <Col md={6}>
+                                                        {this.state.formSuccess ?
+                                                            <h6 className="text-success mt-2">Article submitted successfully.</h6>
+                                                        : ""}
+                                                    </Col>
+                                                </Row>
                                             </Col>
                                         </Row>
                                     </Form>
