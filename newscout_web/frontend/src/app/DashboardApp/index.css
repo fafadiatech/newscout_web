@@ -70,7 +70,7 @@ code {
   text-align: center;
   height: 28px;
 }
-.rdtPicker td {
+.rdtPicker td, .cursor-pointer {
   cursor: pointer;
 }
 .rdtPicker td.rdtDay:hover,
@@ -1348,4 +1348,18 @@ span.CodeMirror-selectedtext { background: none; }
   100% {
     transform: rotate(360deg);
   }
+}
+
+div.modal-header {
+  display: block;
+}
+
+.image-view {
+  margin-top: -20px;
+}
+
+.image-view .lds-ring {
+  position: absolute;
+  margin-top: 30%;
+  margin-left: 45%;
 }

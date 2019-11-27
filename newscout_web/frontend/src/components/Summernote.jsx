@@ -18,7 +18,17 @@ class Summernote extends React.Component {
         this.props.changedValue(content)
     }
 
+    onImageUpload = (files) => {
+        var imageFile = files[0];
+        var imageURL = URL.createObjectURL(imageFile);
+        ReactSummernote.insertImage(imageURL, $image => {
+            $image.css("width", Math.floor($image.width() / 2));
+            $image.attr("alt", $image.name);
+        });
+    }
+
     render() {
+        $(".dropdown-toggle").dropdown();
         var options = {
                     height: 900,
                     width: 850,
@@ -41,6 +51,7 @@ class Summernote extends React.Component {
                 value={this.props.value}
                 options={options}
                 onChange={this.onChange}
+                onImageUpload={this.onImageUpload}
             />
         )
     }
