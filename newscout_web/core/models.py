@@ -143,6 +143,7 @@ class Article(NewsSiteBaseModel):
     edited_on = models.DateTimeField(auto_now=True)
     indexed_on = models.DateTimeField(default=timezone.now)
     spam = models.BooleanField(default=False)
+    article_format = models.CharField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
         return '{} - {} - {} - {} -{}\n'.format(self.id,self.title, self.published_on, self.source, self.hash_tags)
