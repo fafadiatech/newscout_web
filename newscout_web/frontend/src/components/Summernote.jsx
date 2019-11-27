@@ -23,7 +23,7 @@ class Summernote extends React.Component {
         var imageURL = URL.createObjectURL(imageFile);
         ReactSummernote.insertImage(imageURL, $image => {
             $image.css("width", Math.floor($image.width() / 2));
-            $image.attr("alt", image.name);
+            $image.attr("alt", $image.name);
         });
     }
 

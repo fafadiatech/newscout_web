@@ -1,6 +1,7 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 
-from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework.routers import DefaultRouter
+
 from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title="Newscout API Documentation")
@@ -14,9 +15,13 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     DevicesAPIView, NotificationAPIView, SocialLoginView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
                     CategoryBulkUpdate, GetDailyDigestView,
-                    ChangeArticleStatusView, DraftMediaUploadView)
+                    ChangeArticleStatusView, DraftMediaUploadViewSet)
+
+url_router = DefaultRouter()
+url_router.register(r'article/draft-image', DraftMediaUploadViewSet, basename='draft-media')
 
 urlpatterns = [
+    url('', include(url_router.urls)),
     url(r'^documentation/', schema_view),
     url(r'^trending/$', TrendingArticleAPIView.as_view(),
         name="trending"),
@@ -68,8 +73,5 @@ urlpatterns = [
         name='article-create-update'),
     url(r'^article/status/$', ChangeArticleStatusView.as_view(),
         name='article-status'),
-    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
-    url(r'article/draft-image/$', DraftMediaUploadView.as_view(), name='draft-image'),
-    url(r'article/draft-image/(?P<pk>[-\d]+)/$', DraftMediaUploadView.as_view(), name='draft-image'),
+    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest')
 ]
-urlpatterns = format_suffix_patterns(urlpatterns)

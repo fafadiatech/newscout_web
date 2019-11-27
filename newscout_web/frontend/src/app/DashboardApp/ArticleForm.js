@@ -201,16 +201,16 @@ class ArticleForm extends React.Component {
         if (this.state.cover_image_id == ""){
             const body = new FormData();
             body.set('image', imageFile)
-            postRequest(ARTICLE_DRAFTIMAGE_URL, body, this.hanleUploadImageResponse, "POST", fileUploadHeaders);
+            postRequest(ARTICLE_DRAFTIMAGE_URL, body, this.handleUploadImageResponse, "POST", fileUploadHeaders);
         } else {
             const body = new FormData();
             body.set('image', imageFile);
             var url = ARTICLE_DRAFTIMAGE_URL + this.state.cover_image_id + "/";
-            putRequest(url, body, this.hanleUploadImageResponse, "PUT", fileUploadHeaders);
+            putRequest(url, body, this.handleUploadImageResponse, "PUT", fileUploadHeaders);
         }
     }
 
-    hanleUploadImageResponse = (data) => {
+    handleUploadImageResponse = (data) => {
         var state = this.state;
         state.fields.cover_image = window.location.origin + "/" + data.body.image;
         state.cover_image = window.location.origin + "/" + data.body.image;

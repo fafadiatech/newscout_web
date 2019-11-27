@@ -24,7 +24,7 @@ from newscout_web.constants import SOCIAL_AUTH_PROVIDERS
 from django.db.models import Q
 from rest_framework.exceptions import APIException
 from collections import OrderedDict
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.pagination import CursorPagination
 from rest_framework.generics import ListAPIView
 from rest_framework.parsers import JSONParser
@@ -1020,6 +1020,8 @@ class ArticleCreateUpdateView(APIView):
 
     def post(self, request):
         publish = request.data.get("publish")
+        # origin is used to join with cover image
+        # to generate proper image url
         origin = request.META.get("HTTP_ORIGIN")
         cover_image_id = request.data.get("cover_image_id")
 
@@ -1042,6 +1044,8 @@ class ArticleCreateUpdateView(APIView):
     def put(self, request):
         _id = request.data.get("id")
         publish = request.data.get("publish")
+        # origin is used to join with cover image
+        # to generate proper image url
         origin = request.META.get("HTTP_ORIGIN")
         cover_image_id = request.data.get("cover_image_id")
         if cover_image_id:
@@ -1179,13 +1183,13 @@ class GetDailyDigestView(ListAPIView):
             return Response(create_error_response({"Msg" : "Daily Digest Doesn't Exist"}), status=400)
 
 
-class DraftMediaUploadView(APIView):
+class DraftMediaUploadViewSet(viewsets.ViewSet):
     """
     this view is used to upload article images
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
+    def create(self, request):
         image_file = request.data.get("image")
         if not image_file:
             return Response(create_error_response({"error": "Image file is required."}))
@@ -1194,7 +1198,7 @@ class DraftMediaUploadView(APIView):
         serializer = DraftMediaSerializer(draft_image)
         return Response(create_response(serializer.data))
 
-    def put(self, request, pk):
+    def update(self, request, pk):
         image_file = request.data.get("image")
         if not image_file:
             return Response(create_error_response({"error": "Image file is required."}))
@@ -1208,7 +1212,7 @@ class DraftMediaUploadView(APIView):
         serializer = DraftMediaSerializer(draft_image)
         return Response(create_response(serializer.data))
 
-    def delete(self, request, pk):
+    def destroy(self, request, pk):
         draft_image = DraftMedia.objects.get(id=pk)
         if not draft_image:
             return Http404
