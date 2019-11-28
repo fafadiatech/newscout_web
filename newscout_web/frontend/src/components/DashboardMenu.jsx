@@ -11,7 +11,7 @@ class DashboardMenu extends React.Component {
 		};
 	}
 
-	render(){
+	render() {
 		return (
 			<nav className="col-md-2 d-none d-md-block bg-light sidebar">
 				<div className="sidebar-sticky">
@@ -32,11 +32,11 @@ class DashboardMenu extends React.Component {
 							<a className={`${this.state.active_page === "articles" ? 'active' : ''} nav-link `} href="/dashboard/articles/">Articles</a>
 						</li>
 						{
-							!this.state.isAnonymous ?
+							this.state.is_anonymous === "False" ?
 								<li className="nav-item">
 									<a className="nav-link" href="/logout/">Logout</a>
 								</li>
-							:
+								:
 								""
 						}
 					</ul>
