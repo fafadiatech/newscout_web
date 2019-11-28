@@ -11,7 +11,7 @@
 		{% block content %}{% endblock content %}
 	</body>
 	<script type="text/javascript">
-		var isAnonymous = "{{request.user.is_anonymous}}"
+		var isAnonymous = {{request.user.is_anonymous|yesno:'true,false'}}
 	</script>
 	{% block js %}{% endblock js %}
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
