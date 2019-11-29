@@ -32,7 +32,7 @@ class DashboardMenu extends React.Component {
 							<a className={`${this.state.active_page === "articles" ? 'active' : ''} nav-link `} href="/dashboard/articles/">Articles</a>
 						</li>
 						{
-							this.state.is_anonymous === "False" ?
+							!this.state.is_anonymous ?
 								<li className="nav-item">
 									<a className="nav-link" href="/logout/">Logout</a>
 								</li>
