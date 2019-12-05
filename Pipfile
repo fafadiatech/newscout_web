@@ -36,7 +36,7 @@ six = "==1.12.0"
 soupsieve = "==1.9"
 "urllib3" = "==1.24.2"
 django-ajax-selects = "==1.7.1"
-Django = "==2.2.4"
+Django = "==2.2.8"
 prometheus_client = "==0.6.0"
 Pillow = "==6.2.1"
 
