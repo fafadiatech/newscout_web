@@ -14,8 +14,6 @@ import 'newscout/assets/JumboBox.css'
 import 'newscout/assets/SliderItem.css'
 import 'newscout/assets/SectionTitle.css'
 
-import config_data from './config.json';
-
 const DOMAIN = "domain=newscout";
 const tabnav_array = [];
 
