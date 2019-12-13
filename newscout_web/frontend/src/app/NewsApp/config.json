@@ -1,0 +1,786 @@
+[
+	{
+		"menuitems": [
+			{
+				"itemtext": "Trending",
+				"itemurl": "/news/trending/"
+			},
+			{
+				"itemtext": "Latest News",
+				"itemurl": "/news/latest/"
+			},
+			{
+				"itemtext": "Sector Updates",
+				"itemurl": "/news/sector/"
+			},
+			{
+				"itemtext": "Regional Updates",
+				"itemurl": "/news/sector/"
+			},
+			{
+				"itemtext": "Finance",
+				"itemurl": "/news/sector/"
+			},
+			{
+				"itemtext": "Economics",
+				"itemurl": "/news/sector/"
+			},
+			{
+				"itemtext": "Misc",
+				"itemurl": "/news/sector/"
+			}
+		]
+	},
+
+	{
+		"tabnav": [
+			{
+				"tab_title": "Sector Updates",
+				"tab_posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					}
+				]
+			},
+			{
+				"tab_title": "Regional Updates",
+				"tab_posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					}
+				]
+			}
+		]
+	},
+
+	{
+		"posts": [
+			{
+				"src": "http://newscout.in/static/images/slider/image_01.jpg",
+				"header": "Nuclear Fusion Closer to Becoming a Reality",
+				"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+				"url": "/news/post-detail/",
+				"domain_url": "https://www.lipsum.com/",
+				"date": "12 Jan 2010",
+				"key": "1"
+			},
+			{
+				"src": "http://newscout.in/static/images/slider/image_02.jpg",
+				"header": "The Public Health Crisis Hiding in Our Food",
+				"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+				"url": "/news/post-detail/",
+				"domain_url": "https://www.lipsum.com/",
+				"date": "12 Jan 2010",
+				"key": "2"
+			},
+			{
+				"src": "http://newscout.in/static/images/slider/image_03.jpg",
+				"header": "Nuclear Fusion Closer to Becoming a Reality",
+				"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+				"url": "/news/post-detail/",
+				"domain_url": "https://www.lipsum.com/",
+				"date": "12 Jan 2010",
+				"key": "3"
+			}
+		]
+	},
+
+	{
+		"submenu": [
+			{
+				"menuname": "Banking",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Retail",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Tech",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Transport",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Tech",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Energy",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Food & Drinks",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Manufacturing",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Fintech",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			},
+			{
+				"menuname": "Media",
+				"posts": [
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "1"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "2"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "3"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_01.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "4"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_02.jpg",
+						"header": "The Public Health Crisis Hiding in Our Food",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "5"
+					},
+					{
+						"src": "http://newscout.in/static/images/slider/image_03.jpg",
+						"header": "Nuclear Fusion Closer to Becoming a Reality",
+						"caption": "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+						"url": "/news/post-detail/",
+						"domain_url": "https://www.lipsum.com/",
+						"date": "12 Jan 2010",
+						"key": "6"
+					}
+				]
+			}
+		]
+	},
+
+	{
+		"filters": [
+			{
+				"catitems": "Category",
+				"subitem": [
+					{
+						"label": "Recession",
+						"value": "1"
+					},
+					{
+						"label": "Uncategorised",
+						"value": "2"
+					},
+					{
+						"label": "Asia",
+						"value": "3"
+					}
+				]
+			},
+			{
+				"catitems": "Source",
+				"subitem": [
+					{
+						"label": "Recession",
+						"value": "1"
+					},
+					{
+						"label": "Uncategorised",
+						"value": "2"
+					},
+					{
+						"label": "Asia",
+						"value": "3"
+					}
+				]
+			},
+			{
+				"catitems": "Hash Tags",
+				"subitem": [
+					{
+						"label": "Recession",
+						"value": "1"
+					},
+					{
+						"label": "Uncategorised",
+						"value": "2"
+					},
+					{
+						"label": "Asia",
+						"value": "3"
+					}
+				]
+			}
+		]
+	}
+]
