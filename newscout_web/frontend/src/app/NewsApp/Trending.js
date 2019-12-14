@@ -11,8 +11,6 @@ import 'newscout/assets/Menu.css'
 import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 
-import config_data from './config.json';
-
 const DOMAIN = "domain=newscout";
 
 class Trending extends React.Component {
@@ -67,7 +65,7 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending } = this.state
+		var { menus, trending } = this.state;
 
 		var result = trending.map((item, index) => {
 			return (
