@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import logo from './logo.png';
 import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
 
-import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
+import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'

@@ -1,6 +1,7 @@
 import React from 'react';
+import moment from 'moment';
 import ReactDOM from 'react-dom';
-import logo from './logo.svg';
+import logo from './logo.png';
 import Slider from "react-slick";
 import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
 
