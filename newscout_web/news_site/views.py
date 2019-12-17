@@ -29,20 +29,22 @@ class LatestNewsView(TemplateView):
 		return context
 
 
-class MenuPostView(TemplateView):
+class CategoryView(TemplateView):
 	template_name = "menu-posts.html"
 	
 	def get_context_data(self, **kwargs):
-		context = super(MenuPostView, self).get_context_data(**kwargs)
+		context = super(CategoryView, self).get_context_data(**kwargs)
 		context['category'] = self.kwargs['slug']
 		return context
 
 
-class SubmenuPostsView(TemplateView):
+class SubCategoryView(TemplateView):
 	template_name = "submenu-posts.html"
 	
 	def get_context_data(self, **kwargs):
-		context = super(SubmenuPostsView, self).get_context_data(**kwargs)
+		context = super(SubCategoryView, self).get_context_data(**kwargs)
+		context['category'] = self.kwargs['category']
+		context['sub_category'] = self.kwargs['sub_category']
 		return context
 
 
