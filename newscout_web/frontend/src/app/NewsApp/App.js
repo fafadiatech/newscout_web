@@ -87,12 +87,13 @@ class App extends React.Component {
 		var tab_posts = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = decodeURIComponent(item.cover_image)
-			article_dict['altText'] = item.title
+			article_dict['id'] = item.id
 			article_dict['header'] = item.title
+			article_dict['altText'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
+			article_dict['src'] = "http://images.newscout.in/unsafe/300x175/left/top/"+decodeURIComponent(item.cover_image)
 			if(tab_posts.length < 4){
 				tab_posts.push(article_dict)
 			}
@@ -109,12 +110,13 @@ class App extends React.Component {
 		var latestnews_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = decodeURIComponent(item.cover_image)
-			article_dict['altText'] = item.title
+			article_dict['id'] = item.id
 			article_dict['header'] = item.title
+			article_dict['altText'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
+			article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
 			if(latestnews_array.length < 4){
 				latestnews_array.push(article_dict)
 			}
@@ -128,12 +130,13 @@ class App extends React.Component {
 		var financeposts_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = decodeURIComponent(item.cover_image)
-			article_dict['altText'] = item.title
+			article_dict['id'] = item.id
 			article_dict['header'] = item.title
+			article_dict['altText'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
+			article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
 			if(financeposts_array.length < 4){
 				financeposts_array.push(article_dict)
 			}
@@ -147,17 +150,17 @@ class App extends React.Component {
 		var economicposts_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = decodeURIComponent(item.cover_image)
-			article_dict['altText'] = item.title
+			article_dict['id'] = item.id
 			article_dict['header'] = item.title
+			article_dict['altText'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
+			article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
 			if(economicposts_array.length < 4){
 				economicposts_array.push(article_dict)
 			}
 		})
-		console.log(economicposts_array)
 		this.setState({
 			economics: economicposts_array
 		})
@@ -167,12 +170,13 @@ class App extends React.Component {
 		var miscposts_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = decodeURIComponent(item.cover_image)
-			article_dict['altText'] = item.title
+			article_dict['id'] = item.id
 			article_dict['header'] = item.title
+			article_dict['altText'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
+			article_dict['src'] = "http://images.newscout.in/unsafe/600x338/left/top/"+decodeURIComponent(item.cover_image)
 			if(miscposts_array.length < 4){
 				miscposts_array.push(article_dict)
 			}
@@ -187,12 +191,13 @@ class App extends React.Component {
 		data.body.results.map((item, index) => {
 			item.articles.map((ele, ele_index) => {
 				var article_dict = {}
-				article_dict['src'] = decodeURIComponent(item.cover_image)
-				article_dict['altText'] = ele.title
+				article_dict['id'] = item.id
 				article_dict['header'] = ele.title
+				article_dict['altText'] = ele.title
 				article_dict['caption'] = ele.blurb
 				article_dict['source'] = ele.source
 				article_dict['source_url'] = ele.source_url
+				article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(item.cover_image)
 				if(trending_array.length < 4){
 					trending_array.push(article_dict)
 				}

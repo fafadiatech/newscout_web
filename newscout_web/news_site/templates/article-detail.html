@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout - Article Detail{% endblock title %}
+
+{% block content %}
+	<div id="article-detail"></div>
+{% endblock content %}
+
+{% block js %}
+	<script type="text/javascript">
+		var ARTICLE_ID = "{{article_id|safe}}"
+	</script>
+	<script src="{% static "js/react/newsArticleDetail.js" %}"></script>
+{% endblock js %}

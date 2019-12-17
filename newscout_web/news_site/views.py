@@ -48,11 +48,12 @@ class SubCategoryView(TemplateView):
 		return context
 
 
-class PostDetailView(TemplateView):
-	template_name = "postdetail.html"
+class ArticleDetailView(TemplateView):
+	template_name = "article-detail.html"
 	
 	def get_context_data(self, **kwargs):
-		context = super(PostDetailView, self).get_context_data(**kwargs)
+		context = super(ArticleDetailView, self).get_context_data(**kwargs)
+		context['article_id'] = self.kwargs['article_id']
 		return context
 
 

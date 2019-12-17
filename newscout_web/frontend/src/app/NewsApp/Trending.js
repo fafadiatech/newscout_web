@@ -44,13 +44,14 @@ class Trending extends React.Component {
 		data.body.results.map((item, index) => {
 			item.articles.map((ele, ele_index) => {
 				var article_dict = {}
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(ele.cover_image)
-				article_dict['altText'] = ele.title
-				article_dict['header'] = ele.title
-				article_dict['caption'] = ele.blurb
-				article_dict['source'] = ele.source
-				article_dict['source_url'] = ele.source_url
+				article_dict['id'] = ele.id;
+				article_dict['header'] = ele.title;
+				article_dict['altText'] = ele.title;
+				article_dict['caption'] = ele.blurb;
+				article_dict['source'] = ele.source;
+				article_dict['source_url'] = ele.source_url;
 				article_dict['date'] = moment(ele.published_on).format('YYYY-MM-DD');
+				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(ele.cover_image);
 				trending_array.push(article_dict)
 			})
 		})
@@ -77,7 +78,8 @@ class Trending extends React.Component {
 							description={item.caption}
 							uploaded_on={item.date}
 							uploaded_by={item.source}
-							posturl={item.source_url} />
+							source_url={item.source_url}
+							posturl={`/news/article/${item.id}/`} />
 					</div>
 				</li>
 			)

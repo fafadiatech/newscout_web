@@ -64,17 +64,17 @@ class LatestNews extends React.Component {
 	}
 
 	latestNewsPosts = (data) => {
-		console.log(data)
 		var latestnews_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image)
+			article_dict['id'] = item.id
 			article_dict['altText'] = item.title
 			article_dict['header'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
+			article_dict['source_url'] = item.source_url
 			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
+			article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image)
 			latestnews_array.push(article_dict)
 		})
 		this.setState({
@@ -100,7 +100,8 @@ class LatestNews extends React.Component {
 							description={item.caption}
 							uploaded_on={item.date}
 							uploaded_by={item.source}
-							posturl={item.source_url} />
+							source_url={item.source_url}
+							posturl={`/news/article/${item.id}/`} />
 					</div>
 				</li>
 			)
