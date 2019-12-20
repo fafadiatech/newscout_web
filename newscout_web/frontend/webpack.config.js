@@ -14,7 +14,7 @@ module.exports = {
       news: './src/app/NewsApp/index.js',
       newsLatestNews: './src/app/NewsApp/LatestNews.js',
       newsMenuPosts: './src/app/NewsApp/MenuPosts.js',
-      newsPostDetail: './src/app/NewsApp/PostDetail.js',
+      newsArticleDetail: './src/app/NewsApp/ArticleDetail.js',
       newsSearchResult: './src/app/NewsApp/SearchResult.js',
       newsSubmenuPosts: './src/app/NewsApp/SubmenuPosts.js',
       newsTrending: './src/app/NewsApp/Trending.js',
