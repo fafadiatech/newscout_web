@@ -12,6 +12,7 @@ import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/"
 
 class Trending extends React.Component {
 	
@@ -87,7 +88,7 @@ class Trending extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="pt-70">
 					<div className="container-fluid">
 						<div className="row">

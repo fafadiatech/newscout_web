@@ -62,4 +62,5 @@ class SearchView(TemplateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(SearchView, self).get_context_data(**kwargs)
+		context['query'] = self.request.GET.get('q', '')
 		return context

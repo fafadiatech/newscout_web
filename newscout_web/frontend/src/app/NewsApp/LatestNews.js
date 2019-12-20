@@ -13,6 +13,7 @@ import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/Sidebar.css'
 
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/";
 
 class LatestNews extends React.Component {
 	
@@ -109,7 +110,7 @@ class LatestNews extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} />

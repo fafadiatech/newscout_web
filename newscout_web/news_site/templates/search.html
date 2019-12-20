@@ -8,5 +8,8 @@
 {% endblock content %}
 
 {% block js %}
-	<script src="{% static "/news_site/SearchResult.js" %}"></script>
+	<script type="text/javascript">
+		var QUERY = "{{query|safe}}"
+	</script>
+	<script src="{% static "/js/react/newsSearchResult.js" %}"></script>
 {% endblock js %}

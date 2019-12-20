@@ -14,9 +14,9 @@ import 'newscout/assets/JumboBox.css'
 import 'newscout/assets/SliderItem.css'
 import 'newscout/assets/SectionTitle.css'
 
-const DOMAIN = "domain=newscout";
 const tabnav_array = [];
-const URL = ARTICLE_POSTS+"?"+DOMAIN
+const URL = "/news/search/"
+const DOMAIN = "domain=newscout";
 
 class App extends React.Component {
 
@@ -219,7 +219,7 @@ class App extends React.Component {
 		var { menus, trending, latest_news, finance, economics, sector_regional_update, misc } = this.state
 		return (
 			<React.Fragment>
-				<Menu logo={logo} navitems={this.state.menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="pt-70">
 					<div className="container">
 						<div className="row">

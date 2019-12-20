@@ -13,6 +13,7 @@ import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/SideBox.css'
 
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/";
 
 class ArticleDetail extends React.Component {
 	
@@ -25,7 +26,6 @@ class ArticleDetail extends React.Component {
 	}
 
 	getArticleDetail = (data) => {
-		console.log(data)
 		var state = this.state;
 		state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
 		state.article.altText = data.body.article.title;
@@ -62,7 +62,7 @@ class ArticleDetail extends React.Component {
 		var { menus, article } = this.state;
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="pt-70">
 					<div className="container-fluid">
 						<div className="row">

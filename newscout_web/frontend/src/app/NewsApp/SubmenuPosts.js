@@ -13,6 +13,7 @@ import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/"
 
 class SubmenuPosts extends React.Component {
 	
@@ -108,7 +109,7 @@ class SubmenuPosts extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} />
