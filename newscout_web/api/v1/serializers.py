@@ -41,7 +41,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('id', 'title', 'source', 'category', 'hash_tags','source_url',
                   'cover_image', 'blurb', 'published_on', 'is_book_mark',
-                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format')
+                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format', 'author')
 
     source = serializers.ReadOnlyField(source='source.name')
     category = serializers.ReadOnlyField(source='category.name')
@@ -49,6 +49,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     source_id = serializers.ReadOnlyField(source='source.id')
     domain = serializers.ReadOnlyField(source='domain.domain_id')
     hash_tags = HashTagSerializer(many=True)
+    author = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(ArticleSerializer, self).__init__(*args, **kwargs)
@@ -57,6 +58,12 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     def get_hash_tags(self, instance):
         return list(instance.hash_tags.all().values_list("name", flat=True))
+
+    def get_author(self, instance):
+        if instance.author:
+            return "{0} {1}".format(
+                instance.author.first_name, instance.author.last_name)
+        return ""
 
 
 class UserSerializer(serializers.Serializer):
@@ -199,6 +206,9 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
                 url=am["url"],
                 video_url=am["video_url"]
             ) for am in article_media]
+
+        article.author = user
+        article.save()
 
         if self.context.get("publish"):
             article.active = True

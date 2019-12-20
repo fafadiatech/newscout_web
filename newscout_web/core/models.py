@@ -147,6 +147,8 @@ class Article(NewsSiteBaseModel):
     indexed_on = models.DateTimeField(default=timezone.now)
     spam = models.BooleanField(default=False)
     article_format = models.CharField(max_length=100, blank=True, null=True)
+    author = models.ForeignKey(
+        BaseUserProfile, blank=True, null=True, on_delete=models.CASCADE, related_name="author")
 
     def __unicode__(self):
         return '{} - {} - {} - {} -{}\n'.format(self.id,self.title, self.published_on, self.source, self.hash_tags)
