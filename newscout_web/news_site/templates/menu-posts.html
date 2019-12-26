@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout{% endblock title %}
+
+{% block content %}
+	<div id="menu-posts"></div>
+{% endblock content %}
+
+{% block js %}
+	<script type="text/javascript">
+		var CATEGORY = '{{category|safe}}'
+	</script>
+	<script src="{% static "js/react/newsMenuPosts.js" %}"></script>
+{% endblock js %}

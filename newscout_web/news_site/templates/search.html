@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout - Search{% endblock title %}
+
+{% block content %}
+	<div id="search-result"></div>
+{% endblock content %}
+
+{% block js %}
+	<script src="{% static "/news_site/SearchResult.js" %}"></script>
+{% endblock js %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout - Trending{% endblock title %}
+
+{% block content %}
+	<div id="trending"></div>
+{% endblock content %}
+
+{% block js %}
+	<script src="{% static "js/react/newsTrending.js" %}"></script>
+{% endblock js %}
