@@ -281,7 +281,7 @@ class ArticleForm extends React.Component {
                                                     <Col md={12}>
                                                         <FormGroup>
                                                             <Label for="article_source">Article Source</Label>
-                                                            <Select refs="source" options={this.state.sources} value={this.state.fields.source} ></Select>  <FormText color="danger">{this.state.errors["article_source"]}</FormText>
+                                                            <Select refs="source" options={this.state.sources} value={this.state.fields.source} onChange={(e) => this.handleChange("article_source", e)} />  <FormText color="danger">{this.state.errors["article_source"]}</FormText>
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
