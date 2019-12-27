@@ -46,6 +46,8 @@ from .exception_handler import (create_error_response,TokenIDMissing, ProviderMi
 import logging
 import operator
 from functools import reduce
+import tweepy
+
 
 log = logging.getLogger(__name__)
 
@@ -995,7 +997,21 @@ class TrendingArticleAPIView(APIView):
         return Response(create_response({"results": source.data}))
 
 
-class ArticleCreateUpdateView(APIView):
+class SocailMediaPublishing():
+    """
+    this class is to update news arrticles on social media
+    """
+    def twitter(self, data):
+        """
+        this function will tweet article title and its url in twitter
+        """
+        auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+        auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
+        api = tweepy.API(auth)
+        api.update_status(data["title"] + "\n" + data["url"])
+
+
+class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
     """
     Article create update view
     """
@@ -1017,6 +1033,11 @@ class ArticleCreateUpdateView(APIView):
             tag_list = self.get_tags(json_data["hash_tags"])
             json_data["hash_tags"] = tag_list
         ingest_to_elastic([json_data], "article", "article", "id")
+        tweet_data = {
+            "title" : serializer.instance.title,
+            "url" : serializer.instance.source_url,
+        }
+        self.twitter(tweet_data)
 
     def post(self, request):
         publish = request.data.get("publish")
@@ -1066,7 +1087,7 @@ class ArticleCreateUpdateView(APIView):
         return Response(create_error_response(serializer.errors), status=400)
 
 
-class ChangeArticleStatusView(APIView):
+class ChangeArticleStatusView(APIView, SocailMediaPublishing):
     """
     this view is used to update status of given article activate or deactivate
     """
@@ -1089,6 +1110,11 @@ class ChangeArticleStatusView(APIView):
                 tag_list = self.get_tags(json_data["hash_tags"])
                 json_data["hash_tags"] = tag_list
             ingest_to_elastic([json_data], "article", "article", "id")
+            tweet_data = {
+                "title" : serializer.instance.title,
+                "url" : serializer.instance.source_url,
+            }
+            self.twitter(tweet_data)
         else:
             delete_from_elastic([json_data], "article", "article", "id")
 
