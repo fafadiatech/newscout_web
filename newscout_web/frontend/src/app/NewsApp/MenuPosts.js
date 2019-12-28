@@ -49,7 +49,7 @@ const settings = {
 				slidesToScroll: 1
 			}
         }
-      ]
+    ]
 };
 
 class MenuPosts extends React.Component {
@@ -97,7 +97,6 @@ class MenuPosts extends React.Component {
 		submenu.map((item, index) => {
 			var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+item.category_id
 			getRequest(url, this.newsData, false, item.name)
-
 		})
 	}
 

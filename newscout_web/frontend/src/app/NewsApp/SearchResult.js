@@ -19,8 +19,6 @@ const tabnav_array = [];
 const URL = "/news/search/";
 const DOMAIN = "domain=newscout";
 
-import config_data from './config.json';
-
 class SearchResult extends React.Component {
 	
 	constructor(props) {
@@ -29,6 +27,10 @@ class SearchResult extends React.Component {
 			menus: [],
 			searchResult: [],
 			isFilterOpen: false,
+			categories: [],
+			sources: [],
+			hashtags: [],
+			filters: [],
 		};
 	}
 
@@ -55,7 +57,57 @@ class SearchResult extends React.Component {
 	}
 
 	getSearchResult = (data) => {
-		var searchresult_array = []
+		const filters = [];
+		var searchresult_array = [];
+		var source_filters = data.body.filters.source;
+		var hashtags_filters = data.body.filters.hash_tags;
+		var cat_filters = data.body.filters.category;
+		if(cat_filters) {
+			var cat_array = [];
+			cat_filters.map((item, index) => {
+				if(item.key !== ""){
+					var category_dict = {}
+					category_dict['label'] = item.key
+					category_dict['value'] = item.key
+					cat_array.push(category_dict)
+				}
+			})
+			filters.push({"catitems":"Category" ,"subitem": cat_array})
+			this.setState({
+				filters: filters
+			})
+		}
+		if(source_filters) {
+			var source_array = [];
+			source_filters.map((item, index) => {
+				if(item.key !== ""){
+					var source_dict = {}
+					source_dict['label'] = item.key
+					source_dict['value'] = item.key
+					source_array.push(source_dict)
+				}
+			})
+			filters.push({"catitems":"Source" ,"subitem": source_array})
+			this.setState({
+				filters: filters
+			})
+		} 
+		if(hashtags_filters) {
+			var hashtags_array = [];
+			hashtags_filters.map((item, index) => {
+				if(item.key !== ""){
+					var hashtags_dict = {}
+					hashtags_dict['label'] = item.key
+					hashtags_dict['value'] = item.key
+					hashtags_array.push(hashtags_dict)
+				}
+			})
+			filters.push({"catitems":"Hash Tags" ,"subitem": hashtags_array})
+			this.setState({
+				filters: filters
+			})
+		}
+		
 		data.body.results.map((item, index) => {
 			var article_dict = {}
 			article_dict['id'] = item.id
@@ -73,13 +125,19 @@ class SearchResult extends React.Component {
 		})
 	}
 
+	queryFilter = (data) => {
+		console.log(data)
+		getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+data, this.getSearchResult);
+		history.pushState({}, null, window.location.href+"&"+data);
+	}
+
 	componentWillMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY, this.getSearchResult);
 	}
 
 	render() {
-		var { menus, searchResult } = this.state;
+		var { menus, searchResult, filters, isFilterOpen } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return (
@@ -98,7 +156,7 @@ class SearchResult extends React.Component {
 			)
 		})
 
-		if(this.state.isFilterOpen === true){
+		if(isFilterOpen === true){
 			document.getElementsByTagName("body")[0].style = "overflow:hidden !important";
 		} else {
 			document.getElementsByTagName("body")[0].style = "overflow:auto";
@@ -138,7 +196,7 @@ class SearchResult extends React.Component {
 								</div>
 							</div>
 						</div>
-						<Filter filters={config_data[4].filters} toggleFilter={this.toggleFilter} isFilterOpen={this.state.isFilterOpen} />
+						<Filter filters={filters} toggleFilter={this.toggleFilter} isFilterOpen={isFilterOpen} query={this.queryFilter} />
 					</div>
 				</div>
 			</React.Fragment>
