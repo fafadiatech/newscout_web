@@ -15,6 +15,8 @@ import 'newscout/assets/Sidebar.css'
 import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 
+var query_array = [];
+var final_query = "";
 const tabnav_array = [];
 const URL = "/news/search/";
 const DOMAIN = "domain=newscout";
@@ -31,6 +33,7 @@ class SearchResult extends React.Component {
 			sources: [],
 			hashtags: [],
 			filters: [],
+			final_query: ""
 		};
 	}
 
@@ -125,15 +128,34 @@ class SearchResult extends React.Component {
 		})
 	}
 
-	queryFilter = (data) => {
-		console.log(data)
-		getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+data, this.getSearchResult);
-		history.pushState({}, null, window.location.href+"&"+data);
+	queryFilter = (data, checked) => {
+		if(checked == true){
+			query_array.push(data);
+		} else {
+			query_array.splice(query_array.indexOf(data), 1);
+		}
+		final_query = query_array.join("&");
+		this.setState({
+			final_query: final_query
+		})
+
+		if (history.pushState) {
+			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+final_query, this.getSearchResult);
+			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname +"?q="+QUERY;
+			if(final_query){
+		    	newurl = newurl+"&"+final_query;
+			}
+		    window.history.pushState({},'',newurl);
+		}
 	}
 
 	componentWillMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY, this.getSearchResult);
+		if(this.state.final_query){
+			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);
+		} else {
+			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY, this.getSearchResult);
+		}
 	}
 
 	render() {
