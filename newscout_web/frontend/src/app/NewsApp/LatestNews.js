@@ -83,7 +83,7 @@ class LatestNews extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(MENUS+"?"+DOMAIN, this.getLatestNews);
 	}

@@ -53,7 +53,7 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID, this.getArticleDetail);
 	}

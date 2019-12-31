@@ -17,7 +17,6 @@ import 'newscout/assets/SectionTitle.css'
 
 var query_array = [];
 var final_query = "";
-const tabnav_array = [];
 const URL = "/news/search/";
 const DOMAIN = "domain=newscout";
 
@@ -149,7 +148,7 @@ class SearchResult extends React.Component {
 		}
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		if(this.state.final_query){
 			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);

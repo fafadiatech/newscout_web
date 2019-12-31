@@ -13,7 +13,7 @@ import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 const DOMAIN = "domain=newscout";
-const URL = "/news/search/"
+const URL = "/news/search/";
 
 class SubmenuPosts extends React.Component {
 	
@@ -84,7 +84,7 @@ class SubmenuPosts extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(MENUS+"?"+DOMAIN, this.getNewsData);
 	}
