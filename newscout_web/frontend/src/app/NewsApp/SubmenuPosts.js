@@ -4,6 +4,7 @@ import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
 
+import './style.css';
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
@@ -26,7 +27,27 @@ class SubmenuPosts extends React.Component {
 			subcategory: SUBCATEGORY,
 			newsPosts: [],
 			menus: [],
+			loading: false,
+			page : 0,
+			next: null,
+			previous: null,
 		};
+	}
+
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.newsData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
 	}
 
 	getMenu = (data) => {
@@ -68,7 +89,7 @@ class SubmenuPosts extends React.Component {
 		getRequest(url, this.newsData)
 	}
 
-	newsData = (data, extra_data) => {
+	newsData = (data) => {
 		var news_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
@@ -85,14 +106,26 @@ class SubmenuPosts extends React.Component {
 			}
 			news_array.push(article_dict)
 		})
+		var results = [
+			...this.state.newsPosts,
+			...news_array
+		]
 		this.setState({
-			newsPosts: news_array
+			newsPosts: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(MENUS+"?"+DOMAIN, this.getNewsData);
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render() {
@@ -130,9 +163,14 @@ class SubmenuPosts extends React.Component {
 								</div>
 								<div className="row">
 									<div className="col-lg-12">
-										<ul className="list-inline">
-											{result}
-										</ul>
+										<ul className="list-inline">{result}</ul>
+										{
+											this.state.loading ?
+												<React.Fragment>
+													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+												</React.Fragment>
+											: ""
+										}
 									</div>
 								</div>
 							</div>

@@ -6,9 +6,10 @@ import { CardItem, Menu, SectionTitle } from 'newscout';
 
 import config_data from './config.json';
 
-import 'newscout/assets/Menu.css'
-import 'newscout/assets/CardItem.css'
-import 'newscout/assets/SectionTitle.css'
+import './style.css';
+import 'newscout/assets/Menu.css';
+import 'newscout/assets/CardItem.css';
+import 'newscout/assets/SectionTitle.css';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -23,7 +24,27 @@ class Trending extends React.Component {
 		this.state = {
 			trending: [],
 			menus: [],
+			loading: false,
+			page : 0,
+			next: null,
+			previous: null,
 		};
+	}
+
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getTrending);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
 	}
 
 	getMenu = (data) => {
@@ -62,14 +83,26 @@ class Trending extends React.Component {
 				trending_array.push(article_dict)
 			})
 		})
+		var results = [
+			...this.state.trending,
+			trending_array
+		]
 		this.setState({
-			trending: trending_array
+			trending: results[0],
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(TRENDING_NEWS, this.getTrending);
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render() {
@@ -106,6 +139,13 @@ class Trending extends React.Component {
 						</div>
 						<div className="row">
 							<div className="col-lg-10 offset-lg-1">
+								{
+									this.state.loading ?
+										<React.Fragment>
+											<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+										</React.Fragment>
+									: ""
+								}
 								<ul className="list-inline">{result}</ul>
 							</div>
 						</div>

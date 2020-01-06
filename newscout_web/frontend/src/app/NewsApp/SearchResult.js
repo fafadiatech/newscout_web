@@ -9,6 +9,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
+import './style.css';
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Filter.css'
 import 'newscout/assets/Sidebar.css'
@@ -34,8 +35,28 @@ class SearchResult extends React.Component {
 			sources: [],
 			hashtags: [],
 			filters: [],
-			final_query: ""
+			final_query: "",
+			loading: false,
+			page : 0,
+			next: null,
+			previous: null,
 		};
+	}
+
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.getSearchResult, false, true);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
 	}
 
 	getMenu = (data) => {
@@ -60,7 +81,8 @@ class SearchResult extends React.Component {
 		})
 	}
 
-	getSearchResult = (data) => {
+	getSearchResult = (data, extra_data) => {
+		console.log(data)
 		const filters = [];
 		var searchresult_array = [];
 		var source_filters = data.body.filters.source;
@@ -128,8 +150,21 @@ class SearchResult extends React.Component {
 			}
 			searchresult_array.push(article_dict)
 		})
+		if(extra_data){
+			var results = [
+				...this.state.searchResult,
+				...searchresult_array
+			]
+		} else {
+			var results = [
+				...searchresult_array
+			]
+		}
 		this.setState({
-			searchResult: searchresult_array
+			searchResult: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
@@ -155,12 +190,17 @@ class SearchResult extends React.Component {
 	}
 
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		if(this.state.final_query){
 			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);
 		} else {
 			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY, this.getSearchResult);
 		}
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render() {

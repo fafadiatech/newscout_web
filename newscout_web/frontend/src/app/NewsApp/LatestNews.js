@@ -7,10 +7,11 @@ import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
-import 'newscout/assets/Menu.css'
-import 'newscout/assets/CardItem.css'
-import 'newscout/assets/SectionTitle.css'
-import 'newscout/assets/Sidebar.css'
+import './style.css';
+import 'newscout/assets/Menu.css';
+import 'newscout/assets/CardItem.css';
+import 'newscout/assets/SectionTitle.css';
+import 'newscout/assets/Sidebar.css';
 
 import config_data from './config.json';
 
@@ -24,7 +25,27 @@ class LatestNews extends React.Component {
 		this.state = {
 			latestnews: [],
 			menus: [],
+			loading: false,
+			page : 0,
+			next: null,
+			previous: null,
 		};
+	}
+
+	getNext = () => {
+		this.setState({
+			loading: true,
+			page : this.state.page + 1
+		})
+		getRequest(this.state.next, this.latestNewsPosts);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+			if (!this.state.loading && this.state.next){
+				this.getNext();
+			}
+		}
 	}
 
 	getMenu = (data) => {
@@ -84,14 +105,26 @@ class LatestNews extends React.Component {
 			}
 			latestnews_array.push(article_dict)
 		})
+		var results = [
+			...this.state.latestnews,
+			...latestnews_array
+		]
 		this.setState({
-			latestnews: latestnews_array
+			latestnews: results,
+			next: data.body.next,
+			previous: data.body.previous,
+			loading: false
 		})
 	}
 
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(MENUS+"?"+DOMAIN, this.getLatestNews);
+	}
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
 	}
 
 	render() {
@@ -131,9 +164,14 @@ class LatestNews extends React.Component {
 								</div>
 								<div className="row">
 									<div className="col-lg-12">
-										<ul className="list-inline">
-											{result}
-										</ul>
+										<ul className="list-inline">{result}</ul>
+										{
+											this.state.loading ?
+												<React.Fragment>
+													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+												</React.Fragment>
+											: ""
+										}
 									</div>
 								</div>
 							</div>
