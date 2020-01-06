@@ -237,6 +237,11 @@ class ArticleListAPIView(ListAPIView):
         source = self.request.GET.getlist("source","")
         queryset = Article.objects.all()
 
+        if self.request.user.domain:
+            queryset = queryset.filter(domain=self.request.user.domain)
+        else:
+            queryset = Article.objects.none()
+
         if source:
             queryset = queryset.filter(source__name__in=source)
 
