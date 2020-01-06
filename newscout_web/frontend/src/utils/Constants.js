@@ -1,5 +1,6 @@
 // export const BASE_URL = window.location.origin;
 export const BASE_URL = "http://139.59.2.130";
+// export const BASE_URL = "http://newscout.in";
 
 export const AD_API_URL = BASE_URL + "/ads/";
 export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
