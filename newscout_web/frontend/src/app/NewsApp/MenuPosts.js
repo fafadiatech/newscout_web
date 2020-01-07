@@ -62,6 +62,7 @@ class MenuPosts extends React.Component {
 			category: CATEGORY,
 			newsPosts: [],
 			menus: [],
+			isSideOpen: true
 		};
 	}
 
@@ -131,13 +132,19 @@ class MenuPosts extends React.Component {
 		})
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentWillMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(MENUS+"?"+DOMAIN, this.getNewsData);
 	}
 
 	render() {
-		var { menus, newsPosts } = this.state;
+		var { menus, newsPosts, isSideOpen } = this.state;
 		var result = newsPosts.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
@@ -185,11 +192,11 @@ class MenuPosts extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} />
-						<div className="main-content col-lg-10">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="p-70">{result}</div>
 						</div>
 					</div>

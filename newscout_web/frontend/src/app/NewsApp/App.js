@@ -245,7 +245,7 @@ class App extends React.Component {
 		var { menus, trending, latest_news, finance, economics, sector_regional_update, misc } = this.state
 		return (
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
 				<div className="pt-70">
 					<div className="container">
 						<div className="row">

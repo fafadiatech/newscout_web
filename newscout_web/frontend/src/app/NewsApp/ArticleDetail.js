@@ -68,7 +68,7 @@ class ArticleDetail extends React.Component {
 		var { menus, article } = this.state;
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
 				<div className="pt-70">
 					<div className="container-fluid">
 						<div className="row">

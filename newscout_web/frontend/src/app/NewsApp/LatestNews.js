@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import ReactDOM from 'react-dom';
 import logo from './logo.png';
+import ReactDOM from 'react-dom';
 import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
 
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
@@ -29,6 +29,7 @@ class LatestNews extends React.Component {
 			page : 0,
 			next: null,
 			previous: null,
+			isSideOpen: true
 		};
 	}
 
@@ -117,6 +118,12 @@ class LatestNews extends React.Component {
 		})
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
@@ -128,7 +135,7 @@ class LatestNews extends React.Component {
 	}
 
 	render() {
-		var { menus, latestnews } = this.state;
+		var { menus, latestnews, isSideOpen } = this.state;
 
 		var result = latestnews.map((item, index) => {
 			return (
@@ -149,11 +156,11 @@ class LatestNews extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} />
-						<div className="main-content col-lg-10">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="pt-70">
 								<div className="row">
 									<div className="col-lg-12">

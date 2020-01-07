@@ -31,6 +31,7 @@ class SubmenuPosts extends React.Component {
 			page : 0,
 			next: null,
 			previous: null,
+			isSideOpen: true
 		};
 	}
 
@@ -118,6 +119,12 @@ class SubmenuPosts extends React.Component {
 		})
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
@@ -129,7 +136,7 @@ class SubmenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts } = this.state;
+		var { menus, newsPosts, isSideOpen } = this.state;
 		var result = newsPosts.map((item, index) => {
 			return (
 				<li className="list-inline-item">
@@ -148,11 +155,11 @@ class SubmenuPosts extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} />
-						<div className="main-content col-lg-10">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="pt-70">
 								<div className="row">
 									<div className="col-lg-12">

@@ -40,6 +40,7 @@ class SearchResult extends React.Component {
 			page : 0,
 			next: null,
 			previous: null,
+			isSideOpen: true
 		};
 	}
 
@@ -82,7 +83,6 @@ class SearchResult extends React.Component {
 	}
 
 	getSearchResult = (data, extra_data) => {
-		console.log(data)
 		const filters = [];
 		var searchresult_array = [];
 		var source_filters = data.body.filters.source;
@@ -189,6 +189,12 @@ class SearchResult extends React.Component {
 		}
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
@@ -204,7 +210,7 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return (
@@ -230,11 +236,11 @@ class SearchResult extends React.Component {
 		}
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} />
-						<div className="main-content col-lg-10">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="pt-35">
 								<div className="row">
 									<div className="col-lg-12">
@@ -259,6 +265,13 @@ class SearchResult extends React.Component {
 										<ul className="list-inline">
 											{result}
 										</ul>
+										{
+											this.state.loading ?
+												<React.Fragment>
+													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+												</React.Fragment>
+											: ""
+										}
 									</div>
 								</div>
 							</div>

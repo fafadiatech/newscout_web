@@ -85,10 +85,10 @@ class Trending extends React.Component {
 		})
 		var results = [
 			...this.state.trending,
-			trending_array
+			...trending_array
 		]
 		this.setState({
-			trending: results[0],
+			trending: results,
 			next: data.body.next,
 			previous: data.body.previous,
 			loading: false
