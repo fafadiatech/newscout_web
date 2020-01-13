@@ -39,14 +39,22 @@ class Article extends React.Component {
 	}
 
 	setArticleData = (data) => {
-		var results = [
-			...this.state.results,
-			...data.body.results
-		]
+		if (!data.errors){
+			var results = [
+				...this.state.results,
+				...data.body.results
+			]
+			var next = data.body.next
+			var previous = data.body.previous
+		} else {
+			var results = this.state.results
+			var next = 0
+			var previous = 0
+		}
 		this.setState({
 			results: results,
-			next: data.body.next,
-			previous: data.body.previous,
+			next: next,
+			previous: previous,
 			loading: false
 		})
 	}

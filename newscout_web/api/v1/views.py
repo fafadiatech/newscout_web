@@ -239,6 +239,11 @@ class ArticleListAPIView(ListAPIView):
         source = self.request.GET.getlist("source","")
         queryset = Article.objects.all()
 
+        if self.request.user.domain:
+            queryset = queryset.filter(domain=self.request.user.domain)
+        else:
+            queryset = Article.objects.none()
+
         if source:
             queryset = queryset.filter(source__name__in=source)
 
@@ -281,6 +286,9 @@ class ArticleDetailAPIView(APIView):
         user = self.request.user
         if article_id:
             article = Article.objects.filter(id=article_id).first()
+            if article.domain !=  user.domain:
+                raise NoarticleFound
+
             if article:
                 response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
                 if not user.is_anonymous:
