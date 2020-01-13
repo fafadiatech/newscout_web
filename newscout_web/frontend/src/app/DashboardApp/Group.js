@@ -261,7 +261,7 @@ class Group extends React.Component {
 	}
 
 	getGroupsData = (data) => {
-		if(data.body){
+		if(data.body.length > 0){
 			var results = [
 				...this.state.results,
 				...data.body.results
