@@ -254,6 +254,8 @@ class TestCreateBookmarks(APITestCase):
     """
 
     def setUp(self):
+        self.article_bookmarked = Article.objects.first()
+        bookmarked_obj = BookmarkArticle.objects.create(user=user, article=self.article_bookmarked)
         self.article = Article.objects.last()
 
     def test_post_article_bookmark(self):
@@ -273,7 +275,28 @@ class TestCreateBookmarks(APITestCase):
         data = {"article_id": self.article.id, "user": user.id}
         res = client.post(url, data)
         self.assertEqual(res.data["body"]["Msg"], "Article bookmarked successfully")
+        self.assertEqual(res.data["body"]["bookmark_article"]['article'], self.article.id)
         self.assertEqual(res.status_code, 200)
+
+    def test_post_article_bookmark_failed(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE : ID (INT)
+            USER : ID (INT)
+
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            RESPONSE MESSAGE: MSG (STRING)
+        """
+        url = "/api/v1/articles/bookmark/"
+        data = {"article_id": self.article_bookmarked.id, "user": user.id}
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["Msg"], "Article removed from bookmark list")
+        self.assertEqual(res.data["body"]["bookmark_article"]['article'], self.article_bookmarked.id)
+        self.assertEqual(res.status_code, 200)    
 
 
 class TestGetArticleDetails(APITestCase):
@@ -487,7 +510,7 @@ class TestForgetPassword(APITestCase):
         }
         res = client.post(url, data)
         self.assertEqual(res.data["errors"]["Msg"], "Email Does Not Exist")
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 200)    
 
 
 class TestPasswordChange(APITestCase):
