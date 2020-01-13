@@ -100,7 +100,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
         pipeline = [{
             "$match": {"$and": [
             {"ts": {"$gte": start_date, "$lte": end_date}},
-            {"domain_id": domain_id}]}},
+            {"domain": domain_id}]}},
             {"$match": {
                 "$or": [{"action": "article_detail"},
                     {"action": "article_search_details"}]}},
@@ -151,7 +151,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
         pipeline = [
         {"$match": {"$and": [
             {"ts": {"$gte": start_date, "$lte": end_date}},
-            {"domain_id": domain_id}]}},
+            {"domain": domain_id}]}},
         {"$match": {"$or": [
             {"action": "article_detail"},
             {"action": "article_search_details"}
@@ -202,7 +202,7 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -258,7 +258,7 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -312,7 +312,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -353,7 +353,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -387,7 +387,7 @@ class InteractionsPerCategory(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$group": {"_id": {"category": "$category_id",
                 "category_name": "$category_name", "action":"$action"},
                 "count": {"$sum": 1}}},
@@ -427,7 +427,7 @@ class InteractionsPerCategory(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$group": {"_id": {"category": "$category_id",
                 "category_name": "$category_name", "action":"$action"},
                 "count": {"$sum": 1}}},
@@ -462,7 +462,7 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -499,7 +499,7 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -529,7 +529,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -572,7 +572,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -615,7 +615,7 @@ class ArticlesPerSession(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match":{"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -677,7 +677,7 @@ class ArticlesPerSession(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$match":{"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -733,7 +733,7 @@ class InteractionsPerSession(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$project":{
                 "_id": 0,
                 "datePartDay": {
@@ -792,7 +792,7 @@ class InteractionsPerSession(APIView, ParseDateRange):
         pipeline = [
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain_id": domain_id}]}},
+                {"domain": domain_id}]}},
             {"$project":{
                 "_id": 0,
                 "datePartDay": {
