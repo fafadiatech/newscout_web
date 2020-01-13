@@ -261,10 +261,17 @@ class Group extends React.Component {
 	}
 
 	getGroupsData = (data) => {
-		var results = [
-			...this.state.results,
-			...data.body.results
-		]
+		if(data.body){
+			var results = [
+				...this.state.results,
+				...data.body.results
+			]
+		} else {
+			var results = [
+				...this.state.results
+			]
+		}
+
 		this.setState({
 			results: results,
 			next: data.body.next,
