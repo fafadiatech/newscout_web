@@ -231,7 +231,7 @@ class Advertisement extends React.Component {
 	}
 
 	getAdvertisementData = (data) => {
-		if(data.body.length > 0){
+		if(!Array.isArray(data.body)){
 			var results = [
 				...this.state.results,
 				...data.body.results
