@@ -7,7 +7,7 @@ from .models import (Category, BaseUserProfile,
                      Source, HashTag, Article, ArticleMedia,
                      ArticleRating, RelatedArticle, BookmarkArticle, CategoryAssociation,
                     ScoutFrontier, ScoutedItem, TrendingArticle, Menu, SubMenu,
-                    CategoryDefaultImage, Domain)
+                    CategoryDefaultImage, Domain, Comment, ArtilcleLike)
 
 from core.utils import ingest_to_elastic, delete_from_elastic
 from api.v1.serializers import ArticleSerializer
@@ -26,6 +26,8 @@ admin.site.register(CategoryAssociation)
 admin.site.register(Menu)
 admin.site.register(CategoryDefaultImage)
 admin.site.register(Domain)
+admin.site.register(Comment)
+admin.site.register(ArtilcleLike)
 
 
 class ArticleEditedByFilter(admin.SimpleListFilter):

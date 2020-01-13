@@ -5,7 +5,7 @@ from django.http import Http404
 from core.models import (Category, Article, Source, BaseUserProfile,
                               BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
                               SocialAccount, Category, CategoryAssociation,
-                              TrendingArticle, Domain, DailyDigest, DraftMedia)
+                              TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
 
 from rest_framework.authtoken.models import Token
 
@@ -15,7 +15,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
                           BookmarkArticleSerializer, ArtilcleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
-                          ArticleCreateUpdateSerializer, DraftMediaSerializer)
+                          ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -1219,3 +1219,61 @@ class DraftMediaUploadViewSet(viewsets.ViewSet):
 
         draft_image.delete()
         return Response(create_response({"Msg": "Image deleted successfully"}))
+
+
+class CommentViewSet(viewsets.ViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PostpageNumberPagination
+    ordering = "-created_at"
+
+    def create(self, request):
+        data = request.data
+        data["user"] = request.user.id
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(create_response({"result": serializer.data}))
+        return Response(create_error_response({"error": "Enter Valid data"}))
+
+    def list(self, request):
+        article_id = request.GET.get("article_id", "")
+        if not article_id:
+            return Response(
+                create_error_response(
+                    {"error": "Article ID has not been entered by the user"}
+                )
+            )
+        article_obj = Article.objects.filter(id=article_id).first()
+        if not article_obj:
+            return Response(create_error_response({"error": "Article does not exist"})
+            )
+        comment_list = Comment.objects.filter(article=article_obj)
+        serializer = CommentSerializer(comment_list,many=True)
+        return Response(create_response({"results": serializer.data,
+                    "total_article_likes": ArtilcleLike.objects.filter(article=article_obj).count()}))    
+
+    def destroy(self, request, pk):
+        comment_obj = Comment.objects.filter(id=pk)
+        if not comment_obj:
+            return Response(create_error_response({"error": "Comment does not exist"}))
+
+        comment_obj.delete()
+        return Response(create_response({"Msg": "Comment deleted successfully"}))
+
+
+class LikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PostpageNumberPagination
+    ordering = "-created_at"
+
+    def post(self, request):
+        post_data = request.data
+        post_data["user"] = request.user.id
+        print(post_data)
+        serializer = ArtilcleLikeSerializer(data=post_data)
+        if serializer.is_valid():
+            serializer.save()
+            if serializer.data.get("id"):
+                return Response(create_response({"Msg": "Liked"}))
+            return Response(create_response({"Msg": "Removed Like"}))
