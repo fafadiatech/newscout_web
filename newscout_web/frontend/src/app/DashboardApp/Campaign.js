@@ -212,7 +212,7 @@ class Campaign extends React.Component {
 	}
 
 	getCampaignsData = (data) => {
-		if(data.body){
+		if(data.body.length > 0){
 			var results = [
 				...this.state.results,
 				...data.body.results
