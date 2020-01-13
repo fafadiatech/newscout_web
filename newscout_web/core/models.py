@@ -313,6 +313,7 @@ class TrendingArticle(NewsSiteBaseModel):
 
 class DailyDigest(NewsSiteBaseModel):
     device = models.ForeignKey(Devices, on_delete=models.CASCADE)
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
     articles = models.ManyToManyField(Article)
 
     def __unicode__(self):
