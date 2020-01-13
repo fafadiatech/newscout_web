@@ -328,3 +328,13 @@ class DraftMedia(NewsSiteBaseModel):
 
     def __unicode__(self):
         return self.image
+
+class Comment(NewsSiteBaseModel):
+    article = models.ForeignKey(
+        Article, on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.comment

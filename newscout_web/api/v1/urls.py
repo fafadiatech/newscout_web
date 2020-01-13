@@ -15,10 +15,12 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     DevicesAPIView, NotificationAPIView, SocialLoginView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
                     CategoryBulkUpdate, GetDailyDigestView,
-                    ChangeArticleStatusView, DraftMediaUploadViewSet)
+                    ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet, 
+                    LikeAPIView)
 
 url_router = DefaultRouter()
 url_router.register(r'article/draft-image', DraftMediaUploadViewSet, basename='draft-media')
+url_router.register(r'comment', CommentViewSet, basename='comment')
 
 urlpatterns = [
     url('', include(url_router.urls)),
@@ -73,5 +75,6 @@ urlpatterns = [
         name='article-create-update'),
     url(r'^article/status/$', ChangeArticleStatusView.as_view(),
         name='article-status'),
-    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest')
+    url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
+    url(r'article-like/$', LikeAPIView.as_view(), name='article-like')
 ]
