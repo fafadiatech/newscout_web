@@ -50,21 +50,26 @@ class NewsCoutLogAPI(APIView):
         results = {}
 
         for i in data:
-            if "item_id" in i and "item_name" in i:
-                key = i["item_id"]
-                value = i["item_name"]
+            if "category_name" in i and "domain_id" in i:
+                value = i["category_name"]
+                key = i["domain_id"]
                 if key not in results:
-                    results[key] = value
+                    results[key] = [value]
+                else:
+                    if value not in results[key]:
+                        results[key].append(value)
 
         if not results:
             data = events.collection.find({'device_id': device_id}).sort([("ts", pymongo.DESCENDING)])
             for i in data:
-                if "item_id" in i and "item_name" in i:
-                    key = i["item_id"]
-                    value = i["item_name"]
+                if "category_name" in i and "domain_id" in i:
+                    value = i["category_name"]
+                    key = i["domain_id"]
                     if key not in results:
-                        results[key] = value
-                        if len(results) == 14:
-                            break
+                        results[key] = [value]
+                    else:
+                        results[key].append(value)
+                    if len(results[key]) == 14:
+                        break
 
         return Response(results)
