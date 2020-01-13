@@ -96,10 +96,11 @@ class AllArticlesOpen(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [{
-            "$match": {
-                "ts": {"$gte": start_date, "$lte": end_date}}},
+            "$match": {"$and": [
+            {"ts": {"$gte": start_date, "$lte": end_date}},
+            {"domain_id": domain_id}]}},
             {"$match": {
                 "$or": [{"action": "article_detail"},
                     {"action": "article_search_details"}]}},
@@ -131,8 +132,26 @@ class AllArticlesOpen(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            res = {
+                "data": [{"dateStr": "0", "dateObj": "0", "count": 0}],
+                "max": {"count": None, "dateStr": None},
+                "dateStr": 0,
+                "avg_count": 0
+            }
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": res,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
         pipeline = [
-        {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+        {"$match": {"$and": [
+            {"ts": {"$gte": start_date, "$lte": end_date}},
+            {"domain_id": domain_id}]}},
         {"$match": {"$or": [
             {"action": "article_detail"},
             {"action": "article_search_details"}
@@ -154,7 +173,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
         if data:
             max_func = lambda x: x["count"]
             max_values = max(data, key=max_func)
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
             res = {
                 "data": data,
                 "max": {"count": max_values["count"],
@@ -179,9 +198,11 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -222,8 +243,22 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            res = {"dateStr": None, "web": 0, "android": 0, "ios": 0}
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": res,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
+
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -259,7 +294,7 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
                     d[v["platform"]] = v["count"]
                 res.append(d)
             no_data = False
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         else:
             res = {"dateStr": None, "web": 0, "android": 0, "ios": 0}
             no_data = True
@@ -273,11 +308,11 @@ class ArticlesPerCategory(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match":
-                {"ts": {
-                    "$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -303,10 +338,22 @@ class ArticlesPerCategory(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            data = [{"category_id":0, "category_name": None, "count": 0}]
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": data,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
+
         pipeline = [
-            {"$match":
-                {"ts": {
-                    "$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match":
                 {"$or": [
                     {"action": "article_detail"},
@@ -326,7 +373,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
             no_data = True
             avg = {"avg_count": 0}
         else:
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"]}))
 
@@ -336,9 +383,11 @@ class InteractionsPerCategory(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$group": {"_id": {"category": "$category_id",
                 "category_name": "$category_name", "action":"$action"},
                 "count": {"$sum": 1}}},
@@ -362,8 +411,23 @@ class InteractionsPerCategory(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            data = [{"category_id": None,
+                "category_name": None, "total_transactions": 0}]
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": data,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
+
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$group": {"_id": {"category": "$category_id",
                 "category_name": "$category_name", "action":"$action"},
                 "count": {"$sum": 1}}},
@@ -384,7 +448,7 @@ class InteractionsPerCategory(APIView, ParseDateRange):
             no_data = True
             avg = {"avg_count": 0}
         else:
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"]}))
 
@@ -394,9 +458,11 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -418,8 +484,22 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            data = [{"name": None, "article_count": 0}]
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": data,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
+
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -435,7 +515,7 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
             no_data = True
             avg = {"avg_count": 0}
         else:
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"]}))
 
@@ -445,9 +525,11 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -472,8 +554,25 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            res = [{
+                "author": None,
+                "article_details": 0,
+                "article_search_details": 0}]
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": res,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
+
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -495,7 +594,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
                     d[v["action"]] = v["count"]
                 res.append(d)
             no_data = False
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         else:
             res = [{
                 "author": None,
@@ -512,9 +611,11 @@ class ArticlesPerSession(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match":{"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -561,8 +662,22 @@ class ArticlesPerSession(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
+        if not request.user.domain:
+            res = {"data": [{"dateStr": None, "avg_count": 0}]}
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": res,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
+
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$match":{"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
@@ -598,7 +713,7 @@ class ArticlesPerSession(APIView, ParseDateRange):
         if data:
             res = {"data": data}
             no_data = False
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         else:
             res = {
                 "data": [{"dateStr": None, "avg_count": 0}]
@@ -614,9 +729,11 @@ class InteractionsPerSession(APIView, ParseDateRange):
     permission_classes = (AllowAny,)
     events = Event()
 
-    def get_avg(self, start_date, end_date):
+    def get_avg(self, start_date, end_date, domain_id):
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$project":{
                 "_id": 0,
                 "datePartDay": {
@@ -660,14 +777,22 @@ class InteractionsPerSession(APIView, ParseDateRange):
         if error:
             return Response(error, status=400)
 
-        pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
-            {"$group": {"_id": "$sid", "count": {"$sum": 1}}},
-            {"$project": {"_id": 0, "sid": "$_id", "count": "$count"}}
-        ]
+        if not request.user.domain:
+            data = [{"dateStr": None, "avg_count": 0}]
+            no_data = True
+            avg = {"avg_count": 0}
+            return Response(
+                create_response({
+                    "result": data,
+                    "no_data": no_data,
+                    "avg_count": avg["avg_count"]}))
+
+        domain_id = request.user.domain.domain_id
 
         pipeline = [
-            {"$match": {"ts": {"$gte": start_date, "$lte": end_date}}},
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain_id": domain_id}]}},
             {"$project":{
                 "_id": 0,
                 "datePartDay": {
@@ -703,6 +828,6 @@ class InteractionsPerSession(APIView, ParseDateRange):
             no_data = True
             avg = {"avg_count": 0}
         else:
-            avg = self.get_avg(start_date, end_date)
+            avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"]}))
