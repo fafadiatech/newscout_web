@@ -1005,10 +1005,13 @@ class SocailMediaPublishing():
         """
         this function will tweet article title and its url in twitter
         """
-        auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
-        auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
-        api = tweepy.API(auth)
-        api.update_status(data["title"] + "\n" + data["url"])
+        try:
+            auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+            auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
+            api = tweepy.API(auth)
+            api.update_status(data["title"] + "\n" + data["url"])
+        except Exception as e:
+            print("Error in twitter post: ", e)
 
 
 class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
