@@ -637,7 +637,7 @@ class ArticleSearchAPI(APIView):
             sr = sr.filter("terms", domain=list(domain))
 
         if category:
-            cat_objs = Category.objects.filter(id__in=category)
+            cat_objs = Category.objects.filter(name__in=category)
             category = cat_objs.values_list("id", flat=True)
             cat_assn_objs = CategoryAssociation.objects.filter(parent_cat__in=cat_objs).values_list("child_cat__id", flat=True)
             if cat_assn_objs:
