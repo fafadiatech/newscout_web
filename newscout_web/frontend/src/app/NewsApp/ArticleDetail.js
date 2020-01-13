@@ -23,24 +23,50 @@ class ArticleDetail extends React.Component {
 		super(props);
 		this.state = {
 			menus: [],
-			article: {}
+			article: {},
+			recommendations: []
 		};
 	}
 
 	getArticleDetail = (data) => {
 		var state = this.state;
-		if(data.body.article.cover_image){
-			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
-		} else {
-			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+config_data.defaultImage;
-		}
+		state.article.id = data.body.article.id;
 		state.article.altText = data.body.article.title;
 		state.article.header = data.body.article.title;
 		state.article.caption = data.body.article.blurb;
 		state.article.source = data.body.article.source;
-		state.article.url = data.body.article.source_url;
+		state.article.source_url = data.body.article.source_url;
 		state.article.date = moment(data.body.article.published_on).format('YYYY-MM-DD');
+		if(data.body.article.cover_image){
+			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
+		} else {
+			state.article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/"+config_data.defaultImage;
+		}
 		this.setState(state)
+	}
+
+	getRecommendationsResults = (data) => {
+		var recommendations_array = []
+		data.body.results.map((item, index) => {
+			var article_dict = {}
+			article_dict['id'] = item.id
+			article_dict['header'] = item.title
+			article_dict['altText'] = item.title
+			article_dict['caption'] = item.blurb
+			article_dict['source'] = item.source
+			article_dict['url'] = item.source_url
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/fit-in/150x80/left/top/"+config_data.defaultImage
+			}
+			if(recommendations_array.length < 5){
+				recommendations_array.push(article_dict)
+			}
+		})
+		this.setState({
+			recommendations: recommendations_array
+		})
 	}
 
 	getMenu = (data) => {
@@ -62,10 +88,12 @@ class ArticleDetail extends React.Component {
 	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID, this.getArticleDetail);
+		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID+"/recommendations/", this.getRecommendationsResults);
 	}
 
 	render() {
-		var { menus, article } = this.state;
+		var { menus, article, recommendations } = this.state;
+
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
@@ -80,12 +108,15 @@ class ArticleDetail extends React.Component {
 										description={article.caption}
 										uploaded_on={article.date}
 										uploaded_by={article.source}
-										posturl={article.url} />
+										posturl={article.url}
+										source_url={article.source_url}
+										posturl={article.source_url} />
 								</div>
 							</div>
 							<div className="col-lg-3 col-12 mb-4">
 								<div className="side-box">
 									<SectionTitle title="More News" />
+									<SideBox posts={recommendations} />
 								</div>
 							</div>
 						</div>
