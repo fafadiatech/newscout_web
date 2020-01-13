@@ -472,3 +472,13 @@ nav .navbar-brand img {
     opacity: .75;
     color: black;
 }
+
+#menu li.active a,
+.list-group-item.active {
+  color: #e02c26
+}
+
+.list-group-item.active {
+  background-color: transparent;
+  border-color: transparent;
+}
