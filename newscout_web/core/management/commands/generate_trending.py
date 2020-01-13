@@ -5,7 +5,7 @@ import datetime
 from operator import itemgetter
 from datasketch import MinHash
 from core.utils import es
-from core.models import Article, TrendingArticle
+from core.models import Article, TrendingArticle, Domain
 from django.conf import settings
 from django.utils import timezone
 from django.core.management.base import BaseCommand
