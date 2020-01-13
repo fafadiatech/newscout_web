@@ -65,7 +65,7 @@ class CampaignCategoriesListView(APIView):
         List all news category
         """
         categories = CategorySerializer(Category.objects.all(), many=True)
-        campaigns = CampaignSerializer(Campaign.objects.all(), many=True)
+        campaigns = CampaignSerializer(Campaign.objects.filter(domain=request.user.domain), many=True)
         return Response(create_response({"categories": categories.data, "campaigns": campaigns.data}))
 
 
@@ -78,7 +78,13 @@ class CampaignViewSet(viewsets.ModelViewSet):
     pagination_class = PostpageNumberPagination
     filter_backends = (filters.OrderingFilter,)
     ordering = ('-id',)
-    queryset = Campaign.objects.all()
+
+    def get_queryset(self):
+        """
+        this method is used to get queryset
+        """
+        domain = self.request.user.domain
+        return Campaign.objects.filter(domain=domain)
 
     def list(self, request):
         """
@@ -86,6 +92,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
         is given it will filter objects with given query and returns list
         """
         q = request.GET.get("q", "")
+        self.queryset = self.get_queryset()
 
         if q:
             q_list = q.split(" ")
@@ -116,7 +123,9 @@ class CampaignViewSet(viewsets.ModelViewSet):
         """
         this method is used to create new campaign object
         """
-        serializer = CampaignSerializer(data=request.data)
+        post_data = request.data.copy()
+        post_data["domain"] = request.user.domain.id
+        serializer = CampaignSerializer(data=post_data)
         if serializer.is_valid():
             serializer.save()
             return Response(create_response(serializer.data))
@@ -152,7 +161,10 @@ class AdGroupViewSet(viewsets.ModelViewSet):
     pagination_class = PostpageNumberPagination
     filter_backends = (filters.OrderingFilter,)
     ordering = ('-id',)
-    queryset = AdGroup.objects.all()
+
+    def get_queryset(self):
+        domain = self.request.user.domain
+        return AdGroup.objects.filter(campaign__domain=domain)
 
     def list(self, request):
         """
@@ -160,6 +172,7 @@ class AdGroupViewSet(viewsets.ModelViewSet):
         is given it will filter objects with given query and returns list
         """
         q = request.GET.get("q", "")
+        self.queryset = self.get_queryset()
 
         if q:
             q_list = q.split(" ")
@@ -231,12 +244,20 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
     ordering = ('-id',)
     queryset = Advertisement.objects.all()
 
+    def get_queryset(self):
+        """
+        this method is used to get queryset
+        """
+        domain = self.request.user.domain
+        return Advertisement.objects.filter(adgroup__campaign__domain=domain)
+
     def list(self, request):
         """
         this method returns list of advertisement and if 'q' as query parameter
         is given it will filter objects with given query and returns list
         """
         q = request.GET.get("q", "")
+        self.queryset = self.get_queryset()
 
         if q:
             q_list = q.split(" ")
@@ -309,6 +330,8 @@ class GroupTypeListView(APIView):
         """
         List all news category
         """
-        groups = GetAdGroupSerializer(AdGroup.objects.all(), many=True)
+        domain = request.user.domain
+        groups = GetAdGroupSerializer(
+            AdGroup.objects.filter(campaign__domain=domain), many=True)
         types = AdTypeSerializer(AdType.objects.all(), many=True)
         return Response(create_response({"groups": groups.data, "types": types.data}))

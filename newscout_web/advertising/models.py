@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from core.models import NewsSiteBaseModel, Category
+from core.models import NewsSiteBaseModel, Category, Domain
 
 
 class Campaign(NewsSiteBaseModel):
@@ -14,6 +14,7 @@ class Campaign(NewsSiteBaseModel):
     max_bid = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=8)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.is_active:
