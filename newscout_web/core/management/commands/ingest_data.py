@@ -4,7 +4,7 @@ import zlib
 import pytz
 import time
 import redis
-import cPickle
+import pickle as cPickle
 from random import randint
 from datetime import datetime
 from dateutil.parser import parse
