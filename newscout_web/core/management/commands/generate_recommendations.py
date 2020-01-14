@@ -76,7 +76,7 @@ class Command(BaseCommand):
         start, end = self.get_date_range(days)
 
         for domain in Domain.objects.all():
-            results = scan(es, index='article', query={ "query": { "bool": { "must": [ "term": {"domain": domain.domain_id}, "range" : { "published_on" : { "gte" : start, "lt" : end }}]}}, "sort": [{ "published_on" : {" order": "desc" }}]}, preserve_order=True)
+            results = scan(es, index='article', query={"query": {"bool": {"must": [{"term": {"domain": domain.domain_id}}, {"range": {"published_on": {"gte": start,"lt": end}}}]}},"sort": [{"published_on": {"order": "desc"}}]}, preserve_order=True)
 
             for current in results:
                 article_id, title, domain = current['_source']['id'], current['_source']['title'], current['_source']['domain']
