@@ -1001,7 +1001,15 @@ class TrendingArticleAPIView(APIView):
         """
         List all the trending articles
         """
-        source = TrendingArticleSerializer(TrendingArticle.objects.all(), many=True)
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
+        if not domain:
+            return Response(create_error_response({"domain": ["Invalid domain name"]}))
+
+        source = TrendingArticleSerializer(TrendingArticle.objects.filter(domain=domain), many=True)
         return Response(create_response({"results": source.data}))
 
 
