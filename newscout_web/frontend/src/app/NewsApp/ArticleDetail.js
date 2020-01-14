@@ -87,8 +87,8 @@ class ArticleDetail extends React.Component {
 
 	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID, this.getArticleDetail);
-		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID+"/recommendations/", this.getRecommendationsResults);
+		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID+"?"+DOMAIN, this.getArticleDetail);
+		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID+"/recommendations/?"+DOMAIN, this.getRecommendationsResults);
 	}
 
 	render() {

@@ -86,7 +86,7 @@ class SubmenuPosts extends React.Component {
 	}
 
 	getPosts = (cat_name, cat_id) => {
-		var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+cat_id
+		var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+cat_name
 		getRequest(url, this.newsData)
 	}
 
