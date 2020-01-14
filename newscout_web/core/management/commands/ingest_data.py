@@ -104,7 +104,7 @@ class Command(BaseCommand):
             tag_list.append(tag["name"])
         return tag_list
 
-    def create_model_obj(self, doc, index):
+    def create_model_obj(self, doc, domain, index):
         """
         this method is used to create django article model object
         """
@@ -137,6 +137,7 @@ class Command(BaseCommand):
                     category = Category.objects.get(name=category)
                 source, _ = Source.objects.get_or_create(name=source)
                 article_obj = Article.objects.create(
+                    domain=domain,
                     title=title,
                     source=source,
                     category=category,
@@ -204,6 +205,7 @@ class Command(BaseCommand):
         source = options['source']
         index = options['index']
         create_index(index)
+        domain = Domain.objects.get(domain_id="newscout")
         try:
             while True:
                 file_path = self.get_data_from_redis(source)
@@ -214,7 +216,7 @@ class Command(BaseCommand):
                     if os.path.isfile(file_path):
                         doc = cPickle.loads(zlib.decompress(open(file_path).read()))
                         try:
-                            self.create_model_obj(doc, index)
+                            self.create_model_obj(doc, domain, index)
                             if date == self.now:
                                 self.source_ingest.labels(source=doc.get("source", "source"), category=doc.get("category", "category")).inc()
                             else:
