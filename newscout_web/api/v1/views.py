@@ -286,9 +286,6 @@ class ArticleDetailAPIView(APIView):
         user = self.request.user
         if article_id:
             article = Article.objects.filter(id=article_id).first()
-            if article.domain !=  user.domain:
-                raise NoarticleFound
-
             if article:
                 response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
                 if not user.is_anonymous:
