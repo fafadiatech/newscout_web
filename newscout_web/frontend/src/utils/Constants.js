@@ -28,3 +28,7 @@ export const ANALYTICS_ARTICLESPERAUTHOR_URL = BASE_URL + "/analytics/articles-p
 export const ANALYTICS_INTERACTIONSPERAUTHOR_URL = BASE_URL + "/analytics/interactions-per-author/"
 export const ANALYTICS_ARTICLESPERSESSION_URL = BASE_URL + "/analytics/aticles-per-session/"
 export const ANALYTICS_INTERACTIONSPERSESSION_URL = BASE_URL + "/analytics/interactions-per-session/"
+
+export const TRENDING_NEWS = ARTICLE_API_URL + "trending/";
+export const MENUS = ARTICLE_API_URL + "menus/";
+export const ARTICLE_POSTS = ARTICLE_API_URL + "article/search/";
