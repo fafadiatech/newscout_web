@@ -18,11 +18,12 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from ajax_select import urls as ajax_select_urls
 from dashboard.views import MainIndexView, LoginView, LogOutView
+from news_site.views import IndexView
 
 app_name = 'newscout_web'
 
 urlpatterns = [
-    url(r'^$', MainIndexView.as_view(), name="index"),
+    url(r'^$', IndexView.as_view(), name="index"),
     url(r'^login/$', LoginView.as_view(), name="login"),
     url(r'^logout/$', LogOutView.as_view(), name="logout"),
     url(r'^analytics/', include('analytics.urls')),

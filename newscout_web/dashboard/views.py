@@ -124,6 +124,6 @@ class LogOutView(RedirectView):
     """
 
     def get_redirect_url(self):
-        url = "/"
+        url = "/login/"
         logout(self.request)
         return url

@@ -71,7 +71,7 @@ class App extends React.Component {
 	}
 
 	getPosts = (cat_name, cat_id) => {
-		var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+cat_id
+		var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+cat_name
 		if(cat_name == "Uncategorised"){
 			getRequest(url, this.latestNewsPosts)
 		} else if(cat_name == "Finance") {
@@ -237,7 +237,7 @@ class App extends React.Component {
 
 	componentWillMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(TRENDING_NEWS, this.getTrending);
+		getRequest(TRENDING_NEWS+"?"+DOMAIN, this.getTrending);
 		getRequest(MENUS+"?"+DOMAIN, this.getLatestNews);
 	}
 

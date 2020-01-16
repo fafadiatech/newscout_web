@@ -98,7 +98,7 @@ class MenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id, submenu) => {
 		submenu.map((item, index) => {
-			var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+item.category_id
+			var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+item.name
 			getRequest(url, this.newsData, false, item.name)
 		})
 	}

@@ -98,7 +98,7 @@ class Trending extends React.Component {
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(TRENDING_NEWS, this.getTrending);
+		getRequest(TRENDING_NEWS+"?"+DOMAIN, this.getTrending);
 	}
 
 	componentWillUnmount = () => {
