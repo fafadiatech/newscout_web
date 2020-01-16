@@ -156,7 +156,7 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'core.backends.EmailModelBackend',
-    'django.contrib.auth.backends.ModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 REST_FRAMEWORK = {
@@ -186,7 +186,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
 
-ELASTIC_SERVER_IP="139.59.2.130"
+ELASTIC_SERVER_IP="localhost"
 ELASTIC_SERVER_PORT="9200"
 
 DBNAME = 'newscout_analytics'
@@ -194,3 +194,8 @@ client = MongoClient()
 DB = client[DBNAME]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+TWITTER_CONSUMER_KEY = ""
+TWITTER_CONSUMER_SECRET = ""
+TWITTER_ACCESS_TOKEN = ""
+TWITTER_ACCESS_TOKEN_SECRET = ""

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
                               ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
-                              Devices, Notification, TrendingArticle, DraftMedia)
+                              Devices, Notification, TrendingArticle, DraftMedia, Comment)
 from django.contrib.auth import authenticate
 from rest_framework import exceptions
 from rest_framework.validators import UniqueValidator
@@ -41,7 +41,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('id', 'title', 'source', 'category', 'hash_tags','source_url',
                   'cover_image', 'blurb', 'published_on', 'is_book_mark',
-                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format')
+                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format', 'author')
 
     source = serializers.ReadOnlyField(source='source.name')
     category = serializers.ReadOnlyField(source='category.name')
@@ -49,6 +49,7 @@ class ArticleSerializer(serializers.ModelSerializer):
     source_id = serializers.ReadOnlyField(source='source.id')
     domain = serializers.ReadOnlyField(source='domain.domain_id')
     hash_tags = HashTagSerializer(many=True)
+    author = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(ArticleSerializer, self).__init__(*args, **kwargs)
@@ -57,6 +58,12 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     def get_hash_tags(self, instance):
         return list(instance.hash_tags.all().values_list("name", flat=True))
+
+    def get_author(self, instance):
+        if instance.author:
+            return "{0} {1}".format(
+                instance.author.first_name, instance.author.last_name)
+        return ""
 
 
 class UserSerializer(serializers.Serializer):
@@ -105,8 +112,21 @@ class BookmarkArticleSerializer(serializers.ModelSerializer):
 class ArtilcleLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArtilcleLike
-        fields = ('id', 'article', 'is_like')
+        fields = ('id', 'article', 'user','is_like')
 
+    def create(self, validated_data):
+        article_obj = validated_data.get("article", "")
+        user = validated_data.get("user", "")
+        if not article_obj:
+            raise serializers.ValidationError("Article does not exist")
+        if not user:
+            raise serializers.ValidationError("User not logged in")
+        article_like = ArtilcleLike.objects.filter(article=article_obj, user=user)
+        if not article_like:
+            like_obj = ArtilcleLike.objects.create(article=article_obj, user=user)
+            return like_obj
+        ArtilcleLike.objects.filter(article=article_obj, user=user).delete()
+        return {"article": article_obj, "user": user}
 
 class SubMenuSerializer(serializers.ModelSerializer):
     class Meta:
@@ -200,6 +220,9 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
                 video_url=am["video_url"]
             ) for am in article_media]
 
+        article.author = user
+        article.save()
+
         if self.context.get("publish"):
             article.active = True
             article.save()
@@ -253,3 +276,40 @@ class DraftMediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DraftMedia
         fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    article_id = serializers.CharField(max_length=200, required=True)
+
+    class Meta:
+        model = Comment
+        fields = (
+            "id",
+            "created_at",
+            "comment",
+            "article_id",
+            "user",
+            "user_name",
+        )
+
+    def create(self, validated_data):
+        article_id = validated_data.get("article_id", "")
+        comment = validated_data.get("comment", "")
+        user = validated_data.get("user", "")
+        if not article_id:
+            raise serializers.ValidationError("Article Id not entered")
+        if not comment:
+            raise serializers.ValidationError("Comment not entered")
+        if not user:
+            raise serializers.ValidationError("User is not logged in")
+        article_obj = Article.objects.filter(id=article_id).first()
+        if not article_obj:
+            raise serializers.ValidationError("Article does not exist")
+        comment_obj = Comment.objects.create(
+            article=article_obj, comment=comment, user=user
+        )
+        return comment_obj
+
+    def get_user_name(self, instance):
+        user_name = instance.user.first_name + " " + instance.user.last_name
+        return user_name
