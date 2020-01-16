@@ -580,13 +580,19 @@ class ArticleSearchAPI(APIView):
                 results.append(result["_source"])
 
             if response.aggregations.category.buckets:
-                filters["category"] = response.aggregations.category.buckets._l_
+                filters["category"] = sorted(
+                    response.aggregations.category.buckets._l_,
+                    key=operator.itemgetter("key"))
 
             if response.aggregations.source.buckets:
-                filters["source"] = response.aggregations.source.buckets._l_
+                filters["source"] = sorted(
+                    response.aggregations.source.buckets._l_,
+                    key=operator.itemgetter("key"))
 
             if response.aggregations.hash_tags.buckets:
-                filters["hash_tags"] = response.aggregations.hash_tags.buckets._l_
+                filters["hash_tags"] = sorted(
+                    response.aggregations.hash_tags.buckets._l_,
+                     key=operator.itemgetter("key"))
         return results, filters
 
     def get(self, request):
