@@ -94,11 +94,12 @@ class SubmenuPosts extends React.Component {
 		var news_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
+			article_dict['id'] = item.id
 			article_dict['altText'] = item.title
 			article_dict['header'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
+			article_dict['source_url'] = item.source_url
 			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
 			if(item.cover_image){
 				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
@@ -146,8 +147,9 @@ class SubmenuPosts extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_on={item.date}
-							uploaded_by={item.domain_url}
-							posturl={item.url} />
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							posturl={`/news/article/${item.id}/`} />
 					</div>
 				</li>
 			)
