@@ -27,17 +27,25 @@ class Command(BaseCommand):
         results = es.search(
                 index='article',
                 body={
-                        "query": {
-                            "multi_match" : {
-                                "query": title,
-                                "fields": ["title", "blurb^3"]
-                            }
-                        },
-                        "filter" : {
-                            "term" : { "domain": domain }
-                        },
-                        "size": size
-        })
+                    "query": {
+                        "bool" : {
+                            "must": [
+                                {
+                                    "multi_match" : {
+                                        "query": title,
+                                        "fields": ["title", "blurb^3"]
+                                    }
+                                },
+                                {
+                                    "match" : {
+                                        "domain": domain
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "size": 100
+                    })
 
         while len(suggestions) != K:
             rec = {}
