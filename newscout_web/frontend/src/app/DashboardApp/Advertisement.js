@@ -231,10 +231,16 @@ class Advertisement extends React.Component {
 	}
 
 	getAdvertisementData = (data) => {
-		var results = [
-			...this.state.results,
-			...data.body.results
-		]
+		if(!Array.isArray(data.body)){
+			var results = [
+				...this.state.results,
+				...data.body.results
+			]
+		} else {
+			var results = [
+				...this.state.results
+			]
+		}
 		this.setState({
 			results: results,
 			next: data.body.next,
