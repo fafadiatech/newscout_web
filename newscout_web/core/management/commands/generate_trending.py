@@ -102,7 +102,7 @@ class Command(BaseCommand):
             size = response["hits"]["total"]
 
             if size > 0:
-                response = self.get_query(index, size)
+                response = self.get_query(index, domain.domain_id, size)
 
                 for i in response["hits"]["hits"]:
                     self.batch.append(i["_source"])
@@ -219,3 +219,5 @@ class Command(BaseCommand):
             if old_objects:
                 old_objects_ids = list(range(start, end+1))
                 TrendingArticle.objects.filter(id__in=old_objects_ids).delete()
+            self.batch = []
+            self.titles = {}
