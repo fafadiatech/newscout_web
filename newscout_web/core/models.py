@@ -335,6 +335,7 @@ class Comment(NewsSiteBaseModel):
     )
     user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
     comment = models.CharField(max_length=250)
+    reply = models.ForeignKey("Comment", null=True, blank=True,on_delete=models.CASCADE, related_name="replies")
 
     def __str__(self):
         return self.comment
