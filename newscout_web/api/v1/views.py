@@ -5,7 +5,7 @@ from django.http import Http404
 from core.models import (Category, Article, Source, BaseUserProfile,
                               BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
                               SocialAccount, Category, CategoryAssociation,
-                              TrendingArticle, Domain, DailyDigest, DraftMedia)
+                              TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
 
 from rest_framework.authtoken.models import Token
 
@@ -15,7 +15,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
                           BookmarkArticleSerializer, ArtilcleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
-                          ArticleCreateUpdateSerializer, DraftMediaSerializer)
+                          ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -46,6 +46,8 @@ from .exception_handler import (create_error_response,TokenIDMissing, ProviderMi
 import logging
 import operator
 from functools import reduce
+import tweepy
+
 
 log = logging.getLogger(__name__)
 
@@ -236,6 +238,11 @@ class ArticleListAPIView(ListAPIView):
         category = self.request.GET.getlist("category","")
         source = self.request.GET.getlist("source","")
         queryset = Article.objects.all()
+
+        if self.request.user.domain:
+            queryset = queryset.filter(domain=self.request.user.domain)
+        else:
+            queryset = Article.objects.none()
 
         if source:
             queryset = queryset.filter(source__name__in=source)
@@ -573,13 +580,19 @@ class ArticleSearchAPI(APIView):
                 results.append(result["_source"])
 
             if response.aggregations.category.buckets:
-                filters["category"] = response.aggregations.category.buckets._l_
+                filters["category"] = sorted(
+                    response.aggregations.category.buckets._l_,
+                    key=operator.itemgetter("key"))
 
             if response.aggregations.source.buckets:
-                filters["source"] = response.aggregations.source.buckets._l_
+                filters["source"] = sorted(
+                    response.aggregations.source.buckets._l_,
+                    key=operator.itemgetter("key"))
 
             if response.aggregations.hash_tags.buckets:
-                filters["hash_tags"] = response.aggregations.hash_tags.buckets._l_
+                filters["hash_tags"] = sorted(
+                    response.aggregations.hash_tags.buckets._l_,
+                     key=operator.itemgetter("key"))
         return results, filters
 
     def get(self, request):
@@ -635,7 +648,7 @@ class ArticleSearchAPI(APIView):
             sr = sr.filter("terms", domain=list(domain))
 
         if category:
-            cat_objs = Category.objects.filter(id__in=category)
+            cat_objs = Category.objects.filter(name__in=category)
             category = cat_objs.values_list("id", flat=True)
             cat_assn_objs = CategoryAssociation.objects.filter(parent_cat__in=cat_objs).values_list("child_cat__id", flat=True)
             if cat_assn_objs:
@@ -991,11 +1004,36 @@ class TrendingArticleAPIView(APIView):
         """
         List all the trending articles
         """
-        source = TrendingArticleSerializer(TrendingArticle.objects.all(), many=True)
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
+        if not domain:
+            return Response(create_error_response({"domain": ["Invalid domain name"]}))
+
+        source = TrendingArticleSerializer(TrendingArticle.objects.filter(domain=domain), many=True)
         return Response(create_response({"results": source.data}))
 
 
-class ArticleCreateUpdateView(APIView):
+class SocailMediaPublishing():
+    """
+    this class is to update news arrticles on social media
+    """
+    def twitter(self, data):
+        """
+        this function will tweet article title and its url in twitter
+        """
+        try:
+            auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+            auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
+            api = tweepy.API(auth)
+            api.update_status(data["title"] + "\n" + data["url"])
+        except Exception as e:
+            print("Error in twitter post: ", e)
+
+
+class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
     """
     Article create update view
     """
@@ -1017,6 +1055,11 @@ class ArticleCreateUpdateView(APIView):
             tag_list = self.get_tags(json_data["hash_tags"])
             json_data["hash_tags"] = tag_list
         ingest_to_elastic([json_data], "article", "article", "id")
+        tweet_data = {
+            "title" : serializer.instance.title,
+            "url" : serializer.instance.source_url,
+        }
+        self.twitter(tweet_data)
 
     def post(self, request):
         publish = request.data.get("publish")
@@ -1066,7 +1109,7 @@ class ArticleCreateUpdateView(APIView):
         return Response(create_error_response(serializer.errors), status=400)
 
 
-class ChangeArticleStatusView(APIView):
+class ChangeArticleStatusView(APIView, SocailMediaPublishing):
     """
     this view is used to update status of given article activate or deactivate
     """
@@ -1089,6 +1132,11 @@ class ChangeArticleStatusView(APIView):
                 tag_list = self.get_tags(json_data["hash_tags"])
                 json_data["hash_tags"] = tag_list
             ingest_to_elastic([json_data], "article", "article", "id")
+            tweet_data = {
+                "title" : serializer.instance.title,
+                "url" : serializer.instance.source_url,
+            }
+            self.twitter(tweet_data)
         else:
             delete_from_elastic([json_data], "article", "article", "id")
 
@@ -1219,3 +1267,61 @@ class DraftMediaUploadViewSet(viewsets.ViewSet):
 
         draft_image.delete()
         return Response(create_response({"Msg": "Image deleted successfully"}))
+
+
+class CommentViewSet(viewsets.ViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PostpageNumberPagination
+    ordering = "-created_at"
+
+    def create(self, request):
+        data = request.data
+        data["user"] = request.user.id
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(create_response({"result": serializer.data}))
+        return Response(create_error_response({"error": "Enter Valid data"}))
+
+    def list(self, request):
+        article_id = request.GET.get("article_id", "")
+        if not article_id:
+            return Response(
+                create_error_response(
+                    {"error": "Article ID has not been entered by the user"}
+                )
+            )
+        article_obj = Article.objects.filter(id=article_id).first()
+        if not article_obj:
+            return Response(create_error_response({"error": "Article does not exist"})
+            )
+        comment_list = Comment.objects.filter(article=article_obj)
+        serializer = CommentSerializer(comment_list,many=True)
+        return Response(create_response({"results": serializer.data,
+                    "total_article_likes": ArtilcleLike.objects.filter(article=article_obj).count()}))    
+
+    def destroy(self, request, pk):
+        comment_obj = Comment.objects.filter(id=pk)
+        if not comment_obj:
+            return Response(create_error_response({"error": "Comment does not exist"}))
+
+        comment_obj.delete()
+        return Response(create_response({"Msg": "Comment deleted successfully"}))
+
+
+class LikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PostpageNumberPagination
+    ordering = "-created_at"
+
+    def post(self, request):
+        post_data = request.data
+        post_data["user"] = request.user.id
+        print(post_data)
+        serializer = ArtilcleLikeSerializer(data=post_data)
+        if serializer.is_valid():
+            serializer.save()
+            if serializer.data.get("id"):
+                return Response(create_response({"Msg": "Liked"}))
+            return Response(create_response({"Msg": "Removed Like"}))

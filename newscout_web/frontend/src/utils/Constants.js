@@ -1,6 +1,8 @@
-// export const BASE_URL = window.location.origin;
-export const BASE_URL = "http://139.59.2.130";
-// export const BASE_URL = "http://newscout.in";
+export const BASE_URL = "http://www.newscout.in";
+
+export const RED_COLOR = "#ff4263";
+export const GREEN_COLOR = "#63ff42";
+export const BLUE_COLOR = "#4263ff";
 
 export const AD_API_URL = BASE_URL + "/ads/";
 export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
@@ -18,6 +20,11 @@ export const ARTICLE_DETAIL_URL = ARTICLE_API_URL + "articles/";
 export const ARTICLE_STATUS_URL = ARTICLE_API_URL + "article/status/";
 export const ARTICLE_DRAFTIMAGE_URL = ARTICLE_API_URL + "article/draft-image/";
 
-export const TRENDING_NEWS = ARTICLE_API_URL + "trending/";
-export const MENUS = ARTICLE_API_URL + "menus/";
-export const ARTICLE_POSTS = ARTICLE_API_URL + "article/search/";
+export const ANALYTICS_ALLARTICLESOPEN_URL = BASE_URL + "/analytics/all-articles-open/"
+export const ANALYTICS_ARTICLESPERPLATFORM_URL = BASE_URL + "/analytics/articles-per-platform/"
+export const ANALYTICS_ARTICLESPERCATEGORY_URL = BASE_URL + "/analytics/articles-per-category/"
+export const ANALYTICS_INTERACTIONSPERCATEGORY_URL = BASE_URL + "/analytics/interactions-per-category/"
+export const ANALYTICS_ARTICLESPERAUTHOR_URL = BASE_URL + "/analytics/articles-per-author/"
+export const ANALYTICS_INTERACTIONSPERAUTHOR_URL = BASE_URL + "/analytics/interactions-per-author/"
+export const ANALYTICS_ARTICLESPERSESSION_URL = BASE_URL + "/analytics/aticles-per-session/"
+export const ANALYTICS_INTERACTIONSPERSESSION_URL = BASE_URL + "/analytics/interactions-per-session/"

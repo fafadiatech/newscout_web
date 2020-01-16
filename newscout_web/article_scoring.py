@@ -1,7 +1,7 @@
 from __future__ import division
 import numpy
 import datetime
-from news_site.utils import es
+from core.utils import es
 from django.utils import timezone
 
 
