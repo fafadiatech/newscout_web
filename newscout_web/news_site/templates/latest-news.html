@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout - Latest News{% endblock title %}
+
+{% block content %}
+	<div id="latest-news"></div>
+{% endblock content %}
+
+{% block js %}
+	<script src="{% static "js/react/newsLatestNews.js" %}"></script>
+{% endblock js %}

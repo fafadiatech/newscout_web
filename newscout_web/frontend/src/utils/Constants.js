@@ -1,4 +1,7 @@
-export const BASE_URL = window.location.origin;
+// export const BASE_URL = window.location.origin;
+export const BASE_URL = "http://139.59.2.130";
+// export const BASE_URL = "http://newscout.in";
+
 export const AD_API_URL = BASE_URL + "/ads/";
 export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
 
@@ -14,3 +17,7 @@ export const ARTICLE_CREATE_URL = ARTICLE_API_URL + "article/create-update/";
 export const ARTICLE_DETAIL_URL = ARTICLE_API_URL + "articles/";
 export const ARTICLE_STATUS_URL = ARTICLE_API_URL + "article/status/";
 export const ARTICLE_DRAFTIMAGE_URL = ARTICLE_API_URL + "article/draft-image/";
+
+export const TRENDING_NEWS = ARTICLE_API_URL + "trending/";
+export const MENUS = ARTICLE_API_URL + "menus/";
+export const ARTICLE_POSTS = ARTICLE_API_URL + "article/search/";

@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^logout/$', LogOutView.as_view(), name="logout"),
     url(r'^analytics/', include('analytics.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
+    url(r'^news/', include('news_site.urls')),
     url(r'^ajax_select/', include(ajax_select_urls)),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),

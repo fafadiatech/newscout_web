@@ -11,6 +11,13 @@ module.exports = {
       dashboardAdvertisement: './src/app/DashboardApp/Advertisement.js',
       dashboardArticle: './src/app/DashboardApp/Article.js',
       dashboardArticleForm: './src/app/DashboardApp/ArticleForm.js',
+      news: './src/app/NewsApp/index.js',
+      newsLatestNews: './src/app/NewsApp/LatestNews.js',
+      newsMenuPosts: './src/app/NewsApp/MenuPosts.js',
+      newsArticleDetail: './src/app/NewsApp/ArticleDetail.js',
+      newsSearchResult: './src/app/NewsApp/SearchResult.js',
+      newsSubmenuPosts: './src/app/NewsApp/SubmenuPosts.js',
+      newsTrending: './src/app/NewsApp/Trending.js',
     },
     output: {
       path: path.resolve(__dirname, "..", "static", "js", "react"),
@@ -45,6 +52,14 @@ module.exports = {
             include: /node_modules/,  
             loaders: ['style-loader', 'css-loader'],
        },
+       {
+        test: /\.(pdf|jpg|png|gif|svg|ico)$/,
+          use: [
+            {
+              loader: 'url-loader'
+            },
+          ]
+        },
        {
         test: /\.svg$/,
         loader: 'svg-inline-loader'
