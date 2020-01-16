@@ -13,7 +13,10 @@ import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/Sidebar.css'
 
+import config_data from './config.json';
+
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/";
 const submenu_array = [];
 
 const settings = {
@@ -48,7 +51,7 @@ const settings = {
 				slidesToScroll: 1
 			}
         }
-      ]
+    ]
 };
 
 class MenuPosts extends React.Component {
@@ -96,7 +99,6 @@ class MenuPosts extends React.Component {
 		submenu.map((item, index) => {
 			var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+item.category_id
 			getRequest(url, this.newsData, false, item.name)
-
 		})
 	}
 
@@ -112,7 +114,11 @@ class MenuPosts extends React.Component {
 			article_dict['source'] = item.source;
 			article_dict['source_url'] = item.source_url;
 			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
-			article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+config_data.defaultImage;
+			}
 			if(news_array.length <= 9){
 				news_array.push(article_dict)
 			}
@@ -179,7 +185,7 @@ class MenuPosts extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} />

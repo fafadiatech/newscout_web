@@ -14,8 +14,11 @@ import 'newscout/assets/JumboBox.css'
 import 'newscout/assets/SliderItem.css'
 import 'newscout/assets/SectionTitle.css'
 
-const DOMAIN = "domain=newscout";
+import config_data from './config.json';
+
 const tabnav_array = [];
+const URL = "/news/search/"
+const DOMAIN = "domain=newscout";
 
 class App extends React.Component {
 
@@ -93,7 +96,11 @@ class App extends React.Component {
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
-			article_dict['src'] = "http://images.newscout.in/unsafe/300x175/left/top/"+decodeURIComponent(item.cover_image)
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/300x175/left/top/"+decodeURIComponent(item.cover_image)
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/300x175/left/top/"+config_data.defaultImage
+			}
 			if(tab_posts.length < 4){
 				tab_posts.push(article_dict)
 			}
@@ -116,7 +123,11 @@ class App extends React.Component {
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
-			article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+config_data.defaultImage
+			}
 			if(latestnews_array.length < 4){
 				latestnews_array.push(article_dict)
 			}
@@ -136,7 +147,11 @@ class App extends React.Component {
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
-			article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+config_data.defaultImage
+			}
 			if(financeposts_array.length < 4){
 				financeposts_array.push(article_dict)
 			}
@@ -156,7 +171,11 @@ class App extends React.Component {
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
-			article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+config_data.defaultImage
+			}
 			if(economicposts_array.length < 4){
 				economicposts_array.push(article_dict)
 			}
@@ -176,7 +195,11 @@ class App extends React.Component {
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
-			article_dict['src'] = "http://images.newscout.in/unsafe/600x338/left/top/"+decodeURIComponent(item.cover_image)
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/600x338/left/top/"+decodeURIComponent(item.cover_image)
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/600x338/left/top/"+config_data.defaultImage
+			}
 			if(miscposts_array.length < 4){
 				miscposts_array.push(article_dict)
 			}
@@ -197,7 +220,11 @@ class App extends React.Component {
 				article_dict['caption'] = ele.blurb
 				article_dict['source'] = ele.source
 				article_dict['source_url'] = ele.source_url
-				article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(item.cover_image)
+				if(item.cover_image){
+					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(item.cover_image)
+				} else {
+					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+ config_data.defaultImage
+				}
 				if(trending_array.length < 4){
 					trending_array.push(article_dict)
 				}
@@ -218,7 +245,7 @@ class App extends React.Component {
 		var { menus, trending, latest_news, finance, economics, sector_regional_update, misc } = this.state
 		return (
 			<React.Fragment>
-				<Menu logo={logo} navitems={this.state.menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="pt-70">
 					<div className="container">
 						<div className="row">

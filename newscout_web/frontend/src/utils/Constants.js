@@ -1,7 +1,9 @@
+export const BASE_URL = "http://www.newscout.in";
+
 export const RED_COLOR = "#ff4263";
 export const GREEN_COLOR = "#63ff42";
 export const BLUE_COLOR = "#4263ff";
-export const BASE_URL = window.location.origin;
+
 export const AD_API_URL = BASE_URL + "/ads/";
 export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
 

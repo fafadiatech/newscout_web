@@ -12,7 +12,10 @@ import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/SideBox.css'
 
+import config_data from './config.json';
+
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/";
 
 class ArticleDetail extends React.Component {
 	
@@ -25,9 +28,12 @@ class ArticleDetail extends React.Component {
 	}
 
 	getArticleDetail = (data) => {
-		console.log(data)
 		var state = this.state;
-		state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
+		if(data.body.article.cover_image){
+			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
+		} else {
+			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+config_data.defaultImage;
+		}
 		state.article.altText = data.body.article.title;
 		state.article.header = data.body.article.title;
 		state.article.caption = data.body.article.blurb;
@@ -53,7 +59,7 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID, this.getArticleDetail);
 	}
@@ -62,7 +68,7 @@ class ArticleDetail extends React.Component {
 		var { menus, article } = this.state;
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="pt-70">
 					<div className="container-fluid">
 						<div className="row">

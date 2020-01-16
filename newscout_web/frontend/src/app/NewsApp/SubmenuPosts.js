@@ -9,10 +9,13 @@ import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/Sidebar.css'
 
+import config_data from './config.json';
+
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 const DOMAIN = "domain=newscout";
+const URL = "/news/search/";
 
 class SubmenuPosts extends React.Component {
 	
@@ -69,13 +72,17 @@ class SubmenuPosts extends React.Component {
 		var news_array = []
 		data.body.results.map((item, index) => {
 			var article_dict = {}
-			article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image)
 			article_dict['altText'] = item.title
 			article_dict['header'] = item.title
 			article_dict['caption'] = item.blurb
 			article_dict['source'] = item.source
 			article_dict['url'] = item.source_url
 			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
+			if(item.cover_image){
+				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
+			} else {
+				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+config_data.defaultImage;
+			}
 			news_array.push(article_dict)
 		})
 		this.setState({
@@ -83,7 +90,7 @@ class SubmenuPosts extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(MENUS+"?"+DOMAIN, this.getNewsData);
 	}
@@ -108,7 +115,7 @@ class SubmenuPosts extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} />
+				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} />

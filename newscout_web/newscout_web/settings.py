@@ -27,7 +27,7 @@ SECRET_KEY = '_am!u5!_zzqh*tmls(jctl_3j186fuh5r7*p*t0*czpvu&i%+x'
 DEBUG = True
 
 # Enble sqlite database quick mode (by default disabled)
-QUICK_MODE = False
+QUICK_MODE = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -51,12 +51,15 @@ INSTALLED_APPS = [
     'dashboard',
     'frontend',
     'rest_framework_swagger',
+    'corsheaders',
+    'news_site',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -100,7 +103,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'newscout',
             'USER': 'postgres',
-            'PASSWORD': 'postgres',
+            'PASSWORD': 'ftech#123',
             'HOST': 'localhost',
             'PORT': '5432',
         }
@@ -189,6 +192,8 @@ ELASTIC_SERVER_PORT="9200"
 DBNAME = 'newscout_analytics'
 client = MongoClient()
 DB = client[DBNAME]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 TWITTER_CONSUMER_KEY = ""
 TWITTER_CONSUMER_SECRET = ""
