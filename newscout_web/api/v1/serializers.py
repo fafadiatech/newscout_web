@@ -286,7 +286,8 @@ class DraftMediaSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
-    article_id = serializers.CharField(max_length=200, required=True)
+    replies = serializers.SerializerMethodField()
+    article_id = serializers.IntegerField()
 
     class Meta:
         model = Comment
@@ -297,12 +298,15 @@ class CommentSerializer(serializers.ModelSerializer):
             "article_id",
             "user",
             "user_name",
+            "reply",
+            "replies"
         )
 
     def create(self, validated_data):
         article_id = validated_data.get("article_id", "")
         comment = validated_data.get("comment", "")
         user = validated_data.get("user", "")
+        reply = validated_data.get("reply", "")
         if not article_id:
             raise serializers.ValidationError("Article Id not entered")
         if not comment:
@@ -312,11 +316,51 @@ class CommentSerializer(serializers.ModelSerializer):
         article_obj = Article.objects.filter(id=article_id).first()
         if not article_obj:
             raise serializers.ValidationError("Article does not exist")
-        comment_obj = Comment.objects.create(
-            article=article_obj, comment=comment, user=user
-        )
+        if reply:
+            if reply.article.id == article_id:
+                comment_reply_obj = Comment.objects.create(article=article_obj, comment=comment,
+                                                        user=user, reply=reply)
+                return comment_reply_obj
+            raise serializers.ValidationError("Replying on wrong article")
+        comment_obj = Comment.objects.create(article=article_obj, comment=comment, user=user)
         return comment_obj
 
     def get_user_name(self, instance):
         user_name = instance.user.first_name + " " + instance.user.last_name
         return user_name
+
+    def get_replies(self, instance):
+        replies = []
+        comment_reply_qs = Comment.objects.filter(reply=instance.id).values().order_by("-id")
+        for reply in comment_reply_qs:
+            reply_data = CommentListSerializer(reply).data
+            replies.append(reply_data)
+        return replies
+
+class CommentListSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = (
+            "id",
+            "created_at",
+            "comment",
+            "article_id",
+            "user_id",
+            "user_name",
+            "replies"
+        )
+
+    def get_user_name(self, instance):
+        user_obj = BaseUserProfile.objects.get(id=instance["user_id"])
+        user_name = user_obj.first_name + " " + user_obj.last_name
+        return user_name
+
+    def get_replies(self, instance):
+        replies = []
+        comment_reply = Comment.objects.filter(reply=instance["id"]).values().order_by("-id")
+        for reply in comment_reply:
+            replies.append(CommentListSerializer(reply).data)
+        return replies

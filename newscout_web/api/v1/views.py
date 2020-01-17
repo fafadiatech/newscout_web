@@ -15,7 +15,8 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
                           BookmarkArticleSerializer, ArtilcleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
-                          ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer)
+                          ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
+                          CommentListSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -1296,7 +1297,7 @@ class CommentViewSet(viewsets.ViewSet):
         if not article_obj:
             return Response(create_error_response({"error": "Article does not exist"})
             )
-        comment_list = Comment.objects.filter(article=article_obj)
+        comment_list = Comment.objects.filter(article=article_obj, reply=None)
         serializer = CommentSerializer(comment_list,many=True)
         return Response(create_response({"results": serializer.data,
                     "total_article_likes": ArtilcleLike.objects.filter(article=article_obj).count()}))    
