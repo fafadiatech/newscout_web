@@ -12,7 +12,8 @@ from core.models import (
     Menu,
     Devices,
     DailyDigest,
-    ArtilcleLike
+    ArtilcleLike,
+    Comment,
 )
 from rest_framework.authtoken.models import Token
 
@@ -155,7 +156,9 @@ class TestGetLikedArticles(APITestCase):
 
     def setUp(self):
         self.article = Article.objects.last()
-        self.liked_article = ArtilcleLike.objects.create(article=self.article, user=user, is_like=1)
+        self.liked_article = ArtilcleLike.objects.create(
+            article=self.article, user=user, is_like=1
+        )
 
     def test_get_liked_articles(self):
         """
@@ -255,7 +258,9 @@ class TestCreateBookmarks(APITestCase):
 
     def setUp(self):
         self.article_bookmarked = Article.objects.first()
-        bookmarked_obj = BookmarkArticle.objects.create(user=user, article=self.article_bookmarked)
+        bookmarked_obj = BookmarkArticle.objects.create(
+            user=user, article=self.article_bookmarked
+        )
         self.article = Article.objects.last()
 
     def test_post_article_bookmark(self):
@@ -275,7 +280,9 @@ class TestCreateBookmarks(APITestCase):
         data = {"article_id": self.article.id, "user": user.id}
         res = client.post(url, data)
         self.assertEqual(res.data["body"]["Msg"], "Article bookmarked successfully")
-        self.assertEqual(res.data["body"]["bookmark_article"]['article'], self.article.id)
+        self.assertEqual(
+            res.data["body"]["bookmark_article"]["article"], self.article.id
+        )
         self.assertEqual(res.status_code, 200)
 
     def test_post_article_bookmark_failed(self):
@@ -295,8 +302,10 @@ class TestCreateBookmarks(APITestCase):
         data = {"article_id": self.article_bookmarked.id, "user": user.id}
         res = client.post(url, data)
         self.assertEqual(res.data["body"]["Msg"], "Article removed from bookmark list")
-        self.assertEqual(res.data["body"]["bookmark_article"]['article'], self.article_bookmarked.id)
-        self.assertEqual(res.status_code, 200)    
+        self.assertEqual(
+            res.data["body"]["bookmark_article"]["article"], self.article_bookmarked.id
+        )
+        self.assertEqual(res.status_code, 200)
 
 
 class TestGetArticleDetails(APITestCase):
@@ -510,7 +519,7 @@ class TestForgetPassword(APITestCase):
         }
         res = client.post(url, data)
         self.assertEqual(res.data["errors"]["Msg"], "Email Does Not Exist")
-        self.assertEqual(res.status_code, 200)    
+        self.assertEqual(res.status_code, 200)
 
 
 class TestPasswordChange(APITestCase):
@@ -804,10 +813,12 @@ class TestCreateNewArticle(APITestCase):
         self.assertEqual(res.data["body"]["domain"], data["domain"])
         self.assertEqual(res.status_code, 200)
 
+
 class TestChangeArticleStatus(APITestCase):
     """
     this testcase is used to test POST request to change status of an article(activate or deactivate)
     """
+
     def setUp(self):
         self.article = Article.objects.filter(active=True).last()
 
@@ -826,10 +837,7 @@ class TestChangeArticleStatus(APITestCase):
             STATUS: (BOOLEAN)
         """
         url = "/api/v1/article/status/"
-        data = {
-            "id": self.article.id,
-            "activate" : False
-        }
+        data = {"id": self.article.id, "activate": False}
         res = client.post(url, data)
         self.assertEqual(res.data["body"]["id"], self.article.id)
         self.assertNotEqual(res.data["body"]["active"], self.article.active)
@@ -848,12 +856,10 @@ class TestChangeArticleStatus(APITestCase):
             RESPONSE_MESSAGE : ERROR MSG (STRING)
         """
         url = "/api/v1/article/status/"
-        data = {
-            "activate" : False
-        }
+        data = {"activate": False}
         res = client.post(url, data)
-        self.assertEqual(res.data['errors']['error'], "Article does not exists")
-        self.assertEqual(res.status_code, 400)    
+        self.assertEqual(res.data["errors"]["error"], "Article does not exists")
+        self.assertEqual(res.status_code, 400)
 
 
 class TestUpdateArticle(APITestCase):
@@ -1159,7 +1165,7 @@ class TestGetCampaign(APITestCase):
         """
         url = "/ads/campaigns/"
         res = client.get(url)
-        for campaign in res.data['body']["results"]:
+        for campaign in res.data["body"]["results"]:
             self.assertIn(campaign["name"], self.test_campaigns)
         self.assertGreater(len(res.data["body"]), 0)
         self.assertEqual(res.status_code, 200)
@@ -1281,7 +1287,7 @@ class TestFetchAllAdvertisement(APITestCase):
         """
         url = "/ads/advertisements/"
         res = client.get(url)
-        for ads in res.data["body"]['results']:
+        for ads in res.data["body"]["results"]:
             self.assertIn(ads["ad_text"], self.test_ads)
         self.assertGreater(len(res.data["body"]), 0)
         self.assertEqual(res.status_code, 200)
@@ -1446,13 +1452,14 @@ class TestGetAdGroup(APITestCase):
         url = "/ads/adgroups/"
         res = client.get(url)
         self.assertEqual(
-            self.adgroup.campaign.id, res.data["body"]['results'][0]["campaign"]["id"]
+            self.adgroup.campaign.id, res.data["body"]["results"][0]["campaign"]["id"]
         )
         self.assertEqual(
-            self.adgroup.campaign.name, res.data["body"]['results'][0]["campaign"]["name"]
+            self.adgroup.campaign.name,
+            res.data["body"]["results"][0]["campaign"]["name"],
         )
         self.assertEqual(
-            self.adgroup.campaign.is_active, res.data["body"]['results'][0]["is_active"]
+            self.adgroup.campaign.is_active, res.data["body"]["results"][0]["is_active"]
         )
         self.assertGreater(len(res.data["body"]), 0)
         self.assertEqual(res.status_code, 200)
@@ -1564,6 +1571,335 @@ class TestDeleteAdGroup(APITestCase):
         self.assertEqual(res.data["body"]["Msg"], "AdGroup deleted successfully")
         self.assertEqual(res.status_code, 200)
 
-    # Social-Login-pending
 
-    # hashtags-pending
+class TestGetComment(APITestCase):
+    """
+    this testcase is used to test GET request to fetch all comments of an Article
+    """
+
+    def setUp(self):
+        self.comment_id = []
+        self.article = Article.objects.first()
+        self.comment = Comment.objects.filter(article=self.article)
+        for value in self.comment.values():
+            self.comment_id.append(value["id"])
+        self.article_like_count = ArtilcleLike.objects.filter(
+            article=self.article
+        ).count()
+
+    def test_get_comments(self):
+        """
+        Method:
+            GET
+        
+        Query String:
+            ARTICLE_ID: ID (INT)
+
+        Assert:
+            RESPONSE ARTICLE ID (INT)
+            RESPONSE COMMENT ID (INT)
+            RESPONSE_STATUS_CODE: 200
+            LIKE COUNT FOR THE PARTICULAR ARTICLE
+        """
+        url = "/api/v1/comment/?article_id={0}".format(self.article.id)
+        res = client.get(url)
+        for result in res.data["body"]["results"]:
+            self.assertEqual(self.article.id, int(result["article_id"]))
+            self.assertIn(result["id"], self.comment_id)
+        self.assertEqual(
+            res.data["body"]["total_article_likes"], self.article_like_count
+        )
+        self.assertEqual(res.status_code, 200)
+
+
+class TestGetEmptyComment(APITestCase):
+    """
+    this testcase is used to test GET request of article having no comments but having a like
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+        self.comment = Comment.objects.filter(article=self.article)
+        self.article_like_count = ArtilcleLike.objects.filter(
+            article=self.article
+        ).count()
+
+    def test_get_empty_comments(self):
+        """
+        Method:
+            GET
+        
+        Query String:
+            ARTICLE_ID: ID (INT)
+
+        Assert:
+            EMPTY RESPONSE
+            RESPONSE_STATUS_CODE: 200
+            LIKE COUNT FOR THE PARTICULAR ARTICLE
+        """
+        url = "/api/v1/comment/?article_id={0}".format(self.article.id)
+        res = client.get(url)
+        self.assertEqual(res.data["body"]["results"], [])
+        self.assertEqual(
+            res.data["body"]["total_article_likes"], self.article_like_count
+        )
+        self.assertEqual(res.status_code, 200)
+
+
+class TestGetErrorComment(APITestCase):
+    """
+    this testcase is used to test GET request when no or invalid article id is entered
+    """
+
+    def test_get_error_comments(self):
+        """
+        Method:
+            GET
+        
+        Query String:
+            NO ARTICLE_ID: ID (INT)
+
+        Assert:
+            ERROR RESPONSE
+            RESPONSE_STATUS_CODE: 200
+        """
+        url = "/api/v1/comment/?article_id="
+        res = client.get(url)
+        self.assertEqual(
+            res.data["errors"]["error"], "Article ID has not been entered by the user"
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_error_id_comments(self):
+        """
+        Method:
+            GET
+        
+        Query String:
+            INVALID ARTICLE_ID: ID (INT)
+
+        Assert:
+            ERROR RESPONSE
+            RESPONSE_STATUS_CODE: 200
+        """
+        url = "/api/v1/comment/?article_id=0"
+        res = client.get(url)
+        self.assertEqual(res.data["errors"]["error"], "Article does not exist")
+        self.assertEqual(res.status_code, 200)
+
+
+class TestCreateComment(APITestCase):
+    """
+    this testcase is used to test POST request to create a comment
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+
+    def test_post_comment(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE_ID : ID (INT)
+            COMMENT: (STRING)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            COMMENT: (STRING)
+            ARTICLE_ID: ID (INT)
+            USER_ID: (BOOLEAN)
+        """
+        url = "/api/v1/comment/"
+        data = {"article_id": self.article.id, "comment": "New Test Comment"}
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["result"]["comment"], data["comment"])
+        self.assertEqual(
+            int(res.data["body"]["result"]["article_id"]), data["article_id"]
+        )
+        self.assertEqual(res.data["body"]["result"]["user"], user.id)
+        self.assertEqual(res.status_code, 200)
+
+
+class TestErrorCreateComment(APITestCase):
+    """
+    this testcase is used to test POST request to create a comment
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+
+    def test_post_comment(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE_ID : ID (INT)
+            NO COMMENT: (STRING)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            RESPONSE_MESSAGE : (STRING)
+        """
+        url = "/api/v1/comment/"
+        data = {
+            "article_id": self.article.id,
+        }
+        res = client.post(url, data)
+        self.assertEqual(res.data["errors"]["error"], "Enter Valid data")
+        self.assertEqual(res.status_code, 200)
+
+
+class TestCreateReply(APITestCase):
+    """
+    this testcase is used to test POST request to create a reply to a comment
+    """
+
+    def setUp(self):
+        self.article = Article.objects.first()
+        self.comment = Comment.objects.first()
+
+    def test_post_reply(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE_ID : ID (INT)
+            COMMENT: (STRING)
+            REPLY : ID (INT) (FOREIGN KEY)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            COMMENT: (STRING)
+            ARTICLE_ID: ID (INT)
+            USER_ID: (BOOLEAN)
+            REPLY : ID (INT) (FOREIGN KEY)
+        """
+        url = "/api/v1/comment/"
+        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply":self.comment.id}
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["result"]["comment"], data["comment"])
+        self.assertEqual(
+            int(res.data["body"]["result"]["article_id"]), data["article_id"]
+        )
+        self.assertEqual(res.data["body"]["result"]["user"], user.id)
+        self.assertEqual(res.data["body"]["result"]["reply"], data["reply"])
+        self.assertEqual(res.status_code, 200)
+
+
+class TestErrorCreateReply(APITestCase):
+    """
+    this testcase is used to test POST request to test error while creating a reply to a comment
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+        self.comment = Comment.objects.first()
+
+    def test_error_post_reply(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            INAVLID ARTICLE_ID : ID (INT)
+            COMMENT: (STRING)
+            REPLY : ID (INT) (FOREIGN KEY)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            ERROR_RESPONSE_MESSAGE: (STRING)
+        """
+        url = "/api/v1/comment/"
+        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply":self.comment.id}
+        res = client.post(url, data)
+        self.assertEqual(res.data["errors"]["Msg"][0], "Replying on wrong article")
+        self.assertEqual(res.status_code, 401)
+
+
+class TestLikeArticle(APITestCase):
+    """
+    this testcase is used to test POST request to like an article
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+
+    def test_like_article(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE_ID : ID (INT)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            RESPONSE_MESSAGE : (STRING)
+        """
+        url = "/api/v1/article-like/"
+        data = {
+            "article": self.article.id,
+        }
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["Msg"], "Liked")
+        self.assertEqual(res.status_code, 200)
+
+
+class TestRemoveLikeArticle(APITestCase):
+    """
+    this testcase is used to test POST request to remove like on an article
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+        ArtilcleLike.objects.create(article=self.article, user=user)
+
+    def test_remove_like_article(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE_ID : ID (INT)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            RESPONSE_MESSAGE : (STRING)
+        """
+        url = "/api/v1/article-like/"
+        data = {
+            "article": self.article.id,
+        }
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["Msg"], "Removed Like")
+        self.assertEqual(res.status_code, 200)
+
+
+class TestErrorLikeArticle(APITestCase):
+    """
+    this testcase is used to test POST request to display error for invalid data
+    """
+
+    def test_remove_like_article(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            INVALID ARTICLE_ID : ID (INT)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            RESPONSE_MESSAGE : (STRING)
+        """
+        url = "/api/v1/article-like/"
+        data = {
+            "article": 0,
+        }
+        res = client.post(url, data)
+        self.assertEqual(res.data["errors"]["error"], "Invalid Data Entered")
+        self.assertEqual(res.status_code, 200)

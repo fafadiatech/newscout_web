@@ -474,7 +474,7 @@ class ChangePasswordAPIView(APIView):
                 user.set_password(password)
                 user.save()
                 return Response(create_response({
-                    "Msg": "Password chnaged successfully"
+                    "Msg": "Password changed successfully"
                 }))
             else:
                 return Response(create_error_response({
@@ -1277,7 +1277,7 @@ class CommentViewSet(viewsets.ViewSet):
     ordering = "-created_at"
 
     def create(self, request):
-        data = request.data
+        data = request.data.copy()
         data["user"] = request.user.id
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
@@ -1317,12 +1317,12 @@ class LikeAPIView(APIView):
     ordering = "-created_at"
 
     def post(self, request):
-        post_data = request.data
+        post_data = request.data.copy()
         post_data["user"] = request.user.id
-        print(post_data)
         serializer = ArtilcleLikeSerializer(data=post_data)
         if serializer.is_valid():
             serializer.save()
             if serializer.data.get("id"):
                 return Response(create_response({"Msg": "Liked"}))
             return Response(create_response({"Msg": "Removed Like"}))
+        return Response(create_error_response({"error": "Invalid Data Entered"}))    
