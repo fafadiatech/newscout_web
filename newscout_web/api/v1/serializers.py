@@ -299,10 +299,7 @@ class CommentSerializer(serializers.ModelSerializer):
         article_id = validated_data.get("article_id", "")
         comment = validated_data.get("comment", "")
         user = validated_data.get("user", "")
-        try:
-            reply = validated_data.get("reply")
-        except:
-            pass
+        reply = validated_data.get("reply", "")
         if not article_id:
             raise serializers.ValidationError("Article Id not entered")
         if not comment:
@@ -327,7 +324,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_replies(self, instance):
         replies = []
-        comment_reply_qs = Comment.objects.filter(reply=instance.id).values()
+        comment_reply_qs = Comment.objects.filter(reply=instance.id).values().order_by("-id")
         for reply in comment_reply_qs:
             reply_data = CommentListSerializer(reply).data
             replies.append(reply_data)
@@ -356,7 +353,7 @@ class CommentListSerializer(serializers.ModelSerializer):
 
     def get_replies(self, instance):
         replies = []
-        comment_reply = Comment.objects.filter(reply=instance["id"]).values()
+        comment_reply = Comment.objects.filter(reply=instance["id"]).values().order_by("-id")
         for reply in comment_reply:
             replies.append(CommentListSerializer(reply).data)
         return replies
