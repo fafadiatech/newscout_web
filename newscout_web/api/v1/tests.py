@@ -1752,6 +1752,74 @@ class TestErrorCreateComment(APITestCase):
         self.assertEqual(res.status_code, 200)
 
 
+class TestCreateReply(APITestCase):
+    """
+    this testcase is used to test POST request to create a reply to a comment
+    """
+
+    def setUp(self):
+        self.article = Article.objects.first()
+        self.comment = Comment.objects.first()
+
+    def test_post_reply(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            ARTICLE_ID : ID (INT)
+            COMMENT: (STRING)
+            REPLY : ID (INT) (FOREIGN KEY)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            COMMENT: (STRING)
+            ARTICLE_ID: ID (INT)
+            USER_ID: (BOOLEAN)
+            REPLY : ID (INT) (FOREIGN KEY)
+        """
+        url = "/api/v1/comment/"
+        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply":self.comment.id}
+        res = client.post(url, data)
+        self.assertEqual(res.data["body"]["result"]["comment"], data["comment"])
+        self.assertEqual(
+            int(res.data["body"]["result"]["article_id"]), data["article_id"]
+        )
+        self.assertEqual(res.data["body"]["result"]["user"], user.id)
+        self.assertEqual(res.data["body"]["result"]["reply"], data["reply"])
+        self.assertEqual(res.status_code, 200)
+
+
+class TestErrorCreateReply(APITestCase):
+    """
+    this testcase is used to test POST request to test error while creating a reply to a comment
+    """
+
+    def setUp(self):
+        self.article = Article.objects.last()
+        self.comment = Comment.objects.first()
+
+    def test_error_post_reply(self):
+        """
+        Method:
+            POST
+
+        POST Data:
+            INAVLID ARTICLE_ID : ID (INT)
+            COMMENT: (STRING)
+            REPLY : ID (INT) (FOREIGN KEY)
+        
+        Assert:
+            RESPONSE_STATUS_CODE: 200
+            ERROR_RESPONSE_MESSAGE: (STRING)
+        """
+        url = "/api/v1/comment/"
+        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply":self.comment.id}
+        res = client.post(url, data)
+        self.assertEqual(res.data["errors"]["Msg"][0], "Replying on wrong article")
+        self.assertEqual(res.status_code, 401)
+
+
 class TestLikeArticle(APITestCase):
     """
     this testcase is used to test POST request to like an article
