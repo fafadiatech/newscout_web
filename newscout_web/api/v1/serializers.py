@@ -313,7 +313,7 @@ class CommentSerializer(serializers.ModelSerializer):
         if not article_obj:
             raise serializers.ValidationError("Article does not exist")
         if reply:
-            if reply.id == article_id:
+            if reply.article.id == article_id:
                 comment_reply_obj = Comment.objects.create(article=article_obj, comment=comment,
                                                         user=user, reply=reply)
                 return comment_reply_obj
