@@ -197,6 +197,10 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
         })
         return internal_value
 
+    def get_source_url(self, article_id):
+        url = "http://www.newscout.in/news/article/{0}/".format(article_id)
+        return url
+
     def create(self, validated_data):
         hash_tags = validated_data.pop("hash_tags")
         article_media = validated_data.pop("article_media")
@@ -221,6 +225,9 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
             ) for am in article_media]
 
         article.author = user
+        article.save()
+
+        article.source_url = self.get_source_url(article.id)
         article.save()
 
         if self.context.get("publish"):
