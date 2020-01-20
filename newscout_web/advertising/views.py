@@ -20,7 +20,7 @@ from api.v1.views import create_response, PostpageNumberPagination
 from api.v1.exception_handler import (create_error_response,
                                       AdGroupNotFoundException,
                                       AdvertisementNotFoundException)
-from core.models import Category
+from core.models import Category, Domain
 from advertising.models import (Campaign, AdGroup, AdType, Advertisement)
 
 
