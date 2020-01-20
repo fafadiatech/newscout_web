@@ -112,6 +112,8 @@ class Campaign extends React.Component {
 		let fields = this.state.fields;
 		if(field === "start_date" || field === "end_date"){
 			fields[field] = e;
+		} else if(field === "is_active") {
+			fields[field] = e.target.checked;
 		} else {
 			fields[field] = e.target.value;
 		}
@@ -137,6 +139,7 @@ class Campaign extends React.Component {
 		e.preventDefault();
 
 		if(this.handleValidation()){
+			this.state.fields["is_active"] = true;
 			const body = JSON.stringify(this.state.fields)
 			var extra_data = {"clean_results": true};
 			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", false, extra_data);
@@ -316,7 +319,7 @@ class Campaign extends React.Component {
 					}
 				</td>
 				{this.state.rows[el.id] ?
-					<td><input type="checkbox" name="is_active" checked={el.is_active} /></td>
+					<td><input type="checkbox" name="is_active" checked={el.is_active} onChange={(e) => this.handleChange("is_active", e)} /></td>
 				:
 					<td className="text-success">{el.is_active ? "Active" : ""}</td>
 				}
