@@ -46,7 +46,7 @@ urlpatterns = [
         name="vote-article"),
     url(r'^articles/bookmark/$', ArticleBookMarkAPIView.as_view(),
         name="bookmark-article"),
-    url(r'^articles/(?P<article_id>[-\d]+)/$', ArticleDetailAPIView.as_view(),
+    url(r'^articles/(?P<slug>[\w-]+)/$', ArticleDetailAPIView.as_view(),
         name="articles-list"),
     url(r'^articles/(?P<article_id>[-\d]+)/recommendations/$',
         ArticleRecommendationsAPIView.as_view(),
