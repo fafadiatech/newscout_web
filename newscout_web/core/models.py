@@ -158,7 +158,7 @@ class Article(NewsSiteBaseModel):
     def save(self, *args, **kwargs):
         super(Article, self).save(*args, **kwargs)
         if not self.slug:
-            self.slug = slugify(self.title) + "-" + self.pk
+            self.slug = "{0}-{1}".format(slugify(self.title), self.pk)
             self.save()
 
 
