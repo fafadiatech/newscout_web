@@ -31,12 +31,24 @@ class GetAds(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        ads = Advertisement.objects.filter(is_active=True)
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(
+                create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
+        if not domain:
+            return Response(
+                create_error_response({"domain": ["Domain id is required"]}))
+
+        ads = Advertisement.objects.filter(
+            adgroup__campaign__domain=domain, is_active=True).order_by('?')
         if ads:
             ad = ads[random.randint(0, len(ads)-1)]
             ad.delivered += 1
             ad.save()
-            ad_serializer = AdvertisementSerializer(ad, context={"request": request})
+            ad_serializer = AdvertisementSerializer(
+                ad, context={"request": request})
             return Response(create_response(ad_serializer.data))
         return Response(create_response({}))
 
