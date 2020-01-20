@@ -7,6 +7,7 @@ from django.db import models
 from django.core.validators import URLValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class NewsSiteBaseModel(models.Model):
@@ -149,9 +150,16 @@ class Article(NewsSiteBaseModel):
     article_format = models.CharField(max_length=100, blank=True, null=True)
     author = models.ForeignKey(
         BaseUserProfile, blank=True, null=True, on_delete=models.CASCADE, related_name="author")
+    slug = models.SlugField(max_length=250, allow_unicode=True, blank=True, null=True)
 
     def __unicode__(self):
         return '{} - {} - {} - {} -{}\n'.format(self.id,self.title, self.published_on, self.source, self.hash_tags)
+
+    def save(self, *args, **kwargs):
+        super(Article, self).save(*args, **kwargs)
+        if not self.slug:
+            self.slug = slugify(self.title) + "-" + self.pk
+            self.save()
 
 
 class ArticleMedia(NewsSiteBaseModel):
