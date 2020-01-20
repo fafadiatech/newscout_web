@@ -121,6 +121,7 @@ class Advertisement extends React.Component {
 			body.set('ad_text', this.state.fields.ad_text)
 			body.set('ad_url', this.state.fields.ad_url)
 			body.set('file', this.state.fields.media)
+			body.set('is_active', true)
 			var extra_data = {"clean_results": true};
 			postRequest(ADVERTISEMENT_URL, body, this.advertisementSubmitResponse, "POST", fileUploadHeaders, extra_data);
 		}else{
