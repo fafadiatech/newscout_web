@@ -87,6 +87,8 @@ class Advertisement extends React.Component {
 			fields[field] = {value: e.value, label: e.label};
 		} else if(e.target.files) {
 			fields[field] = e.target.files[0];
+		} else if(field === "is_active") {
+			fields[field] = e.target.checked;
 		} else {
 			fields[field] = e.target.value;
 		}
@@ -137,6 +139,7 @@ class Advertisement extends React.Component {
 			body.set('ad_text', this.state.fields.ad_text)
 			body.set('ad_url', this.state.fields.ad_url)
 			body.set('file', this.state.fields.media)
+			body.set('is_active', this.state.fields.is_active)
 			var extra_data = {"clean_results": true};
 			var url = ADVERTISEMENT_URL + id + "/";
 			putRequest(url, body, this.advertisementSubmitResponse, "PUT", fileUploadHeaders, extra_data);
@@ -359,7 +362,7 @@ class Advertisement extends React.Component {
 					<td className="text-primary">{el.media}</td>
 				}
 				{this.state.rows[el.id] ?
-					<td><input type="checkbox" checked={is_active_value} name="is_active" /></td>
+					<td><input type="checkbox" checked={is_active_value} name="is_active" onChange={(e) => this.handleChange("is_active", e)} /></td>
 				:
 					<React.Fragment>
 						{el.is_active ?
