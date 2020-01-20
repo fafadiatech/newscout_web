@@ -41,7 +41,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = ('id', 'title', 'source', 'category', 'hash_tags','source_url',
                   'cover_image', 'blurb', 'published_on', 'is_book_mark',
-                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format', 'author')
+                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format', 'author', 'slug')
 
     source = serializers.ReadOnlyField(source='source.name')
     category = serializers.ReadOnlyField(source='category.name')

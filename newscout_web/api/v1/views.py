@@ -282,31 +282,30 @@ class ArticleDetailAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, format=None, *args, **kwargs):
-        article_id = self.kwargs.get("article_id", "")
+        slug = self.kwargs.get("slug", "")
 
         user = self.request.user
-        if article_id:
-            article = Article.objects.filter(id=article_id).first()
-            if article:
-                response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
-                if not user.is_anonymous:
-                    book_mark_article = BookmarkArticle.objects.filter(
-                        user=user, article=article).first()
-                    like_article = ArtilcleLike.objects.filter(
-                        user=user, article=article).first()
+        article = Article.objects.filter(slug=slug).first()
+        if article:
+            response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
+            if not user.is_anonymous:
+                book_mark_article = BookmarkArticle.objects.filter(
+                    user=user, article=article).first()
+                like_article = ArtilcleLike.objects.filter(
+                    user=user, article=article).first()
 
-                    if book_mark_article:
-                        response_data["isBookMark"] = True
-                    else:
-                        response_data["isBookMark"] = False
+                if book_mark_article:
+                    response_data["isBookMark"] = True
+                else:
+                    response_data["isBookMark"] = False
 
-                    if like_article:
-                        response_data["isLike"] = like_article.is_like
-                    else:
-                        response_data["isLike"] = 2
+                if like_article:
+                    response_data["isLike"] = like_article.is_like
+                else:
+                    response_data["isLike"] = 2
 
-                return Response(create_response({
-                    "article": response_data}))
+            return Response(create_response({
+                "article": response_data}))
         raise NoarticleFound
 
     def post(self, request, *args, **kwargs):
