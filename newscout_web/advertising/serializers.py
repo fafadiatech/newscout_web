@@ -22,7 +22,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     def get_ad_url(self, instance):
         request = self.context.get("request")
         host = request.META.get("HTTP_HOST")
-        utm_source = "NewsCout"
+        utm_source = instance.adgroup.campaign.domain.domain_name
         utm_medium = request.GET.get("category") or " ".join(instance.adgroup.category.all().values_list('name', flat=True))
         utm_campaign = instance.adgroup.campaign.name
         params = urlencode({"utm_source": utm_source, "utm_medium": utm_medium, "utm_campaign": utm_campaign})
@@ -31,7 +31,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         else:
             ad_url = quote(instance.ad_url + "?" + params)
         print(ad_url)
-        url = "http://" + host + "/getad-redirect/?url={0}&aid={1}".format(ad_url, instance.id)
+        url = "http://" + host + "/ads/redirect/?url={0}&aid={1}".format(ad_url, instance.id)
         return url
 
 
