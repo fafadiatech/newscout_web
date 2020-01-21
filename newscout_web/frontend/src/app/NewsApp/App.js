@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import logo from './logo.png';
-import { SectionTitle, Menu, SliderItem, SideBox, TabItem, JumboBox } from 'newscout';
+import { SectionTitle, Menu, SliderItem, SideBox, TabItem, JumboBox, ImageOverlay, ContentOverlay, CardItem } from 'newscout';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
@@ -13,6 +13,9 @@ import 'newscout/assets/TabItem.css'
 import 'newscout/assets/JumboBox.css'
 import 'newscout/assets/SliderItem.css'
 import 'newscout/assets/SectionTitle.css'
+import 'newscout/assets/ImageOverlay.css'
+import 'newscout/assets/ContentOverlay.css'
+import 'newscout/assets/CardItem.css'
 
 import config_data from './config.json';
 
@@ -49,24 +52,6 @@ class App extends React.Component {
 		})
 		this.setState({
 			menus: menus_array
-		})
-	}
-
-	getLatestNews = (data) => {
-		data.body.results.map((item, index) => {
-			if(item.heading){
-				var heading_dict = {}
-				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
-				heading_dict['item_id'] = item.heading.category_id
-				if(item.heading.name === "Misc"){
-					item.heading.submenu.map((sub_item, sub_index) => {
-						if(sub_item.name === "Uncategorised"){
-							this.getPosts(sub_item.name, sub_item.category_id)
-						}
-					})
-				}
-			}
 		})
 	}
 
@@ -110,30 +95,6 @@ class App extends React.Component {
 		tabnav_array.push(tabnav_dict)
 		this.setState({
 			sector_regional_update: tabnav_array
-		})
-	}
-
-	latestNewsPosts = (data) => {
-		var latestnews_array = []
-		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['header'] = item.title
-			article_dict['altText'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
-			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+config_data.defaultImage
-			}
-			if(latestnews_array.length < 4){
-				latestnews_array.push(article_dict)
-			}
-		})
-		this.setState({
-			latest_news: latestnews_array
 		})
 	}
 
@@ -212,62 +173,144 @@ class App extends React.Component {
 	getTrending = (data) => {
 		var trending_array = []
 		data.body.results.map((item, index) => {
-			item.articles.map((ele, ele_index) => {
-				var article_dict = {}
-				article_dict['id'] = item.id
-				article_dict['header'] = ele.title
-				article_dict['altText'] = ele.title
-				article_dict['caption'] = ele.blurb
-				article_dict['source'] = ele.source
-				article_dict['source_url'] = ele.source_url
-				if(item.cover_image){
-					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(item.cover_image)
-				} else {
-					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+ config_data.defaultImage
+			var articles = item.articles;
+			if(articles.length < 3){
+				for (var ele = 0; ele < articles.length; ele++) {
+					if(articles[ele].cover_image){
+						var article_dict = {}
+						article_dict['id'] = item.id
+						article_dict['header'] = articles[ele].title
+						article_dict['altText'] = articles[ele].title
+						article_dict['caption'] = articles[ele].blurb
+						article_dict['source'] = articles[ele].source
+						article_dict['category'] = articles[ele].category
+						article_dict['slug'] = articles[ele].slug
+						article_dict['source_url'] = articles[ele].source_url
+						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
+						trending_array.push(article_dict)
+						break;
+					}
 				}
-				if(trending_array.length < 4){
-					trending_array.push(article_dict)
-				}
-			})
+			}
 		})
 		this.setState({
 			trending: trending_array
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
 		getRequest(TRENDING_NEWS+"?"+DOMAIN, this.getTrending);
-		getRequest(MENUS+"?"+DOMAIN, this.getLatestNews);
 	}
 
 	render() {
 		var { menus, trending, latest_news, finance, economics, sector_regional_update, misc } = this.state
+		console.log(trending)
 		return (
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
-				<div className="pt-70">
+				<div className="pt-50">
 					<div className="container">
 						<div className="row">
-							<div className="col-lg-8 col-12 mb-4">
-								<SliderItem slides={trending} />
+							<div className="col-lg-7 col-12 mb-4">
+								{trending.length > 0 ?
+									<ImageOverlay 
+												image={trending[0].src}
+												title={trending[0].header}
+												description={trending[0].caption}
+												uploaded_by={trending[0].source}
+												source_url={trending[0].source_url}
+												slug_url={trending[0].slug}
+												category={trending[0].category}
+									/>
+								: ''
+								}
 							</div>
-							<div className="col-lg-4 col-12 mb-4">
-								<div className="side-box">
-									<SectionTitle title="Latest News" />
-									<SideBox posts={latest_news} />
-								</div>
+							<div className="col-lg-5 col-12 mb-4">
+								{trending.length > 0 ?
+									<ContentOverlay
+												title={trending[1].header}
+												description={trending[1].caption}
+												uploaded_by={trending[1].source}
+												source_url={trending[1].source_url}
+												slug_url={trending[1].slug}
+												category={trending[1].category}
+									/>
+								: ''
+								}
 							</div>
 						</div>
 					</div>
 				</div>
-				<div className="pt-70">
+				<div className="pt-50">
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-12 col-12 mb-4">
-								<div className="tab-box">
-									<TabItem tabnav={sector_regional_update} />
-								</div>
+								<h2>Sector Updates</h2>
+							</div>
+						</div>
+						<div className="row">
+							<div className="col-lg-4">
+								{trending.length > 0 ?
+									<CardItem
+										image={trending[0].src}
+										title={trending[0].header}
+										description={trending[0].caption}
+										uploaded_by={trending[0].source}
+										source_url={trending[0].source_url}
+										slug_url={trending[0].slug}
+										category={trending[0].category}
+									/>
+								: ''
+								}
+							</div>
+							<div className="col-lg-4">
+								{trending.length > 0 ?
+									<CardItem
+										image={trending[0].src}
+										title={trending[0].header}
+										description={trending[0].caption}
+										uploaded_by={trending[0].source}
+										source_url={trending[0].source_url}
+										slug_url={trending[0].slug}
+										category={trending[0].category}
+									/>
+								: ''
+								}
+							</div>
+							<div className="col-lg-4">
+								{trending.length > 0 ?
+									<CardItem
+										image={trending[0].src}
+										title={trending[0].header}
+										description={trending[0].caption}
+										uploaded_by={trending[0].source}
+										source_url={trending[0].source_url}
+										slug_url={trending[0].slug}
+										category={trending[0].category}
+									/>
+								: ''
+								}
+							</div>
+							<div className="col-lg-4">
+								{trending.length > 0 ?
+									<CardItem
+										image={trending[0].src}
+										title={trending[0].header}
+										description={trending[0].caption}
+										uploaded_by={trending[0].source}
+										source_url={trending[0].source_url}
+										slug_url={trending[0].slug}
+										category={trending[0].category}
+									/>
+								: ''
+								}
+							</div>
+						</div>
+						<div className="col-lg-6 col-12 mb-4">
+							<div className="side-box">
+								<SectionTitle title="Economics" />
+								<SideBox posts={economics} />
 							</div>
 						</div>
 					</div>
