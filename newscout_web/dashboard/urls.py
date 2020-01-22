@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^advertisements/$', AdvertisementView.as_view(), name="advertisements"),
     url(r'^articles/$', ArticleView.as_view(), name="articles"),
     url(r'^article/create/$', ArticleCreateView.as_view(), name="article-create"),
-    url(r'^article/edit/(?P<article_id>[-\d]+)/$', ArticleEditView.as_view(), name="article-edit"),
+    url(r'^article/edit/(?P<slug>[\w-]+)/$', ArticleEditView.as_view(), name="article-edit"),
 ]
