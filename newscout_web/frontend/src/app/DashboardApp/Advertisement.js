@@ -358,7 +358,7 @@ class Advertisement extends React.Component {
 					}
 				</td>
 				{this.state.rows[el.id] ?
-					<td><input refs="media" type="file" name="media" id="ad-media" />{el.media}</td>
+					<td><input refs="media" type="file" name="media" id="ad-media" onChange={(e) => this.handleChange("media", e)} />{el.media}</td>
 				:
 					<td className="text-primary">{el.media}</td>
 				}
