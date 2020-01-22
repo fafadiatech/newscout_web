@@ -241,7 +241,7 @@ class ArticleForm extends React.Component {
     }
 
     componentDidMount() {
-        if (this.state.article_id) {
+        if (this.state.article_slug) {
             this.getArticleDetails()
         }
         this.getSources()
