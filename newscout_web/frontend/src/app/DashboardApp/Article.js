@@ -154,7 +154,7 @@ class Article extends React.Component {
 				<td>
 					<ul className="list-inline m-0">
 						<React.Fragment>
-							<li className="list-inline-item" index={index} data-id={el.id} ><a href={'/dashboard/article/edit/' + el.id + '/'} className=" btn btn-sm btn-warning">Edit</a></li>
+							<li className="list-inline-item" index={index} data-id={el.id} ><a href={'/dashboard/article/edit/' + el.slug + '/'} className=" btn btn-sm btn-warning">Edit</a></li>
 							{
 								el.active ?
 									<li className="list-inline-item btn btn-sm btn-danger" data-id={el.id} data-status=

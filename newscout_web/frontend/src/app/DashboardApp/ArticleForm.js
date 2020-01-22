@@ -37,7 +37,8 @@ class ArticleForm extends React.Component {
 			formSuccess: false,
             results: [],
             active_page: ACTIVE_PAGE,
-            article_id: ARTICLE_ID,
+            article_slug: ARTICLE_SLUG,
+            article_id: "",
             cover_image: "",
             cover_image_name: "",
             cover_image_id: ""
@@ -102,13 +103,14 @@ class ArticleForm extends React.Component {
     }
 
     getArticleDetails = () => {
-        var url = ARTICLE_DETAIL_URL + this.state.article_id + "/";
+        var url = ARTICLE_DETAIL_URL + this.state.article_slug + "/";
 		getRequest(url, this.setArticleDetails);
     }
 
     setArticleDetails = (data) => {
         var state = this.state;
         var article_detail = data.body.article;
+        state.article_id = article_detail.id;
         state.fields.title = article_detail.title;
         state.fields.category = {label: article_detail.category, value: article_detail.category_id};
         state.fields.source = {label: article_detail.source, value: article_detail.source_id};

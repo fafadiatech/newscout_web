@@ -85,7 +85,7 @@ class ArticleEditView(EditorTemplateView):
     def get_context_data(self, **kwargs):
         context = super(ArticleEditView, self).get_context_data(**kwargs)
         context['active_page'] = 'article-edit'
-        context['article_id'] = kwargs.get('article_id')
+        context['article_slug'] = kwargs.get('slug')
         return context
 
 
