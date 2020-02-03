@@ -1,7 +1,9 @@
 import React from 'react';
+import moment from 'moment';
 import ReactDOM from 'react-dom';
+import Slider from "react-slick";
 import logo from './logo.png';
-import { SectionTitle, Menu, SliderItem, SideBox, TabItem, JumboBox, ImageOverlay, ContentOverlay, CardItem } from 'newscout';
+import { SectionTitle, Menu, SideBox, JumboBox, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
@@ -9,9 +11,7 @@ import { getRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/SideBox.css'
-import 'newscout/assets/TabItem.css'
 import 'newscout/assets/JumboBox.css'
-import 'newscout/assets/SliderItem.css'
 import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/ContentOverlay.css'
@@ -23,6 +23,41 @@ const tabnav_array = [];
 const URL = "/news/search/"
 const DOMAIN = "domain=newscout";
 
+const settings = {
+	dots: false,
+	infinite: false,
+	speed: 500,
+	slidesToShow: 3,
+	slidesToScroll: 3,
+	initialSlide: 0,
+	responsive: [
+		{
+			breakpoint: 1024,
+			settings: {
+				slidesToShow: 3,
+				slidesToScroll: 3,
+				infinite: false,
+				dots: false
+			}
+        },
+        {
+			breakpoint: 600,
+			settings: {
+				slidesToShow: 2,
+				slidesToScroll: 2,
+				initialSlide: 2
+			}
+        },
+        {
+			breakpoint: 480,
+				settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1
+			}
+        }
+    ]
+};
+
 class App extends React.Component {
 
 	constructor(props) {
@@ -30,8 +65,8 @@ class App extends React.Component {
 		this.state = {
 			trending: [],
 			menus: [],
-			latest_news: [],
-			sector_regional_update: [],
+			sector_update: [],
+			regional_update: [],
 			finance: [],
 			economics: [],
 			misc: []
@@ -65,56 +100,78 @@ class App extends React.Component {
 			getRequest(url, this.economicPosts)
 		} else if(cat_name == "Misc") {
 			getRequest(url, this.miscPosts)
-		} else {
-			getRequest(url, this.tabPosts, false, cat_name)
+		} else if(cat_name == "Sector Updates") {
+			getRequest(url, this.sectorUpdatePosts)
+		} else if(cat_name == "Regional Updates") {
+			getRequest(url, this.regionalUpdatePosts)
 		}
 	}
 
-	tabPosts = (data, extra_data) => {
-		var tabnav_dict = {}
-		var tab_posts = []
+	sectorUpdatePosts = (data) => {
+		var sectorupdateposts_array = []
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['header'] = item.title
-			article_dict['altText'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/300x175/left/top/"+decodeURIComponent(item.cover_image)
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/300x175/left/top/"+config_data.defaultImage
-			}
-			if(tab_posts.length < 4){
-				tab_posts.push(article_dict)
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
+				if(sectorupdateposts_array.length < 3){
+					sectorupdateposts_array.push(article_dict)
+				}
 			}
 		})
-		tabnav_dict['tab_title'] = extra_data
-		tabnav_dict['tab_posts'] = tab_posts
-		tabnav_array.push(tabnav_dict)
 		this.setState({
-			sector_regional_update: tabnav_array
+			sector_update: sectorupdateposts_array
+		})
+	}
+
+	regionalUpdatePosts = (data) => {
+		var regionalupdateposts_array = []
+		data.body.results.map((item, index) => {
+			if(item.cover_image){
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
+				if(regionalupdateposts_array.length < 4){
+					regionalupdateposts_array.push(article_dict)
+				}
+			}
+		})
+		this.setState({
+			regional_update: regionalupdateposts_array
 		})
 	}
 
 	financePosts = (data) => {
 		var financeposts_array = []
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['header'] = item.title
-			article_dict['altText'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+config_data.defaultImage
-			}
-			if(financeposts_array.length < 4){
-				financeposts_array.push(article_dict)
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['url'] = item.source_url
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
+				if(financeposts_array.length < 8){
+					financeposts_array.push(article_dict)
+				}
 			}
 		})
 		this.setState({
@@ -125,20 +182,21 @@ class App extends React.Component {
 	economicPosts = (data) => {
 		var economicposts_array = []
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['header'] = item.title
-			article_dict['altText'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+config_data.defaultImage
-			}
-			if(economicposts_array.length < 4){
-				economicposts_array.push(article_dict)
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
+				if(economicposts_array.length < 4){
+					economicposts_array.push(article_dict)
+				}
 			}
 		})
 		this.setState({
@@ -149,20 +207,21 @@ class App extends React.Component {
 	miscPosts = (data) => {
 		var miscposts_array = []
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['header'] = item.title
-			article_dict['altText'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['url'] = item.source_url
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/600x338/left/top/"+decodeURIComponent(item.cover_image)
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/600x338/left/top/"+config_data.defaultImage
-			}
-			if(miscposts_array.length < 4){
-				miscposts_array.push(article_dict)
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
+				if(miscposts_array.length < 3){
+					miscposts_array.push(article_dict)
+				}
 			}
 		})
 		this.setState({
@@ -204,8 +263,95 @@ class App extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, latest_news, finance, economics, sector_regional_update, misc } = this.state
-		console.log(trending)
+		var { menus, trending, finance, economics, sector_update, regional_update, misc } = this.state
+		
+		var sector_update = sector_update.map((item, index) => {
+			return(
+				<div className="col-lg-4 mb-4">
+					<VerticleCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
+			)
+		})
+
+		var regional_update = regional_update.map((item, index) => {
+			return(
+				<div className="col-lg-6 mb-4">
+					<HorizontalCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
+			)
+		})
+
+		var finance = finance.map((item, index) => {
+			return (
+				<ImageOverlay 
+					image={item.src}
+					title={item.header}
+					description={item.caption}
+					uploaded_by={item.source}
+					source_url={item.source_url}
+					slug_url={item.slug}
+					category={item.category}
+					size="sm"
+				/>
+			)
+		})
+
+		var economics = economics.map((item, index) => {
+			return(
+				<div className="col-lg-6 mb-4">
+					<HorizontalCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
+			)
+		})
+
+		var misc = misc.map((item, index) => {
+			return(
+				<div className="col-lg-4 mb-4">
+					<VerticleCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
+			)
+		})
+
 		return (
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
@@ -242,107 +388,73 @@ class App extends React.Component {
 						</div>
 					</div>
 				</div>
+				
 				<div className="pt-50">
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-12 col-12 mb-4">
-								<h2>Sector Updates</h2>
-							</div>
-						</div>
-						<div className="row">
-							<div className="col-lg-4">
-								{trending.length > 0 ?
-									<CardItem
-										image={trending[0].src}
-										title={trending[0].header}
-										description={trending[0].caption}
-										uploaded_by={trending[0].source}
-										source_url={trending[0].source_url}
-										slug_url={trending[0].slug}
-										category={trending[0].category}
-									/>
-								: ''
-								}
-							</div>
-							<div className="col-lg-4">
-								{trending.length > 0 ?
-									<CardItem
-										image={trending[0].src}
-										title={trending[0].header}
-										description={trending[0].caption}
-										uploaded_by={trending[0].source}
-										source_url={trending[0].source_url}
-										slug_url={trending[0].slug}
-										category={trending[0].category}
-									/>
-								: ''
-								}
-							</div>
-							<div className="col-lg-4">
-								{trending.length > 0 ?
-									<CardItem
-										image={trending[0].src}
-										title={trending[0].header}
-										description={trending[0].caption}
-										uploaded_by={trending[0].source}
-										source_url={trending[0].source_url}
-										slug_url={trending[0].slug}
-										category={trending[0].category}
-									/>
-								: ''
-								}
-							</div>
-							<div className="col-lg-4">
-								{trending.length > 0 ?
-									<CardItem
-										image={trending[0].src}
-										title={trending[0].header}
-										description={trending[0].caption}
-										uploaded_by={trending[0].source}
-										source_url={trending[0].source_url}
-										slug_url={trending[0].slug}
-										category={trending[0].category}
-									/>
-								: ''
-								}
-							</div>
-						</div>
-						<div className="col-lg-6 col-12 mb-4">
-							<div className="side-box">
-								<SectionTitle title="Economics" />
-								<SideBox posts={economics} />
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="pt-70 bg-gray">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-6 col-12 mb-4">
-								<div className="side-box">
-									<SectionTitle title="Finance" />
-									<SideBox posts={finance} />
-								</div>
-							</div>
-							<div className="col-lg-6 col-12 mb-4">
-								<div className="side-box">
-									<SectionTitle title="Economics" />
-									<SideBox posts={economics} />
+								<div className="section-title">
+									<h2 className="m-0 section-title">Sector Updates</h2>
 								</div>
 							</div>
 						</div>
+						<div className="row">{sector_update}</div>
 					</div>
 				</div>
-				<div className="pt-70">
+
+				<div className="pt-50">
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-12 col-12 mb-4">
-								<div className="side-box">
-									<SectionTitle title="Misc" />
-									<JumboBox posts={misc} />
+								<div className="section-title">
+									<h2 className="m-0 section-title">Regional Updates</h2>
 								</div>
 							</div>
 						</div>
+						<div className="row">{regional_update}</div>
+					</div>
+				</div>
+
+				<div className="pt-50">
+					<div className="container">
+						<div className="row">
+							<div className="col-lg-12 col-12 mb-4">
+								<div className="section-title">
+									<h2 className="m-0 section-title">Finance</h2>
+								</div>
+							</div>
+						</div>
+						<div className="row">
+							<div className="col-lg-12">
+								<Slider {...settings}>{finance}</Slider>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="pt-50">
+					<div className="container">
+						<div className="row">
+							<div className="col-lg-12 col-12 mb-4">
+								<div className="section-title">
+									<h2 className="m-0 section-title">Economics</h2>
+								</div>
+							</div>
+						</div>
+						<div className="row">{economics}</div>
+					</div>
+				</div>
+
+				<div className="pt-50">
+					<div className="container">
+						<div className="row">
+							<div className="col-lg-12 col-12 mb-4">
+								<div className="section-title">
+									<h2 className="m-0 section-title">Misc</h2>
+								</div>
+							</div>
+						</div>
+						<div className="row">{misc}</div>
 					</div>
 				</div>
 			</React.Fragment>
