@@ -10,6 +10,7 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
         return context
 
 
@@ -64,3 +65,12 @@ class SearchView(TemplateView):
 		context = super(SearchView, self).get_context_data(**kwargs)
 		context['query'] = self.request.GET.get('q', '')
 		return context
+
+
+class IBJDomainView(TemplateView):
+	template_name = "ibj-index.html"
+	
+	def get_context_data(self, **kwargs):
+		context = super(IBJDomainView, self).get_context_data(**kwargs)
+		return context
+		
