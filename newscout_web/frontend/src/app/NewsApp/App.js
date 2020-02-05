@@ -3,16 +3,13 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import logo from './logo.png';
-import { SectionTitle, Menu, SideBox, JumboBox, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
+import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
-import 'newscout/assets/SideBox.css'
-import 'newscout/assets/JumboBox.css'
-import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/ContentOverlay.css'
 import 'newscout/assets/CardItem.css'
@@ -117,7 +114,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = item.slug
+				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
@@ -142,7 +139,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = item.slug
+				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
@@ -167,7 +164,10 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['url'] = item.source_url
+				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(financeposts_array.length < 8){
 					financeposts_array.push(article_dict)
@@ -189,7 +189,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = item.slug
+				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
@@ -214,7 +214,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = item.slug
+				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
@@ -243,7 +243,7 @@ class App extends React.Component {
 						article_dict['caption'] = articles[ele].blurb
 						article_dict['source'] = articles[ele].source
 						article_dict['category'] = articles[ele].category
-						article_dict['slug'] = articles[ele].slug
+						article_dict['slug'] = "/news/article/"+articles[ele].slug
 						article_dict['source_url'] = articles[ele].source_url
 						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
 						trending_array.push(article_dict)
@@ -258,7 +258,6 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log(MENUS+"?"+this.state.domain)
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 	}

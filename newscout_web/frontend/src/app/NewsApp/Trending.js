@@ -2,19 +2,18 @@ import React from 'react';
 import moment from 'moment';
 import ReactDOM from 'react-dom';
 import logo from './logo.png';
-import { CardItem, Menu, SectionTitle } from 'newscout';
+import { CardItem, Menu, VerticleCardItem } from 'newscout';
 
 import config_data from './config.json';
 
 import './style.css';
 import 'newscout/assets/Menu.css';
 import 'newscout/assets/CardItem.css';
-import 'newscout/assets/SectionTitle.css';
+import 'newscout/assets/ImageOverlay.css'
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
-const DOMAIN = "domain=newscout";
 const URL = "/news/search/"
 
 class Trending extends React.Component {
@@ -28,6 +27,7 @@ class Trending extends React.Component {
 			page : 0,
 			next: null,
 			previous: null,
+			domain: "domain="+DOMAIN
 		};
 	}
 
@@ -67,20 +67,20 @@ class Trending extends React.Component {
 		var trending_array = []
 		data.body.results.map((item, index) => {
 			item.articles.map((ele, ele_index) => {
-				var article_dict = {}
-				article_dict['id'] = ele.id;
-				article_dict['header'] = ele.title;
-				article_dict['altText'] = ele.title;
-				article_dict['caption'] = ele.blurb;
-				article_dict['source'] = ele.source;
-				article_dict['source_url'] = ele.source_url;
-				article_dict['date'] = moment(ele.published_on).format('YYYY-MM-DD');
 				if(ele.cover_image){
-					article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(ele.cover_image);
-				} else {
-					article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+config_data.defaultImage;
+					var article_dict = {}
+					article_dict['id'] = ele.id;
+					article_dict['header'] = ele.title;
+					article_dict['altText'] = ele.title;
+					article_dict['caption'] = ele.blurb;
+					article_dict['source'] = ele.source;
+					article_dict['slug'] = "/news/article/"+ele.slug
+					article_dict['category'] = ele.category
+					article_dict['hash_tags'] = ele.hash_tags
+					article_dict['published_on'] = moment(ele.published_on).format('MMMM D, YYYY')
+					article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(ele.cover_image);
+					trending_array.push(article_dict)
 				}
-				trending_array.push(article_dict)
 			})
 		})
 		var results = [
@@ -97,8 +97,8 @@ class Trending extends React.Component {
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(TRENDING_NEWS+"?"+DOMAIN, this.getTrending);
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
+		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 	}
 
 	componentWillUnmount = () => {
@@ -110,18 +110,19 @@ class Trending extends React.Component {
 
 		var result = trending.map((item, index) => {
 			return (
-				<li className="list-inline-item">
-					<div className="card-container">
-						<CardItem 
-							image={item.src}
-							title={item.header}
-							description={item.caption}
-							uploaded_on={item.date}
-							uploaded_by={item.source}
-							source_url={item.source_url}
-							posturl={`/news/article/${item.id}/`} />
-					</div>
-				</li>
+				<div className="col-lg-4 mb-4">
+					<VerticleCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
 			)
 		})
 
@@ -129,25 +130,23 @@ class Trending extends React.Component {
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} />
 				<div className="pt-70">
-					<div className="container-fluid">
+					<div className="container">
 						<div className="row">
-							<div className="col-lg-10 offset-lg-1">
-								<div className="side-box">
-									<SectionTitle title="Trending" />
+							<div className="col-lg-12 mb-4">
+								<div className="section-title">
+									<h2 className="m-0 section-title">Trending</h2>
 								</div>
 							</div>
 						</div>
 						<div className="row">
-							<div className="col-lg-10 offset-lg-1">
-								{
-									this.state.loading ?
-										<React.Fragment>
-											<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-										</React.Fragment>
-									: ""
-								}
-								<ul className="list-inline">{result}</ul>
-							</div>
+							{
+								this.state.loading ?
+									<React.Fragment>
+										<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+									</React.Fragment>
+								: ""
+							}
+							{result}
 						</div>
 					</div>
 				</div>

@@ -14,7 +14,6 @@ import 'newscout/assets/SideBox.css'
 
 import config_data from './config.json';
 
-const DOMAIN = "domain=newscout";
 const URL = "/news/search/";
 
 class ArticleDetail extends React.Component {
@@ -24,7 +23,9 @@ class ArticleDetail extends React.Component {
 		this.state = {
 			menus: [],
 			article: {},
-			recommendations: []
+			recommendations: [],
+			domain: "domain="+DOMAIN,
+			article_id: ""
 		};
 	}
 
@@ -42,6 +43,7 @@ class ArticleDetail extends React.Component {
 		} else {
 			state.article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/"+config_data.defaultImage;
 		}
+		getRequest(ARTICLE_DETAIL_URL+state.article.id+"/recommendations/?"+this.state.domain, this.getRecommendationsResults);
 		this.setState(state)
 	}
 
@@ -86,9 +88,8 @@ class ArticleDetail extends React.Component {
 	}
 
 	componentDidMount() {
-		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID+"?"+DOMAIN, this.getArticleDetail);
-		getRequest(ARTICLE_DETAIL_URL+ARTICLE_ID+"/recommendations/?"+DOMAIN, this.getRecommendationsResults);
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
+		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 	}
 
 	render() {

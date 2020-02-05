@@ -8,5 +8,8 @@
 {% endblock content %}
 
 {% block js %}
+	<script type="text/javascript">
+		var DOMAIN = "{{domain|safe}}"
+	</script>
 	<script src="{% static "js/react/newsTrending.js" %}"></script>
 {% endblock js %}

@@ -9,7 +9,8 @@
 
 {% block js %}
 	<script type="text/javascript">
-		var ARTICLE_ID = "{{article_id|safe}}"
+		var DOMAIN = "{{domain|safe}}"
+		var SLUG = "{{slug|safe}}"
 	</script>
 	<script src="{% static "js/react/newsArticleDetail.js" %}"></script>
 {% endblock js %}

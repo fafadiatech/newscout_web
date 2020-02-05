@@ -19,6 +19,7 @@ class TrendingView(TemplateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(TrendingView, self).get_context_data(**kwargs)
+		context['domain'] = self.request.GET.get('domain', 'newscout')
 		return context
 
 
@@ -54,7 +55,8 @@ class ArticleDetailView(TemplateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(ArticleDetailView, self).get_context_data(**kwargs)
-		context['article_id'] = self.kwargs['article_id']
+		context['domain'] = self.request.GET.get('domain', 'newscout')
+		context['slug'] = self.kwargs['slug']
 		return context
 
 
