@@ -37,6 +37,7 @@ class CategoryView(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(CategoryView, self).get_context_data(**kwargs)
 		context['category'] = self.kwargs['slug']
+		context['domain'] = self.request.GET.get('domain', 'newscout')
 		return context
 
 
