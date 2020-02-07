@@ -2,10 +2,11 @@ import React from 'react';
 import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
-import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
+import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem } from 'newscout';
 
 import './style.css';
 import 'newscout/assets/Menu.css'
+import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/CardItem.css'
 import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/Sidebar.css'
@@ -15,7 +16,6 @@ import config_data from './config.json';
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
-const DOMAIN = "domain=newscout";
 const URL = "/news/search/";
 
 class SubmenuPosts extends React.Component {
@@ -31,7 +31,8 @@ class SubmenuPosts extends React.Component {
 			page : 0,
 			next: null,
 			previous: null,
-			isSideOpen: true
+			isSideOpen: true,
+			domain: "domain="+DOMAIN
 		};
 	}
 
@@ -86,27 +87,27 @@ class SubmenuPosts extends React.Component {
 	}
 
 	getPosts = (cat_name, cat_id) => {
-		var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+cat_name
+		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
 		getRequest(url, this.newsData)
 	}
 
 	newsData = (data) => {
 		var news_array = []
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['altText'] = item.title
-			article_dict['header'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['source_url'] = item.source_url
-			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+config_data.defaultImage;
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
+				news_array.push(article_dict)
 			}
-			news_array.push(article_dict)
 		})
 		var results = [
 			...this.state.newsPosts,
@@ -128,8 +129,8 @@ class SubmenuPosts extends React.Component {
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(MENUS+"?"+DOMAIN, this.getNewsData);
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
+		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
 	}
 
 	componentWillUnmount = () => {
@@ -140,18 +141,19 @@ class SubmenuPosts extends React.Component {
 		var { menus, newsPosts, isSideOpen } = this.state;
 		var result = newsPosts.map((item, index) => {
 			return (
-				<li className="list-inline-item">
-					<div className="card-container">
-						<CardItem 
-							image={item.src}
-							title={item.header}
-							description={item.caption}
-							uploaded_on={item.date}
-							uploaded_by={item.source}
-							source_url={item.source_url}
-							posturl={`/news/article/${item.id}/`} />
-					</div>
-				</li>
+				<div className="col-lg-3 mb-4">
+					<VerticleCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
 			)
 		})
 
@@ -164,15 +166,15 @@ class SubmenuPosts extends React.Component {
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="pt-70">
 								<div className="row">
-									<div className="col-lg-12">
-										<div className="side-box">
-											<SectionTitle title={SUBCATEGORY.replace("-", " ")} />
+									<div className="col-lg-12 mb-2">
+										<div className="section-title">
+											<h2 className="m-0 section-title">{SUBCATEGORY.replace("-", " ")}</h2>
 										</div>
 									</div>
 								</div>
 								<div className="row">
-									<div className="col-lg-12">
-										<ul className="list-inline">{result}</ul>
+									<div className="col-lg-12 p-5">
+										<div className="row">{result}</div>
 										{
 											this.state.loading ?
 												<React.Fragment>

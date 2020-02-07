@@ -48,6 +48,7 @@ class SubCategoryView(TemplateView):
 		context = super(SubCategoryView, self).get_context_data(**kwargs)
 		context['category'] = self.kwargs['category']
 		context['sub_category'] = self.kwargs['sub_category']
+		context['domain'] = self.request.GET.get('domain', 'newscout')
 		return context
 
 
