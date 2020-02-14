@@ -4,12 +4,9 @@
 {% block title %}NewScout{% endblock title %}
 
 {% block content %}
-	<div id="index"></div>
+	<div id="ibjindex"></div>
 {% endblock content %}
 
 {% block js %}
-	<script type="text/javascript">
-		var DOMAIN = "{{domain|safe}}"
-	</script>
-	<script src="{% static "js/react/news.js" %}"></script>
+	<script src="{% static "js/react/newsIBJnews.js" %}"></script>
 {% endblock js %}

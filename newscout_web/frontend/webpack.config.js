@@ -18,6 +18,7 @@ module.exports = {
       newsSearchResult: './src/app/NewsApp/SearchResult.js',
       newsSubmenuPosts: './src/app/NewsApp/SubmenuPosts.js',
       newsTrending: './src/app/NewsApp/Trending.js',
+      newsIBJnews: './src/app/NewsApp/IBJnews.js',
     },
     output: {
       path: path.resolve(__dirname, "..", "static", "js", "react"),

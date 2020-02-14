@@ -3,19 +3,18 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
-import { CardItem, Menu, SectionTitle, SideBar } from 'newscout';
+import { CardItem, Menu, ImageOverlay, SideBar } from 'newscout';
 
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
+import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/CardItem.css'
-import 'newscout/assets/SectionTitle.css'
 import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
-const DOMAIN = "domain=newscout";
 const URL = "/news/search/";
 const submenu_array = [];
 
@@ -62,7 +61,8 @@ class MenuPosts extends React.Component {
 			category: CATEGORY,
 			newsPosts: [],
 			menus: [],
-			isSideOpen: true
+			isSideOpen: true,
+			domain: "domain="+DOMAIN
 		};
 	}
 
@@ -98,7 +98,7 @@ class MenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id, submenu) => {
 		submenu.map((item, index) => {
-			var url = ARTICLE_POSTS+"?"+DOMAIN+"&category="+item.name
+			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
 			getRequest(url, this.newsData, false, item.name)
 		})
 	}
@@ -107,21 +107,21 @@ class MenuPosts extends React.Component {
 		var news_dict = {}
 		var news_array = []
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id;
-			article_dict['header'] = item.title;
-			article_dict['altText'] = item.title;
-			article_dict['caption'] = item.blurb;
-			article_dict['source'] = item.source;
-			article_dict['source_url'] = item.source_url;
-			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+config_data.defaultImage;
-			}
-			if(news_array.length <= 9){
-				news_array.push(article_dict)
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/425x200/left/top/"+decodeURIComponent(item.cover_image)
+				if(news_array.length <= 9){
+					news_array.push(article_dict)
+				}
 			}
 		})
 		news_dict['menuname'] = extra_data
@@ -139,8 +139,8 @@ class MenuPosts extends React.Component {
 	}
 
 	componentWillMount() {
-		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
-		getRequest(MENUS+"?"+DOMAIN, this.getNewsData);
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
+		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
 	}
 
 	render() {
@@ -149,41 +149,35 @@ class MenuPosts extends React.Component {
 			return (
 				<React.Fragment key={index}>
 					<div className="row">
-						<div className="col-lg-12">
-							<div className="side-box">
-								<SectionTitle title={item.menuname} />
+						<div className="col-lg-12 col-12 mb-2">
+							<div className="section-title">
+								<h2 className="m-0 section-title">{item.menuname}</h2>
 							</div>
 						</div>
 					</div>
 					<div className="row">
-						<div className="col-lg-12">
-							<ul className="list-inline">
-								<Slider {...settings}>
-									{item.posts.map((sub_item, sub_index) => {
-										return (
-											<li className="list-inline-item" key={sub_index}>
-												<div className="card-container">
-													<CardItem 
-														image={sub_item.src}
-														title={sub_item.header}
-														description={sub_item.caption}
-														uploaded_on={sub_item.date}
-														uploaded_by={sub_item.source}
-														source_url={sub_item.source_url}
-														posturl={`/news/article/${sub_item.id}/`} />
-												</div>
-											</li>
-										)
-									})}
-									<li className="list-inline-item">
-										<div className="card-container">
-											<div className="view-all">
-												<a href={`/news/${CATEGORY}/${item.menuname.replace(" ", "-").toLowerCase()}/`}>View All +</a>
-											</div>
-										</div>
-									</li>
-								</Slider>
-							</ul>
+						<div className="col-lg-12 mb-5">
+							<Slider {...settings}>
+								{item.posts.map((sub_item, sub_index) => {
+									return (
+										<ImageOverlay 
+											image={sub_item.src}
+											title={sub_item.header}
+											description={sub_item.caption}
+											uploaded_by={sub_item.source}
+											source_url={sub_item.source_url}
+											slug_url={sub_item.slug}
+											category={sub_item.category}
+											size="sm"
+										/>
+									)
+								})}
+								<div className="card-container">
+									<div className="view-all">
+										<a href={`/news/${CATEGORY}/${item.menuname.replace(" ", "-").toLowerCase()}/`}>View All +</a>
+									</div>
+								</div>
+							</Slider>
 						</div>
 					</div>
 				</React.Fragment>

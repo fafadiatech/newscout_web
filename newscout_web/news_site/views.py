@@ -10,6 +10,7 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
         return context
 
 
@@ -18,6 +19,7 @@ class TrendingView(TemplateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(TrendingView, self).get_context_data(**kwargs)
+		context['domain'] = self.request.GET.get('domain', 'newscout')
 		return context
 
 
@@ -35,6 +37,7 @@ class CategoryView(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(CategoryView, self).get_context_data(**kwargs)
 		context['category'] = self.kwargs['slug']
+		context['domain'] = self.request.GET.get('domain', 'newscout')
 		return context
 
 
@@ -45,6 +48,7 @@ class SubCategoryView(TemplateView):
 		context = super(SubCategoryView, self).get_context_data(**kwargs)
 		context['category'] = self.kwargs['category']
 		context['sub_category'] = self.kwargs['sub_category']
+		context['domain'] = self.request.GET.get('domain', 'newscout')
 		return context
 
 
@@ -53,7 +57,8 @@ class ArticleDetailView(TemplateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(ArticleDetailView, self).get_context_data(**kwargs)
-		context['article_id'] = self.kwargs['article_id']
+		context['domain'] = self.request.GET.get('domain', 'newscout')
+		context['slug'] = self.kwargs['slug']
 		return context
 
 
@@ -64,3 +69,12 @@ class SearchView(TemplateView):
 		context = super(SearchView, self).get_context_data(**kwargs)
 		context['query'] = self.request.GET.get('q', '')
 		return context
+
+
+class IBJDomainView(TemplateView):
+	template_name = "ibj-index.html"
+	
+	def get_context_data(self, **kwargs):
+		context = super(IBJDomainView, self).get_context_data(**kwargs)
+		return context
+		
