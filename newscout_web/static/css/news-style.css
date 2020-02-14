@@ -476,3 +476,26 @@ nav .navbar-brand img {
   font-size: 28px;
   font-weight: 600;
 }
+
+.h6-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+}
+
+.comment-post textarea {
+  resize: none;
+  height: 115px;
+}
+
+.comment h6 {
+  font-weight: 600;
+  color: #262626;
+}
+
+.comment p {
+  color: #747474;
+  font-weight: normal;
+  font-size: 14px;
+}

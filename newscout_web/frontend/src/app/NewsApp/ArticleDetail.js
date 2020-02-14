@@ -2,7 +2,13 @@ import React from 'react';
 import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
+
+import Auth from './Auth';
+import Comments from './Comments'
+
 import { JumboBox, Menu, SideBox } from 'newscout';
+
+import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { MENUS, ARTICLE_DETAIL_URL } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -25,8 +31,15 @@ class ArticleDetail extends React.Component {
 			article: {},
 			recommendations: [],
 			domain: "domain="+DOMAIN,
-			article_id: ""
+			article_id: "",
+			modal: false,
 		};
+	}
+
+	toggle = () => {
+		this.setState({
+			modal: !this.state.modal,
+		})
 	}
 
 	getArticleDetail = (data) => {
@@ -102,28 +115,57 @@ class ArticleDetail extends React.Component {
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-8 col-12 mb-4">
-								<div className="article-detail">
-									<JumboBox 
-										source_url={article.source_url}
-										image={article.src}
-										title={article.header}
-										uploaded_on={article.date}
-										uploaded_by={article.source}
-										description={article.caption}
-										hash_tags={article.hash_tags} />
+								<div className="row">
+									<div className="col-lg-12">
+										<div className="article-detail">
+											<JumboBox 
+												source_url={article.source_url}
+												image={article.src}
+												title={article.header}
+												uploaded_on={article.date}
+												uploaded_by={article.source}
+												description={article.caption}
+												hash_tags={article.hash_tags} />
+										</div>
+									</div>
+								</div>
+								<div className="row">
+									<div className="col-lg-12">
+										<div className="sidebox mt-5">
+											<div className="heading">
+												<div className="clearfix">
+													<div className="float-left">
+														<h3 className="">Reviews</h3>
+													</div>
+													<div className="float-right">
+														<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
+													</div>
+												</div>
+											</div>
+											<div className="mt-4">
+												<Comments />
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 							<div className="col-lg-4 col-12 mb-4">
-								<div className="sidebox">
-									<div className="heading">
-										<h3 className="text-center">More News</h3>
+								<div className="row">
+									<div className="col-lg-12">
+										<div className="sidebox">
+											<div className="heading">
+												<h3 className="text-center">More News</h3>
+											</div>
+											<SideBox posts={recommendations} />
+										</div>
 									</div>
-									<SideBox posts={recommendations} />
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+
+				<Auth is_open={this.state.modal} toggle={this.toggle} />
 			</React.Fragment>
 		)
 	}
