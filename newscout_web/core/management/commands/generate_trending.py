@@ -8,7 +8,7 @@ from core.utils import es
 from core.models import Article, TrendingArticle, Domain
 from django.conf import settings
 from django.utils import timezone
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
@@ -19,6 +19,9 @@ class Command(BaseCommand):
     stopwords = [current.strip() for current in open(os.path.join(settings.BASE_DIR, "news_site", "management", "commands", "stopwords.txt")).readlines()]
     epoch = 3
     MAX_TRENDING = 30
+
+    def add_arguments(self, parser):
+        parser.add_argument('--domain', '-d', nargs='+', type=str)
 
     def strip_puncs(self, s):
         table = str.maketrans({key: None for key in string.punctuation})
@@ -90,7 +93,11 @@ class Command(BaseCommand):
         return False
 
     def handle(self, *args, **options):
-        for domain in Domain.objects.all():
+        domains = options["domain"]
+        if not domains:
+            raise CommandError('Domain name is required')
+
+        for domain in Domain.objects.filter(domain_id__in=domains):
             old_objects = TrendingArticle.objects.filter(domain=domain)
             if old_objects:
                 start = old_objects.first().id
