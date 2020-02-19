@@ -492,10 +492,29 @@ nav .navbar-brand img {
 .comment h6 {
   font-weight: 600;
   color: #262626;
+  font-size: 15px;
 }
 
 .comment p {
   color: #747474;
   font-weight: normal;
   font-size: 14px;
+}
+
+.authform label,
+.authtitle {
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+ul.usr li {
+  margin-bottom: 15px !important;
+  cursor: pointer;
+}
+
+.success-comment {
+  padding: .575rem .75rem;
+  font-size: 13px;
+  margin-bottom: 0px;
 }

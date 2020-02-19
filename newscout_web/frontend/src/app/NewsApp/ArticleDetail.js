@@ -2,16 +2,17 @@ import React from 'react';
 import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
+import Cookies from 'universal-cookie';
+import { JumboBox, Menu, SideBox } from 'newscout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
+import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { JumboBox, Menu, SideBox } from 'newscout';
-
-import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-
-import { MENUS, ARTICLE_DETAIL_URL } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
+import { MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT } from '../../utils/Constants';
+import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/JumboBox.css'
@@ -21,6 +22,7 @@ import 'newscout/assets/SideBox.css'
 import config_data from './config.json';
 
 const URL = "/news/search/";
+const cookies = new Cookies();
 
 class ArticleDetail extends React.Component {
 	
@@ -33,7 +35,21 @@ class ArticleDetail extends React.Component {
 			domain: "domain="+DOMAIN,
 			article_id: "",
 			modal: false,
+			username: cookies.get('full_name'),
+			articlecomments: [],
+			successComment: false,
+			is_login: false,
+			is_login_validation: false
 		};
+	}
+
+	loggedInUser = (data) => {
+		this.setState({
+			username: data,
+			is_login: true
+		})
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 	}
 
 	toggle = () => {
@@ -41,6 +57,19 @@ class ArticleDetail extends React.Component {
 			modal: !this.state.modal,
 		})
 	}
+
+	handleLogout = () => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+    }
+
+    authLogoutResponse = (data) => {
+    	cookies.remove('full_name')
+        cookies.remove('token')
+        this.setState({
+        	is_login: false
+        })
+    }
 
 	getArticleDetail = (data) => {
 		var state = this.state;
@@ -54,7 +83,7 @@ class ArticleDetail extends React.Component {
 		state.article.source_url = data.body.article.source_url;
 		state.article.category = data.body.article.category;
 		state.article.hash_tags = data.body.article.hash_tags;
-		state.article.date = moment(data.body.article.published_on).format('DD-MM-YYYY');
+		state.article.date = moment(data.body.article.published_on).format('DD-MMMM-YYYY');
 		if(data.body.article.cover_image){
 			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
 		} else {
@@ -85,6 +114,13 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+	getArticleComment = (data) => {
+		var results = data.body.results.reverse()
+		this.setState({
+			articlecomments : results
+		})
+	}
+
 	getMenu = (data) => {
 		var menus_array = []
 		data.body.results.map((item, index) => {
@@ -101,13 +137,48 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+	handleSubmit = (data) => {
+		var url = ARTICLE_COMMENT+"?article_id="+ARTICLEID
+        var body = JSON.stringify({comment: data, article_id: ARTICLEID})
+        if(cookies.get('full_name') !== undefined){
+        	var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+        	postRequest(url, body, this.commentSubmitResponse, "POST", headers);
+        } else {
+        	this.setState({
+					is_login_validation: true
+				})
+			setTimeout(() => {
+				this.setState({
+					is_login_validation: false
+				})
+			}, 3000);
+        }
+	}
+
+	commentSubmitResponse = (data) => {
+		if(data.header.status === "1") {
+			this.setState({
+					successComment: true
+				})
+			setTimeout(() => {
+				this.setState({
+					successComment: false
+				})
+			}, 3000);
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
+		}
+	}
+
 	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 	}
 
 	render() {
-		var { menus, article, recommendations } = this.state;
+		var { menus, article, recommendations, username, modal } = this.state;
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
@@ -138,12 +209,24 @@ class ArticleDetail extends React.Component {
 														<h3 className="">Reviews</h3>
 													</div>
 													<div className="float-right">
-														<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
+														{this.state.is_login ?
+															<ul className="list-inline mb-0 usr">
+																<li className="list-inline-item">
+																	<h6 className="h6-text mt-2 mb-0">{username}</h6>
+																</li>
+																<li className="list-inline-item">|</li>
+																<li className="list-inline-item text-danger" onClick={this.handleLogout}>
+																	<FontAwesomeIcon icon={faPowerOff} />
+																</li>
+															</ul>
+														:
+															<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
+														}
 													</div>
 												</div>
 											</div>
 											<div className="mt-4">
-												<Comments />
+												<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} />
 											</div>
 										</div>
 									</div>
@@ -165,7 +248,7 @@ class ArticleDetail extends React.Component {
 					</div>
 				</div>
 
-				<Auth is_open={this.state.modal} toggle={this.toggle} />
+				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
 			</React.Fragment>
 		)
 	}

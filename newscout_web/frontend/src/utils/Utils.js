@@ -65,11 +65,10 @@ export let notify = (msg, type = "success") => {
             toast.success(msg, toastProp);
             break;
     }
-
 };
 
 export const getRequest = function getRequest(url, successFunc, headers = false, extra_data = false) {
-    if (!headers) {
+    if (headers === false) {
         headers = postHeaders;
     }
 
@@ -131,7 +130,13 @@ export const postRequest = function postRequest(url, body, successFunc, method =
                 })
             }
             if (response.status === 401 || response.status === 403) {
-                window.location = getLoginURL();
+                return response.json().then(data => {
+                    if (!extra_data) {
+                        return successFunc(data);
+                    } else {
+                        return successFunc(data, extra_data);
+                    }
+                })
             }
             if (response.status >= 500) {
                 notify("Something went wrong", "error")
