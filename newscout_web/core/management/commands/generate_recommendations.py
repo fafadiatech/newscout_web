@@ -17,6 +17,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--days', '-d', type=int, default=3, help='Generate recommendations for given days [default: last 3 days]')
+        parser.add_argument('--domain', '-d', nargs='+', type=str)
 
     def get_recommendations(self, title, domain, size=100, K=25):
         """
@@ -81,9 +82,14 @@ class Command(BaseCommand):
         # make sure we have our recommendations index
         create_index("recommendation")
         days = options['days']
+        domains = options["domain"]
+
+        if not domains:
+            raise CommandError('Domain name is required')
+
         start, end = self.get_date_range(days)
 
-        for domain in Domain.objects.all():
+        for domain in Domain.objects.filter(domain_id__in=domains):
             results = scan(es, index='article', query={"query": {"bool": {"must": [{"term": {"domain": domain.domain_id}}, {"range": {"published_on": {"gte": start,"lt": end}}}]}},"sort": [{"published_on": {"order": "desc"}}]}, preserve_order=True)
 
             for current in results:
