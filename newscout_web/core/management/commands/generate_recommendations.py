@@ -16,7 +16,7 @@ class Command(BaseCommand):
     DEBUG = False
 
     def add_arguments(self, parser):
-        parser.add_argument('--days', '-d', type=int, default=3, help='Generate recommendations for given days [default: last 3 days]')
+        parser.add_argument('--days', '-n', type=int, default=3, help='Generate recommendations for given days [default: last 3 days]')
         parser.add_argument('--domain', '-d', nargs='+', type=str)
 
     def get_recommendations(self, title, domain, size=100, K=25):
