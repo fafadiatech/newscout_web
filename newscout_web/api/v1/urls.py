@@ -16,7 +16,7 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
                     CategoryBulkUpdate, GetDailyDigestView,
                     ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet, 
-                    LikeAPIView)
+                    LikeAPIView, CaptchaCommentApiView)
 
 url_router = DefaultRouter()
 url_router.register(r'article/draft-image', DraftMediaUploadViewSet, basename='draft-media')
@@ -76,5 +76,6 @@ urlpatterns = [
     url(r'^article/status/$', ChangeArticleStatusView.as_view(),
         name='article-status'),
     url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
-    url(r'article-like/$', LikeAPIView.as_view(), name='article-like')
+    url(r'article-like/$', LikeAPIView.as_view(), name='article-like'),
+    url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha')
 ]

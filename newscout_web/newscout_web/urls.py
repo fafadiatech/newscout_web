@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^event/', include('event_tracking.urls')),
     url(r'^ads/', include('advertising.urls')),
+    url(r'^captcha/', include('captcha.urls')),
 ]
