@@ -1,4 +1,5 @@
-export const BASE_URL = "http://www.newscout.in";
+// export const BASE_URL = "http://www.newscout.in";
+export const BASE_URL = "http://localhost:8001";
 
 export const RED_COLOR = "#ff4263";
 export const GREEN_COLOR = "#63ff42";
@@ -29,6 +30,10 @@ export const ANALYTICS_INTERACTIONSPERAUTHOR_URL = BASE_URL + "/analytics/intera
 export const ANALYTICS_ARTICLESPERSESSION_URL = BASE_URL + "/analytics/aticles-per-session/"
 export const ANALYTICS_INTERACTIONSPERSESSION_URL = BASE_URL + "/analytics/interactions-per-session/"
 
-export const TRENDING_NEWS = ARTICLE_API_URL + "trending/";
+export const ARTICLE_LOGIN = ARTICLE_API_URL + "login/";
+export const ARTICLE_SIGNUP = ARTICLE_API_URL + "signup/";
+export const ARTICLE_LOGOUT = ARTICLE_API_URL + "logout/";
+export const ARTICLE_COMMENT = ARTICLE_API_URL + "comment/";
 export const MENUS = ARTICLE_API_URL + "menus/";
+export const TRENDING_NEWS = ARTICLE_API_URL + "trending/";
 export const ARTICLE_POSTS = ARTICLE_API_URL + "article/search/";

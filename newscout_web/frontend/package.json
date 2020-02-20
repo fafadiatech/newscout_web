@@ -27,6 +27,7 @@
     "react-toastify": "^5.4.0",
     "recharts": "^1.8.5",
     "summernote": "^0.8.11",
+    "universal-cookie": "^4.0.3",
     "url-loader": "^3.0.0"
   },
   "scripts": {

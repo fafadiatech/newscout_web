@@ -119,22 +119,24 @@ class LoginAPIView(generics.GenericAPIView):
             return Response(res_data, status=403)
 
         user = BaseUserProfile.objects.filter(email=request.data["email"]).first()
-        device_name = request.data["device_name"]
-        device_id = request.data["device_id"]
-        device, _ = Devices.objects.get_or_create(user=user,
-                                               device_name=device_name,
-                                               device_id=device_id)
-        notification_obj, _ = Notification.objects.get_or_create(device=device)
-        notification = NotificationSerializer(notification_obj)
+        device_name = request.data.get("device_name")
+        device_id = request.data.get("device_id")
+        if device_id and device_name:
+            device, _ = Devices.objects.get_or_create(user=user,
+                                                   device_name=device_name,
+                                                   device_id=device_id)
+            notification_obj, _ = Notification.objects.get_or_create(device=device)
+            notification = NotificationSerializer(notification_obj)
 
         user_serializer = BaseUserProfileSerializer(user)
         token, _ = Token.objects.get_or_create(user=user)
 
         data = user_serializer.data
         data["token"] = token.key
-        data["breaking_news"] = notification.data['breaking_news']
-        data["daily_edition"] = notification.data['daily_edition']
-        data["personalized"] = notification.data['personalized']
+        if device_id and device_name:
+            data["breaking_news"] = notification.data['breaking_news']
+            data["daily_edition"] = notification.data['daily_edition']
+            data["personalized"] = notification.data['personalized']
 
         response_data = create_response({"user": data})
         return Response(response_data)
@@ -1312,7 +1314,7 @@ class CommentViewSet(viewsets.ViewSet):
             return Response(create_error_response({"error": "Article does not exist"})
             )
         comment_list = Comment.objects.filter(article=article_obj, reply=None)
-        serializer = CommentSerializer(comment_list,many=True)
+        serializer = CommentSerializer(comment_list, many=True)
         return Response(create_response({"results": serializer.data,
                     "total_article_likes": ArtilcleLike.objects.filter(article=article_obj).count()}))    
 
