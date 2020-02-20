@@ -54,7 +54,7 @@ class ArticleDetail extends React.Component {
 		state.article.source_url = data.body.article.source_url;
 		state.article.category = data.body.article.category;
 		state.article.hash_tags = data.body.article.hash_tags;
-		state.article.date = moment(data.body.article.published_on).format('DD-MM-YYYY');
+		state.article.date = moment(data.body.article.published_on).format('D MMMM YYYY');
 		if(data.body.article.cover_image){
 			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
 		} else {
@@ -73,7 +73,7 @@ class ArticleDetail extends React.Component {
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['slug'] = "/news/article/"+item.slug
-				article_dict['published_on'] = moment(item.published_on).format('DD-MM-YYYY');
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY');
 				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
 				if(recommendations_array.length < 5){
 					recommendations_array.push(article_dict)

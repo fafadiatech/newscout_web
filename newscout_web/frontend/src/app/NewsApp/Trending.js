@@ -77,7 +77,7 @@ class Trending extends React.Component {
 					article_dict['slug'] = "/news/article/"+ele.slug
 					article_dict['category'] = ele.category
 					article_dict['hash_tags'] = ele.hash_tags
-					article_dict['published_on'] = moment(ele.published_on).format('MMMM D, YYYY')
+					article_dict['published_on'] = moment(ele.published_on).format('D MMMM YYYY')
 					article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(ele.cover_image);
 					trending_array.push(article_dict)
 				}

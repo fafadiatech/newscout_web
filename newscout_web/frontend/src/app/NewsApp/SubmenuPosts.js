@@ -104,7 +104,7 @@ class SubmenuPosts extends React.Component {
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
 				news_array.push(article_dict)
 			}

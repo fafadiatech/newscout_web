@@ -117,7 +117,7 @@ class App extends React.Component {
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
 				if(sectorupdateposts_array.length < 3){
 					sectorupdateposts_array.push(article_dict)
@@ -142,7 +142,7 @@ class App extends React.Component {
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
 				if(regionalupdateposts_array.length < 4){
 					regionalupdateposts_array.push(article_dict)
@@ -167,7 +167,7 @@ class App extends React.Component {
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(financeposts_array.length < 8){
 					financeposts_array.push(article_dict)
@@ -192,7 +192,7 @@ class App extends React.Component {
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
 				if(economicposts_array.length < 4){
 					economicposts_array.push(article_dict)
@@ -217,7 +217,7 @@ class App extends React.Component {
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
 				if(miscposts_array.length < 3){
 					miscposts_array.push(article_dict)
