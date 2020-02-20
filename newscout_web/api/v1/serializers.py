@@ -131,7 +131,7 @@ class ArtilcleLikeSerializer(serializers.ModelSerializer):
 class SubMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubMenu
-        fields = ('name', 'category_id', 'hash_tags')
+        fields = ('name', 'category_id', 'hash_tags', 'icon')
 
     hash_tags = HashTagSerializer(many=True)
     name = serializers.SerializerMethodField()
@@ -147,7 +147,7 @@ class SubMenuSerializer(serializers.ModelSerializer):
 class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ('name', 'category_id', 'submenu')
+        fields = ('name', 'category_id', 'submenu', 'icon')
 
     name = serializers.SerializerMethodField()
     category_id = serializers.SerializerMethodField()
