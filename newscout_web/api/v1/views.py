@@ -1275,6 +1275,16 @@ class CommentViewSet(viewsets.ViewSet):
     pagination_class = PostpageNumberPagination
     ordering = "-created_at"
 
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'list':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return [permission() for permission in self.permission_classes]
+
     def create(self, request):
         data = request.data.copy()
         data["user"] = request.user.id
