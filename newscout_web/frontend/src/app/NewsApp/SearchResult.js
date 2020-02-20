@@ -1,8 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import ReactDOM from 'react-dom';
 import logo from './logo.png';
-import { CardItem, Menu, SectionTitle, SideBar, Filter } from 'newscout';
+import ReactDOM from 'react-dom';
+import { Menu, SideBar, Filter, VerticleCardItem } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
@@ -11,17 +11,16 @@ import { getRequest } from '../../utils/Utils';
 
 import './style.css';
 import 'newscout/assets/Menu.css'
+import 'newscout/assets/ImageOverlay.css'
+import 'newscout/assets/CardItem.css'
 import 'newscout/assets/Filter.css'
 import 'newscout/assets/Sidebar.css'
-import 'newscout/assets/CardItem.css'
-import 'newscout/assets/SectionTitle.css'
 
 import config_data from './config.json';
 
 var query_array = [];
 var final_query = "";
 const URL = "/news/search/";
-const DOMAIN = "domain=newscout";
 
 class SearchResult extends React.Component {
 	
@@ -40,7 +39,8 @@ class SearchResult extends React.Component {
 			page : 0,
 			next: null,
 			previous: null,
-			isSideOpen: true
+			isSideOpen: true,
+			domain: "domain="+DOMAIN
 		};
 	}
 
@@ -135,20 +135,20 @@ class SearchResult extends React.Component {
 		}
 		
 		data.body.results.map((item, index) => {
-			var article_dict = {}
-			article_dict['id'] = item.id
-			article_dict['altText'] = item.title
-			article_dict['header'] = item.title
-			article_dict['caption'] = item.blurb
-			article_dict['source'] = item.source
-			article_dict['source_url'] = item.source_url
-			article_dict['date'] = moment(item.published_on).format('YYYY-MM-DD');
 			if(item.cover_image){
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+decodeURIComponent(item.cover_image);
-			} else {
-				article_dict['src'] = "http://images.newscout.in/unsafe/336x150/left/top/"+config_data.defaultImage;
+				var article_dict = {}
+				article_dict['id'] = item.id
+				article_dict['header'] = item.title
+				article_dict['altText'] = item.title
+				article_dict['caption'] = item.blurb
+				article_dict['source'] = item.source
+				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['category'] = item.category
+				article_dict['hash_tags'] = item.hash_tags
+				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
+				searchresult_array.push(article_dict)
 			}
-			searchresult_array.push(article_dict)
 		})
 		if(extra_data){
 			var results = [
@@ -180,7 +180,7 @@ class SearchResult extends React.Component {
 		})
 
 		if (history.pushState) {
-			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+final_query, this.getSearchResult);
+			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY+"&"+final_query, this.getSearchResult);
 			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname +"?q="+QUERY;
 			if(final_query){
 		    	newurl = newurl+"&"+final_query;
@@ -197,11 +197,11 @@ class SearchResult extends React.Component {
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		getRequest(MENUS+"?"+DOMAIN, this.getMenu);
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		if(this.state.final_query){
-			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);
+			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);
 		} else {
-			getRequest(ARTICLE_POSTS+"?"+DOMAIN+"&q="+QUERY, this.getSearchResult);
+			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY, this.getSearchResult);
 		}
 	}
 
@@ -213,19 +213,20 @@ class SearchResult extends React.Component {
 		var { menus, searchResult, filters, isFilterOpen, isSideOpen } = this.state;
 
 		var result = searchResult.map((item, index) => {
-			return (
-				<li className="list-inline-item">
-					<div className="card-container">
-						<CardItem 
-							image={item.src}
-							title={item.header}
-							description={item.caption}
-							uploaded_on={item.date}
-							uploaded_by={item.source}
-							source_url={item.source_url}
-							posturl={`/news/article/${item.id}/`} />
-					</div>
-				</li>
+			return(
+				<div className="col-lg-3 mb-5">
+					<VerticleCardItem
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.source_url}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+					/>
+				</div>
 			)
 		})
 
@@ -261,18 +262,14 @@ class SearchResult extends React.Component {
 							</div>
 							<div className="pt-35">
 								<div className="row">
-									<div className="col-lg-12">
-										<ul className="list-inline">
-											{result}
-										</ul>
-										{
-											this.state.loading ?
-												<React.Fragment>
-													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-												</React.Fragment>
-											: ""
-										}
-									</div>
+									{result}
+									{
+										this.state.loading ?
+											<React.Fragment>
+												<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+											</React.Fragment>
+										: ""
+									}
 								</div>
 							</div>
 						</div>
