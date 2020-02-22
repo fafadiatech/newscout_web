@@ -205,6 +205,7 @@ class Command(BaseCommand):
             sorted_cluster_id_to_ts = sorted(cluster_id_to_ts, key=itemgetter(1), reverse=True)
 
             n = 0
+            all_articles_in_trending = []
             for item in sorted_cluster_id_to_ts:
                 i, ts = item
                 group = final_clusters[i]
@@ -213,14 +214,19 @@ class Command(BaseCommand):
                 trending.save()
                 for item in group:
                     item_id = int(item)
-                    print("\t", self.titles[item_id])
-                    if Article.objects.filter(id=item_id).exists():
-                        member = Article.objects.get(id=item_id)
-                        trending.articles.add(member)
-                        trending.save()
-                n += 1
-                if n >= self.MAX_TRENDING:
-                    break
+                    if item_in not in all_articles_in_trending:
+                        print("\t", self.titles[item_id])
+                        if Article.objects.filter(id=item_id).exists():
+                            member = Article.objects.get(id=item_id)
+                            trending.articles.add(member)
+                            trending.save()
+
+                if trending.articles.count() <= 1:
+                    trending.delete()
+                else:
+                    n += 1
+                    if n >= self.MAX_TRENDING:
+                        break
 
             print("Removing old trending objects")
             if old_objects:
