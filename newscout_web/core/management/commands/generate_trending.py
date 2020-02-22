@@ -214,7 +214,7 @@ class Command(BaseCommand):
                 trending.save()
                 for item in group:
                     item_id = int(item)
-                    if item_in not in all_articles_in_trending:
+                    if item_id not in all_articles_in_trending:
                         print("\t", self.titles[item_id])
                         if Article.objects.filter(id=item_id).exists():
                             member = Article.objects.get(id=item_id)
