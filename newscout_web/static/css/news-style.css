@@ -499,3 +499,9 @@ nav .navbar-brand img {
   font-weight: normal;
   font-size: 14px;
 }
+
+.tryloading {
+  height: 100% !important;
+  width: 100% !important;
+  background-color: #ddd !important;
+}

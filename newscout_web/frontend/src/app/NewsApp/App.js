@@ -3,8 +3,9 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import logo from './logo.png';
-import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
+import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
+import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -66,7 +67,8 @@ class App extends React.Component {
 			finance: [],
 			economics: [],
 			misc: [],
-			domain: "domain="+DOMAIN
+			domain: "domain="+DOMAIN,
+			isLoading: false
 		}
 	}
 
@@ -87,19 +89,54 @@ class App extends React.Component {
 		})
 	}
 
+	getTrending = (data) => {
+		var trending_array = []
+		data.body.results.map((item, index) => {
+			var articles = item.articles;
+			if(articles.length < 3){
+				for (var ele = 0; ele < articles.length; ele++) {
+					if(articles[ele].cover_image){
+						var article_dict = {}
+						article_dict['id'] = item.id
+						article_dict['header'] = articles[ele].title
+						article_dict['altText'] = articles[ele].title
+						article_dict['caption'] = articles[ele].blurb
+						article_dict['source'] = articles[ele].source
+						article_dict['category'] = articles[ele].category
+						article_dict['slug'] = "/news/article/"+articles[ele].slug
+						article_dict['source_url'] = articles[ele].source_url
+						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
+						trending_array.push(article_dict)
+						break;
+					}
+				}
+			}
+		})
+		this.setState({
+			trending: trending_array,
+			isLoading: false
+		})
+	}
+
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
 		if(cat_name == "Uncategorised"){
+			this.setState({isLoading: true})
 			getRequest(url, this.latestNewsPosts)
 		} else if(cat_name == "Finance") {
+			this.setState({isLoading: true})
 			getRequest(url, this.financePosts)
 		} else if(cat_name == "Economics") {
+			this.setState({isLoading: true})
 			getRequest(url, this.economicPosts)
 		} else if(cat_name == "Misc") {
+			this.setState({isLoading: true})
 			getRequest(url, this.miscPosts)
 		} else if(cat_name == "Sector Updates") {
+			this.setState({isLoading: true})
 			getRequest(url, this.sectorUpdatePosts)
 		} else if(cat_name == "Regional Updates") {
+			this.setState({isLoading: true})
 			getRequest(url, this.regionalUpdatePosts)
 		}
 	}
@@ -125,7 +162,8 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
-			sector_update: sectorupdateposts_array
+			sector_update: sectorupdateposts_array,
+			isLoading: true
 		})
 	}
 
@@ -229,56 +267,32 @@ class App extends React.Component {
 		})
 	}
 
-	getTrending = (data) => {
-		var trending_array = []
-		data.body.results.map((item, index) => {
-			var articles = item.articles;
-			if(articles.length < 3){
-				for (var ele = 0; ele < articles.length; ele++) {
-					if(articles[ele].cover_image){
-						var article_dict = {}
-						article_dict['id'] = item.id
-						article_dict['header'] = articles[ele].title
-						article_dict['altText'] = articles[ele].title
-						article_dict['caption'] = articles[ele].blurb
-						article_dict['source'] = articles[ele].source
-						article_dict['category'] = articles[ele].category
-						article_dict['slug'] = "/news/article/"+articles[ele].slug
-						article_dict['source_url'] = articles[ele].source_url
-						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
-						trending_array.push(article_dict)
-						break;
-					}
-				}
-			}
-		})
-		this.setState({
-			trending: trending_array
-		})
-	}
-
 	componentDidMount() {
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading } = this.state
 		
 		var sector_update = sector_update.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
-					<VerticleCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.source_url}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<Skeleton height={525} />
+					:
+						<VerticleCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
@@ -286,50 +300,64 @@ class App extends React.Component {
 		var regional_update = regional_update.map((item, index) => {
 			return(
 				<div className="col-lg-6 mb-4">
-					<HorizontalCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.source_url}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<Skeleton height={250} />
+					:
+						<HorizontalCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
 
 		var finance = finance.map((item, index) => {
 			return (
-				<ImageOverlay 
-					image={item.src}
-					title={item.header}
-					description={item.caption}
-					uploaded_by={item.source}
-					source_url={item.source_url}
-					slug_url={item.slug}
-					category={item.category}
-					size="sm"
-				/>
+				<React.Fragment>
+					{isLoading ?
+						<Skeleton height={230} />
+					:
+						<ImageOverlay 
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							size="sm"
+						/>
+					}
+				</React.Fragment>
 			)
 		})
 
 		var economics = economics.map((item, index) => {
 			return(
 				<div className="col-lg-6 mb-4">
-					<HorizontalCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.source_url}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<Skeleton height={230} />
+					:
+						<HorizontalCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
@@ -337,17 +365,21 @@ class App extends React.Component {
 		var misc = misc.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
-					<VerticleCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.source_url}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<Skeleton height={525} />
+					:
+						<VerticleCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
@@ -359,31 +391,47 @@ class App extends React.Component {
 					<div className="container">
 						<div className="row">
 							<div className="col-lg-7 col-12 mb-4">
-								{trending.length > 0 ?
-									<ImageOverlay 
-												image={trending[0].src}
-												title={trending[0].header}
-												description={trending[0].caption}
-												uploaded_by={trending[0].source}
-												source_url={trending[0].source_url}
-												slug_url={trending[0].slug}
-												category={trending[0].category}
-									/>
-								: ''
-								}
+								<React.Fragment>
+									{isLoading ?
+										<Skeleton height={500} />
+									:
+										<React.Fragment>
+											{trending.length > 0 ?
+												<ImageOverlay 
+													image={trending[0].src}
+													title={trending[0].header}
+													description={trending[0].caption}
+													uploaded_by={trending[0].source}
+													source_url={trending[0].source_url}
+													slug_url={trending[0].slug}
+													category={trending[0].category}
+												/>
+											: ''
+											}
+										</React.Fragment>
+									}
+								</React.Fragment>
 							</div>
 							<div className="col-lg-5 col-12 mb-4">
-								{trending.length > 0 ?
-									<ContentOverlay
-												title={trending[1].header}
-												description={trending[1].caption}
-												uploaded_by={trending[1].source}
-												source_url={trending[1].source_url}
-												slug_url={trending[1].slug}
-												category={trending[1].category}
-									/>
-								: ''
-								}
+								<React.Fragment>
+									{isLoading ?
+										<Skeleton height={500} />
+									:
+										<React.Fragment>
+											{trending.length > 0 ?
+												<ContentOverlay
+													title={trending[1].header}
+													description={trending[1].caption}
+													uploaded_by={trending[1].source}
+													source_url={trending[1].source_url}
+													slug_url={trending[1].slug}
+													category={trending[1].category}
+												/>
+											: ""
+											}
+										</React.Fragment>
+									}
+								</React.Fragment>
 							</div>
 						</div>
 					</div>
