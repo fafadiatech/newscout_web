@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
+import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem } from 'newscout';
 
 import './style.css';
@@ -27,18 +28,19 @@ class SubmenuPosts extends React.Component {
 			subcategory: SUBCATEGORY,
 			newsPosts: [],
 			menus: [],
-			loading: false,
+			loadingPagination: false,
 			page : 0,
 			next: null,
 			previous: null,
 			isSideOpen: true,
-			domain: "domain="+DOMAIN
+			domain: "domain="+DOMAIN,
+			isLoading: false
 		};
 	}
 
 	getNext = () => {
 		this.setState({
-			loading: true,
+			loadingPagination: true,
 			page : this.state.page + 1
 		})
 		getRequest(this.state.next, this.newsData);
@@ -46,7 +48,7 @@ class SubmenuPosts extends React.Component {
 
 	handleScroll = () => {
 		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-			if (!this.state.loading && this.state.next){
+			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
 		}
@@ -88,6 +90,7 @@ class SubmenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
+		this.setState({isLoading: true})
 		getRequest(url, this.newsData)
 	}
 
@@ -117,7 +120,8 @@ class SubmenuPosts extends React.Component {
 			newsPosts: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loading: false
+			loadingPagination: false,
+			isLoading: false
 		})
 	}
 
@@ -138,21 +142,25 @@ class SubmenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading } = this.state;
 		var result = newsPosts.map((item, index) => {
 			return (
 				<div className="col-lg-3 mb-4">
-					<VerticleCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.source_url}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<Skeleton height={525} />
+					:
+						<VerticleCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
@@ -176,7 +184,7 @@ class SubmenuPosts extends React.Component {
 									<div className="col-lg-12 p-5">
 										<div className="row">{result}</div>
 										{
-											this.state.loading ?
+											this.state.loadingPagination ?
 												<React.Fragment>
 													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
 												</React.Fragment>

@@ -3,6 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
+import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, ImageOverlay, SideBar } from 'newscout';
 
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
@@ -62,7 +63,8 @@ class MenuPosts extends React.Component {
 			newsPosts: [],
 			menus: [],
 			isSideOpen: true,
-			domain: "domain="+DOMAIN
+			domain: "domain="+DOMAIN,
+			isLoading: false
 		};
 	}
 
@@ -98,6 +100,7 @@ class MenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id, submenu) => {
 		submenu.map((item, index) => {
+			this.setState({isLoading: true})
 			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
 			getRequest(url, this.newsData, false, item.name)
 		})
@@ -128,7 +131,8 @@ class MenuPosts extends React.Component {
 		news_dict['posts'] = news_array
 		submenu_array.push(news_dict)
 		this.setState({
-			newsPosts: submenu_array
+			newsPosts: submenu_array,
+			isLoading: false
 		})
 	}
 
@@ -144,7 +148,7 @@ class MenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading } = this.state;
 		var result = newsPosts.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
@@ -160,16 +164,22 @@ class MenuPosts extends React.Component {
 							<Slider {...settings}>
 								{item.posts.map((sub_item, sub_index) => {
 									return (
-										<ImageOverlay 
-											image={sub_item.src}
-											title={sub_item.header}
-											description={sub_item.caption}
-											uploaded_by={sub_item.source}
-											source_url={sub_item.source_url}
-											slug_url={sub_item.slug}
-											category={sub_item.category}
-											size="sm"
-										/>
+										<React.Fragment>
+											{isLoading ?
+												<Skeleton height={525} />
+											:
+												<ImageOverlay 
+													image={sub_item.src}
+													title={sub_item.header}
+													description={sub_item.caption}
+													uploaded_by={sub_item.source}
+													source_url={sub_item.source_url}
+													slug_url={sub_item.slug}
+													category={sub_item.category}
+													size="sm"
+												/>
+											}
+										</React.Fragment>
 									)
 								})}
 								<div className="card-container">

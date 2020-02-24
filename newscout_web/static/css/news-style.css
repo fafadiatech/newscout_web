@@ -518,3 +518,9 @@ ul.usr li {
   font-size: 13px;
   margin-bottom: 0px;
 }
+
+.tryloading {
+  height: 100% !important;
+  width: 100% !important;
+  background-color: #ddd !important;
+}
