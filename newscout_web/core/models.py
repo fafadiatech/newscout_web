@@ -215,6 +215,7 @@ class BookmarkArticle(NewsSiteBaseModel):
 class SubMenu(models.Model):
     name = models.ForeignKey(Category, on_delete=models.CASCADE)
     hash_tags = models.ManyToManyField(HashTag)
+    icon = models.ImageField(upload_to="static/icons/", blank=True, null=True)
 
     def __unicode__(self):
         return self.name.name
@@ -228,6 +229,7 @@ class Menu(models.Model):
         Domain, blank=True, null=True, on_delete=models.CASCADE)
     name = models.ForeignKey(Category, on_delete=models.CASCADE)
     submenu = models.ManyToManyField(SubMenu)
+    icon = models.ImageField(upload_to="static/icons/", blank=True, null=True)
 
     def __unicode__(self):
         return self.name.name
