@@ -1,7 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import ReactDOM from 'react-dom';
 import logo from './logo.png';
+import ReactDOM from 'react-dom';
+import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, SectionTitle, SideBar, Filter } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
@@ -36,17 +37,18 @@ class SearchResult extends React.Component {
 			hashtags: [],
 			filters: [],
 			final_query: "",
-			loading: false,
+			loadingPagination: false,
 			page : 0,
 			next: null,
 			previous: null,
-			isSideOpen: true
+			isSideOpen: true,
+			isLoading: false
 		};
 	}
 
 	getNext = () => {
 		this.setState({
-			loading: true,
+			loadingPagination: true,
 			page : this.state.page + 1
 		})
 		getRequest(this.state.next, this.getSearchResult, false, true);
@@ -54,7 +56,7 @@ class SearchResult extends React.Component {
 
 	handleScroll = () => {
 		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-			if (!this.state.loading && this.state.next){
+			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
 		}
@@ -164,7 +166,7 @@ class SearchResult extends React.Component {
 			searchResult: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loading: false
+			loadingPagination: false
 		})
 	}
 
@@ -266,7 +268,7 @@ class SearchResult extends React.Component {
 											{result}
 										</ul>
 										{
-											this.state.loading ?
+											this.state.loadingPagination ?
 												<React.Fragment>
 													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
 												</React.Fragment>

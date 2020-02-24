@@ -1,8 +1,8 @@
 import React from 'react';
 import moment from 'moment';
+import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
-import logo from './logo.png';
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
@@ -162,8 +162,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
-			sector_update: sectorupdateposts_array,
-			isLoading: true
+			sector_update: sectorupdateposts_array
 		})
 	}
 

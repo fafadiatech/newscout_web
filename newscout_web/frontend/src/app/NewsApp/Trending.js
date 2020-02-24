@@ -1,7 +1,8 @@
 import React from 'react';
 import moment from 'moment';
-import ReactDOM from 'react-dom';
 import logo from './logo.png';
+import ReactDOM from 'react-dom';
+import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, VerticleCardItem } from 'newscout';
 
 import config_data from './config.json';
@@ -21,19 +22,20 @@ class Trending extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			trending: [],
-			menus: [],
-			loading: false,
 			page : 0,
+			menus: [],
 			next: null,
+			trending: [],
 			previous: null,
-			domain: "domain="+DOMAIN
+			loadingPagination: false,
+			domain: "domain="+DOMAIN,
+			isLoading: false
 		};
 	}
 
 	getNext = () => {
 		this.setState({
-			loading: true,
+			loadingPagination: true,
 			page : this.state.page + 1
 		})
 		getRequest(this.state.next, this.getTrending);
@@ -41,7 +43,7 @@ class Trending extends React.Component {
 
 	handleScroll = () => {
 		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-			if (!this.state.loading && this.state.next){
+			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
 		}
@@ -91,14 +93,20 @@ class Trending extends React.Component {
 			trending: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loading: false
+			loadingPagination: false,
+			isLoading: false
 		})
+	}
+
+	getTrendingPosts = () => {
+		this.setState({isLoading: true})
+		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 	}
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
+		this.getTrendingPosts()
 	}
 
 	componentWillUnmount = () => {
@@ -106,22 +114,29 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending } = this.state;
+		var { menus, trending, isLoading } = this.state;
 
 		var result = trending.map((item, index) => {
 			return (
 				<div className="col-lg-4 mb-4">
-					<VerticleCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.source_url}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<React.Fragment>
+							<h3>Loading</h3>
+							<Skeleton height={525} />
+						</React.Fragment>
+					:
+						<VerticleCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.source_url}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
@@ -140,7 +155,7 @@ class Trending extends React.Component {
 						</div>
 						<div className="row">
 							{
-								this.state.loading ?
+								this.state.loadingPagination ?
 									<React.Fragment>
 										<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
 									</React.Fragment>
