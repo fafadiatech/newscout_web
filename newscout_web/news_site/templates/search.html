@@ -10,6 +10,7 @@
 {% block js %}
 	<script type="text/javascript">
 		var QUERY = "{{query|safe}}"
+		var DOMAIN = '{{domain|safe}}'
 	</script>
 	<script src="{% static "/js/react/newsSearchResult.js" %}"></script>
 {% endblock js %}
