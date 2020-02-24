@@ -1282,7 +1282,6 @@ class CommentViewSet(viewsets.ViewSet):
 
     def create(self, request):
         captcha_response_key = 0
-        print(request.data)
         captcha_key = request.data.get("captcha_key")
         captcha_value = request.data.get("captcha_value")
 
@@ -1290,7 +1289,7 @@ class CommentViewSet(viewsets.ViewSet):
         if not captcha:
             return Response(create_error_response({"error": "Invalid Captcha"}))
 
-        if captcha.response != captcha_value:
+        if captcha.response != captcha_value.lower():
             return Response(create_error_response({"error": "Invalid Captcha"}))
 
         data = request.data.copy()

@@ -39,7 +39,11 @@ class ArticleDetail extends React.Component {
 			articlecomments: [],
 			successComment: false,
 			is_login: false,
-			is_login_validation: false
+			is_login_validation: false,
+			captchaData : {},
+			captchaImage: "",
+			InvalidCaptcha : false,
+			resetAll : false,
 		};
 	}
 
@@ -139,9 +143,10 @@ class ArticleDetail extends React.Component {
 
 	handleSubmit = (data) => {
 		var url = ARTICLE_COMMENT+"?article_id="+ARTICLEID
-        var body = JSON.stringify({comment: data, article_id: ARTICLEID})
+		var captchaKey = this.state.captchaData
+        var body = JSON.stringify({comment: data["comment"], article_id: ARTICLEID, captcha_value:data["captcha"], captcha_key:captchaKey["new_captch_key"]})
         if(cookies.get('full_name') !== undefined){
-        	var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
         	postRequest(url, body, this.commentSubmitResponse, "POST", headers);
         } else {
         	this.setState({
@@ -154,19 +159,46 @@ class ArticleDetail extends React.Component {
 			}, 3000);
         }
 	}
-
+	setCaptcha = (data) => {
+		var results = JSON.parse(data["body"]["result"])
+		var captcha_image = "http://localhost:8001"+results["new_captch_image"]
+		var state = this.state
+		state.captchaImage = captcha_image
+		state.captchaData = results
+		this.setState(state);
+	}
+	fetchCaptcha = () => {
+		let url = "http://localhost:8001/api/v1/comment-captcha/";
+		getRequest(url, this.setCaptcha);
+	}
 	commentSubmitResponse = (data) => {
 		if(data.header.status === "1") {
 			this.setState({
-					successComment: true
-				})
+				InvalidCaptcha:false
+			});
+			this.setState({
+				successComment :true
+			});
+			this.setState({
+				resetAll :true
+			});
 			setTimeout(() => {
 				this.setState({
 					successComment: false
 				})
 			}, 3000);
+			setTimeout(() => {
+				this.setState({
+					resetAll: false
+				})
+			}, 50);
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
+		}
+		else {
+			this.setState({
+				InvalidCaptcha: true
+			})
 		}
 	}
 
@@ -175,10 +207,11 @@ class ArticleDetail extends React.Component {
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
+		this.fetchCaptcha();
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal } = this.state;
+		var { menus, article, recommendations, username, modal, captchaImage } = this.state;
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
@@ -226,7 +259,8 @@ class ArticleDetail extends React.Component {
 												</div>
 											</div>
 											<div className="mt-4">
-												<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} />
+												<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
+												fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}/>
 											</div>
 										</div>
 									</div>
