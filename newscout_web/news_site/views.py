@@ -59,6 +59,8 @@ class ArticleDetailView(TemplateView):
 		context = super(ArticleDetailView, self).get_context_data(**kwargs)
 		context['domain'] = self.request.GET.get('domain', 'newscout')
 		context['slug'] = self.kwargs['slug']
+		article_id = context['slug'].split("-")[-1]
+		context['articleId'] = article_id
 		return context
 
 
