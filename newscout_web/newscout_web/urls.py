@@ -19,6 +19,7 @@ from django.contrib import admin
 from ajax_select import urls as ajax_select_urls
 from dashboard.views import MainIndexView, LoginView, LogOutView
 from news_site.views import IndexView
+from core.feed import ArticlesFeed
 
 app_name = 'newscout_web'
 
@@ -34,4 +35,5 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^event/', include('event_tracking.urls')),
     url(r'^ads/', include('advertising.urls')),
+    url(r'^article/rss/', ArticlesFeed(), name="news-item"),
 ]
