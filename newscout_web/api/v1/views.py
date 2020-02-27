@@ -48,6 +48,9 @@ import logging
 import operator
 from functools import reduce
 import tweepy
+import json
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
 
 log = logging.getLogger(__name__)
@@ -1288,6 +1291,17 @@ class CommentViewSet(viewsets.ViewSet):
         return [permission() for permission in self.permission_classes]
 
     def create(self, request):
+        captcha_response_key = 0
+        captcha_key = request.data.get("captcha_key")
+        captcha_value = request.data.get("captcha_value")
+
+        captcha = CaptchaStore.objects.filter(hashkey=captcha_key).first()
+        if not captcha:
+            return Response(create_error_response({"error": "Invalid Captcha"}))
+
+        if captcha.response != captcha_value.lower():
+            return Response(create_error_response({"error": "Invalid Captcha"}))
+
         data = request.data.copy()
         data["user"] = request.user.id
         serializer = CommentSerializer(data=data)
@@ -1336,4 +1350,23 @@ class LikeAPIView(APIView):
             if serializer.data.get("id"):
                 return Response(create_response({"Msg": "Liked"}))
             return Response(create_response({"Msg": "Removed Like"}))
-        return Response(create_error_response({"error": "Invalid Data Entered"}))    
+        return Response(create_error_response({"error": "Invalid Data Entered"}))
+
+class CaptchaCommentApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        captcha_len = len(CaptchaStore.objects.all())
+        if captcha_len > 500:
+            captcha = CaptchaStore.objects.order_by('?')[:1]
+            to_json_response = dict()
+            to_json_response['status'] = 1
+            to_json_response['new_captch_key'] = captcha[0].hashkey
+            to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
+            return Response(create_response({"result": json.dumps(to_json_response)}))
+        else:
+            to_json_response = dict()
+            to_json_response['status'] = 1
+            to_json_response['new_captch_key'] = CaptchaStore.generate_key()
+            to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
+            return Response(create_response({"result": json.dumps(to_json_response)}))
