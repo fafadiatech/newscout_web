@@ -5,7 +5,10 @@ import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
-import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
+import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, Footer } from 'newscout';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookSquare, faTwitter } from '@fortawesome/free-brands-svg-icons';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -386,6 +389,7 @@ class App extends React.Component {
 		return (
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
+				
 				<div className="pt-50">
 					<div className="container">
 						<div className="row">
@@ -504,6 +508,8 @@ class App extends React.Component {
 						<div className="row">{misc}</div>
 					</div>
 				</div>
+				
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}
