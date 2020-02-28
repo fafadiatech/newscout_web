@@ -161,14 +161,14 @@ class ArticleDetail extends React.Component {
 	}
 	setCaptcha = (data) => {
 		var results = JSON.parse(data["body"]["result"])
-		var captcha_image = "http://localhost:8001"+results["new_captch_image"]
+		var captcha_image = "http://newscout.in"+results["new_captch_image"]
 		var state = this.state
 		state.captchaImage = captcha_image
 		state.captchaData = results
 		this.setState(state);
 	}
 	fetchCaptcha = () => {
-		let url = "http://localhost:8001/api/v1/comment-captcha/";
+		let url = "http://newscout.in/api/v1/comment-captcha/";
 		getRequest(url, this.setCaptcha);
 	}
 	commentSubmitResponse = (data) => {
