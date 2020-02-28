@@ -475,6 +475,7 @@ nav .navbar-brand img {
   color: #262626;
   font-size: 28px;
   font-weight: 600;
+  text-transform: capitalize;
 }
 
 .h6-text {
