@@ -107,7 +107,7 @@ class ArticleDetail extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY');
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/70x70/center/smart/"+decodeURIComponent(item.cover_image)
 				if(recommendations_array.length < 5){
 					recommendations_array.push(article_dict)
 				}
