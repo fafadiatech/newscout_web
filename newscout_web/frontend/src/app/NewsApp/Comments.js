@@ -45,7 +45,7 @@ class Comments extends React.Component {
 
 	render() {
 		var state = this.state;
-		let { comments, successComment, is_login, captchaImage,InvalidCaptcha, resetAll } = this.props
+		let { comments, successComment, is_login, captchaImage,InvalidCaptcha, resetAll, is_captcha } = this.props
 		if(resetAll){
 			state.comment = ""
 			state.captcha = ""
@@ -84,7 +84,7 @@ class Comments extends React.Component {
 							<Input type="textarea" name="comment" id="exampleText" onChange={(e) => this.handleChange("comment", e)} value={this.state.comment} placeholder="Enter Comment"/>
 						</FormGroup>
 						<FormGroup>
-							<div className="clearfix">
+							<div className="clearfix" hidden={is_captcha}>
 								<div className="float-left">
 									<img src={captchaImage} alt={captchaImage} />
 									<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>

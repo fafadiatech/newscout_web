@@ -44,6 +44,7 @@ class ArticleDetail extends React.Component {
 			captchaImage: "",
 			InvalidCaptcha : false,
 			resetAll : false,
+			is_captcha : true,
 		};
 	}
 
@@ -54,6 +55,7 @@ class ArticleDetail extends React.Component {
 		})
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
+		this.setState({is_captcha:false})
 	}
 
 	toggle = () => {
@@ -71,7 +73,8 @@ class ArticleDetail extends React.Component {
     	cookies.remove('full_name')
         cookies.remove('token')
         this.setState({
-        	is_login: false
+			is_login: false,
+			is_captcha: true
         })
     }
 
@@ -260,7 +263,8 @@ class ArticleDetail extends React.Component {
 											</div>
 											<div className="mt-4">
 												<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
-												fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}/>
+												fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}
+												is_captcha={this.state.is_captcha}/>
 											</div>
 										</div>
 									</div>
