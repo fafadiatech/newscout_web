@@ -83,6 +83,7 @@ class IBJnews extends React.Component {
 				heading_dict['itemtext'] = item.heading.name
 				heading_dict['itemurl'] = item.heading.name.replace(/ /g, "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
+				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
 				item.heading.submenu.map((subitem, subindex) => {
 					var submenu_dict = {}
