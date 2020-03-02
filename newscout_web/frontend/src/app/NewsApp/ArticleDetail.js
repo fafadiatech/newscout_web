@@ -173,7 +173,8 @@ class ArticleDetail extends React.Component {
 	}
 	fetchCaptcha = () => {
 		let url = "http://newscout.in/api/v1/comment-captcha/";
-		getRequest(url, this.setCaptcha);
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		getRequest(url, this.setCaptcha, headers);
 	}
 	commentSubmitResponse = (data) => {
 		if(data.header.status === "1") {
