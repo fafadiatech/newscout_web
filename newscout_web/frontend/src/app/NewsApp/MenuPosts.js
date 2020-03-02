@@ -87,11 +87,8 @@ class MenuPosts extends React.Component {
 	getNewsData = (data) => {
 		data.body.results.map((item, index) => {
 			if(item.heading){
-				var heading_dict = {}
-				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
-				heading_dict['item_id'] = item.heading.category_id
-				if(heading_dict['itemurl'] === CATEGORY){
+				var heading = item.heading.name.replace(" ", "-").toLowerCase()
+				if(heading === CATEGORY){
 					this.getPosts(item.heading.name, item.heading.category_id, item.heading.submenu)
 				}
 			}
@@ -102,7 +99,7 @@ class MenuPosts extends React.Component {
 		submenu.map((item, index) => {
 			this.setState({isLoading: true})
 			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
-			getRequest(url, this.newsData, false, item.name)
+			getRequest(url, this.newsData, false, item)
 		})
 	}
 
@@ -127,11 +124,15 @@ class MenuPosts extends React.Component {
 				}
 			}
 		})
-		news_dict['menuname'] = extra_data
+		news_dict['menuname'] = extra_data.name
+		news_dict['menuid'] = extra_data.category_id
 		news_dict['posts'] = news_array
 		submenu_array.push(news_dict)
+		var final_data = submenu_array.sort(function(a, b){
+			return a.menuid - b.menuid
+		})
 		this.setState({
-			newsPosts: submenu_array,
+			newsPosts: final_data,
 			isLoading: false
 		})
 	}
