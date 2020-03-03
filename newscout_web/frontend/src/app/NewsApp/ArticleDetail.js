@@ -56,7 +56,7 @@ class ArticleDetail extends React.Component {
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 		this.fetchCaptcha();
-		this.setState({is_captcha:false})
+		this.setState({is_captcha:false});
 	}
 
 	toggle = () => {
@@ -76,7 +76,7 @@ class ArticleDetail extends React.Component {
         this.setState({
 			is_login: false,
 			is_captcha: true
-        })
+		})
     }
 
 	getArticleDetail = (data) => {
@@ -208,10 +208,14 @@ class ArticleDetail extends React.Component {
 	}
 
 	componentDidMount() {
+		if(cookies.get('full_name')){
+			this.fetchCaptcha();
+			this.setState({is_login:true,is_captcha:false})
+		}
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);		
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 	}
 
 	render() {
