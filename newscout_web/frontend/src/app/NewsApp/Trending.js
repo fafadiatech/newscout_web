@@ -3,7 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, VerticleCardItem, Footer } from 'newscout';
+import { CardItem, Menu, VerticleCardItem, SideBar, Footer } from 'newscout';
 
 import config_data from './config.json';
 
@@ -11,6 +11,7 @@ import './style.css';
 import 'newscout/assets/Menu.css';
 import 'newscout/assets/CardItem.css';
 import 'newscout/assets/ImageOverlay.css'
+import 'newscout/assets/Sidebar.css'
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -29,7 +30,8 @@ class Trending extends React.Component {
 			previous: null,
 			loadingPagination: false,
 			domain: "domain="+DOMAIN,
-			isLoading: false
+			isLoading: false,
+			isSideOpen: true,
 		};
 	}
 
@@ -104,6 +106,12 @@ class Trending extends React.Component {
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
@@ -115,7 +123,7 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, isLoading } = this.state;
+		var { menus, trending, isLoading, isSideOpen } = this.state;
 
 		var result = trending.map((item, index) => {
 			return (
@@ -144,26 +152,32 @@ class Trending extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} />
-				
-				<div className="pt-70">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 mb-4">
-								<div className="section-title">
-									<h2 className="m-0 section-title">Trending</h2>
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<div className="container-fluid">
+					<div className="row">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+							<div className="container">
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">Trending</h2>
+											</div>
+										</div>
+									</div>
+									<div className="row">
+										{
+											this.state.loadingPagination ?
+												<React.Fragment>
+													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+												</React.Fragment>
+											: ""
+										}
+										{result}
+									</div>
 								</div>
 							</div>
-						</div>
-						<div className="row">
-							{
-								this.state.loadingPagination ?
-									<React.Fragment>
-										<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-									</React.Fragment>
-								: ""
-							}
-							{result}
 						</div>
 					</div>
 				</div>

@@ -3,7 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
-import { JumboBox, Menu, SideBox, Footer } from 'newscout';
+import { JumboBox, Menu, SideBox, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
 import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem } from 'reactstrap';
@@ -18,6 +18,7 @@ import 'newscout/assets/Menu.css'
 import 'newscout/assets/JumboBox.css'
 import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/SideBox.css'
+import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
@@ -45,6 +46,7 @@ class ArticleDetail extends React.Component {
 			InvalidCaptcha : false,
 			resetAll : false,
 			is_captcha : true,
+			isSideOpen: true,
 		};
 	}
 
@@ -212,6 +214,12 @@ class ArticleDetail extends React.Component {
 		}
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
@@ -220,8 +228,8 @@ class ArticleDetail extends React.Component {
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage } = this.state;
-		var sub_category = ""
+		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen } = this.state;
+    var sub_category = ""
 		var category = ""
 		if(article.sub_category) {
 			var sub_category = article.sub_category.replace(" ", "-").toLowerCase()
@@ -231,85 +239,91 @@ class ArticleDetail extends React.Component {
 		}
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
-				
-				<div className="pt-70">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 col-12">
-								<div className="article-breadcrumb">
-									<Breadcrumb className="mb-0">
-										<BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
-										{article.category ?
-											<BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
-										: ""
-										}
-										{article.sub_category ?
-											<BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
-										: ""
-										}
-									</Breadcrumb>
-								</div>
-							</div>
-						</div>
-						<div className="row">
-							<div className="col-lg-8 col-12 mb-4">
-								<div className="row">
-									<div className="col-lg-12">
-										<div className="article-detail">
-											<JumboBox 
-												source_url={article.source_url}
-												image={article.src}
-												title={article.title}
-												uploaded_on={article.date}
-												uploaded_by={article.source}
-												description={article.caption}
-												hash_tags={article.hash_tags} />
-										</div>
-									</div>
-								</div>
-								<div className="row">
-									<div className="col-lg-12">
-										<div className="sidebox mt-5">
-											<div className="heading">
-												<div className="clearfix">
-													<div className="float-left">
-														<h3 className="">Reviews</h3>
-													</div>
-													<div className="float-right">
-														{this.state.is_login ?
-															<ul className="list-inline mb-0 usr">
-																<li className="list-inline-item">
-																	<h6 className="h6-text mt-2 mb-0">{username}</h6>
-																</li>
-																<li className="list-inline-item">|</li>
-																<li className="list-inline-item text-danger" onClick={this.handleLogout}>
-																	<FontAwesomeIcon icon={faPowerOff} />
-																</li>
-															</ul>
-														:
-															<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
-														}
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<div className="container-fluid">
+					<div className="row">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+							<div className="container">
+								<div className="pt-50">
+                  <div className="row">
+                    <div className="col-lg-12 col-12">
+                      <div className="article-breadcrumb">
+                        <Breadcrumb className="mb-0">
+                          <BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
+                          {article.category ?
+                            <BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
+                          : ""
+                          }
+                          {article.sub_category ?
+                            <BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
+                          : ""
+                          }
+                        </Breadcrumb>
+                      </div>
+                    </div>
+                  </div>
+									<div className="row">
+										<div className="col-lg-8 col-12 mb-4">
+											<div className="row">
+												<div className="col-lg-12">
+													<div className="article-detail">
+														<JumboBox 
+															source_url={article.source_url}
+															image={article.src}
+															title={article.header}
+															uploaded_on={article.date}
+															uploaded_by={article.source}
+															description={article.caption}
+															hash_tags={article.hash_tags} />
 													</div>
 												</div>
 											</div>
-											<div className="mt-4">
-												<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
-												fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}
-												is_captcha={this.state.is_captcha}/>
+											<div className="row">
+												<div className="col-lg-12">
+													<div className="sidebox mt-5">
+														<div className="heading">
+															<div className="clearfix">
+																<div className="float-left">
+																	<h3 className="">Reviews</h3>
+																</div>
+																<div className="float-right">
+																	{this.state.is_login ?
+																		<ul className="list-inline mb-0 usr">
+																			<li className="list-inline-item">
+																				<h6 className="h6-text mt-2 mb-0">{username}</h6>
+																			</li>
+																			<li className="list-inline-item">|</li>
+																			<li className="list-inline-item text-danger" onClick={this.handleLogout}>
+																				<FontAwesomeIcon icon={faPowerOff} />
+																			</li>
+																		</ul>
+																	:
+																		<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
+																	}
+																</div>
+															</div>
+														</div>
+														<div className="mt-4">
+															<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
+															fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}
+															is_captcha={this.state.is_captcha}/>
+														</div>
+													</div>
+												</div>
 											</div>
 										</div>
-									</div>
-								</div>
-							</div>
-							<div className="col-lg-4 col-12 mb-4">
-								<div className="row">
-									<div className="col-lg-12">
-										<div className="sidebox">
-											<div className="heading">
-												<h3 className="text-center">More News</h3>
+										<div className="col-lg-4 col-12 mb-4">
+											<div className="row">
+												<div className="col-lg-12">
+													<div className="sidebox">
+														<div className="heading">
+															<h3 className="text-center">More News</h3>
+														</div>
+														<SideBox posts={recommendations} />
+													</div>
+												</div>
 											</div>
-											<SideBox posts={recommendations} />
 										</div>
 									</div>
 								</div>
