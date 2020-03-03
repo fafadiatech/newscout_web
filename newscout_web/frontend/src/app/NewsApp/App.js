@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
-import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem } from 'newscout';
+import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar } from 'newscout';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -14,6 +14,7 @@ import 'newscout/assets/Menu.css'
 import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/ContentOverlay.css'
 import 'newscout/assets/CardItem.css'
+import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
@@ -68,7 +69,8 @@ class App extends React.Component {
 			economics: [],
 			misc: [],
 			domain: "domain="+DOMAIN,
-			isLoading: false
+			isLoading: false,
+			isSideOpen: true,
 		}
 	}
 
@@ -266,13 +268,19 @@ class App extends React.Component {
 		})
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen } = this.state
 		
 		var sector_update = sector_update.map((item, index) => {
 			return(
@@ -385,123 +393,120 @@ class App extends React.Component {
 
 		return (
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
-				<div className="pt-50">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-7 col-12 mb-4">
-								<React.Fragment>
-									{isLoading ?
-										<Skeleton height={500} />
-									:
-										<React.Fragment>
-											{trending.length > 0 ?
-												<ImageOverlay 
-													image={trending[0].src}
-													title={trending[0].header}
-													description={trending[0].caption}
-													uploaded_by={trending[0].source}
-													source_url={trending[0].source_url}
-													slug_url={trending[0].slug}
-													category={trending[0].category}
-												/>
-											: ''
-											}
-										</React.Fragment>
-									}
-								</React.Fragment>
-							</div>
-							<div className="col-lg-5 col-12 mb-4">
-								<React.Fragment>
-									{isLoading ?
-										<Skeleton height={500} />
-									:
-										<React.Fragment>
-											{trending.length > 0 ?
-												<ContentOverlay
-													title={trending[1].header}
-													description={trending[1].caption}
-													uploaded_by={trending[1].source}
-													source_url={trending[1].source_url}
-													slug_url={trending[1].slug}
-													category={trending[1].category}
-												/>
-											: ""
-											}
-										</React.Fragment>
-									}
-								</React.Fragment>
-							</div>
-						</div>
-					</div>
-				</div>
+				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<div className="container-fluid">
+					<div className="row">
+						<SideBar menuitems={menus} class={isSideOpen} />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+							<div className="container">
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-7 col-12 mb-4">
+											<React.Fragment>
+												{isLoading ?
+													<Skeleton height={500} />
+												:
+													<React.Fragment>
+														{trending.length > 0 ?
+															<ImageOverlay 
+																image={trending[0].src}
+																title={trending[0].header}
+																description={trending[0].caption}
+																uploaded_by={trending[0].source}
+																source_url={trending[0].source_url}
+																slug_url={trending[0].slug}
+																category={trending[0].category}
+															/>
+														: ''
+														}
+													</React.Fragment>
+												}
+											</React.Fragment>
+										</div>
+										<div className="col-lg-5 col-12 mb-4">
+											<React.Fragment>
+												{isLoading ?
+													<Skeleton height={500} />
+												:
+													<React.Fragment>
+														{trending.length > 0 ?
+															<ContentOverlay
+																title={trending[1].header}
+																description={trending[1].caption}
+																uploaded_by={trending[1].source}
+																source_url={trending[1].source_url}
+																slug_url={trending[1].slug}
+																category={trending[1].category}
+															/>
+														: ""
+														}
+													</React.Fragment>
+												}
+											</React.Fragment>
+										</div>
+									</div>
+								</div>
 				
-				<div className="pt-50">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 col-12 mb-4">
-								<div className="section-title">
-									<h2 className="m-0 section-title">Sector Updates</h2>
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 col-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">Sector Updates</h2>
+											</div>
+										</div>
+									</div>
+									<div className="row">{sector_update}</div>
 								</div>
-							</div>
-						</div>
-						<div className="row">{sector_update}</div>
-					</div>
-				</div>
 
-				<div className="pt-50">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 col-12 mb-4">
-								<div className="section-title">
-									<h2 className="m-0 section-title">Regional Updates</h2>
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 col-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">Regional Updates</h2>
+											</div>
+										</div>
+									</div>
+									<div className="row">{regional_update}</div>
 								</div>
-							</div>
-						</div>
-						<div className="row">{regional_update}</div>
-					</div>
-				</div>
 
-				<div className="pt-50">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 col-12 mb-4">
-								<div className="section-title">
-									<h2 className="m-0 section-title">Finance</h2>
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 col-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">Finance</h2>
+											</div>
+										</div>
+									</div>
+									<div className="row">
+										<div className="col-lg-12">
+											<Slider {...settings}>{finance}</Slider>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-						<div className="row">
-							<div className="col-lg-12">
-								<Slider {...settings}>{finance}</Slider>
-							</div>
-						</div>
-					</div>
-				</div>
 
-				<div className="pt-50">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 col-12 mb-4">
-								<div className="section-title">
-									<h2 className="m-0 section-title">Economics</h2>
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 col-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">Economics</h2>
+											</div>
+										</div>
+									</div>
+									<div className="row">{economics}</div>
 								</div>
-							</div>
-						</div>
-						<div className="row">{economics}</div>
-					</div>
-				</div>
 
-				<div className="pt-50">
-					<div className="container">
-						<div className="row">
-							<div className="col-lg-12 col-12 mb-4">
-								<div className="section-title">
-									<h2 className="m-0 section-title">Misc</h2>
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 col-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">Misc</h2>
+											</div>
+										</div>
+									</div>
+									<div className="row">{misc}</div>
 								</div>
 							</div>
 						</div>
-						<div className="row">{misc}</div>
 					</div>
 				</div>
 			</React.Fragment>
