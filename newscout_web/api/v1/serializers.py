@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
-                              ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
-                              Devices, Notification, TrendingArticle, DraftMedia, Comment)
+                         ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
+                         Devices, Notification, TrendingArticle, DraftMedia, Comment,
+                         CategoryAssociation)
 from django.contrib.auth import authenticate
 from rest_framework import exceptions
 from rest_framework.validators import UniqueValidator
@@ -19,11 +20,13 @@ class SourceSerializer(serializers.ModelSerializer):
         model = Source
         fields = ('name', 'id')
 
+
 class HashTagSerializer(serializers.ModelSerializer):
     count = serializers.IntegerField(default=1)
+
     class Meta:
         model = HashTag
-        fields = ('id','name','count')
+        fields = ('id', 'name', 'count')
 
 
 class ArticleMediaSerializer(serializers.ModelSerializer):
@@ -39,15 +42,17 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('id', 'title', 'source', 'category', 'hash_tags','source_url',
-                  'cover_image', 'blurb', 'published_on', 'is_book_mark',
-                  'isLike','article_media', 'category_id', 'domain', 'active', 'source_id', 'article_format', 'author', 'slug')
+        fields = ('id', 'title', 'source', 'category', 'hash_tags', 'source_url', 'cover_image', 'blurb',
+                  'published_on', 'is_book_mark', 'isLike', 'article_media', 'category_id', 'domain', 'active',
+                  'source_id', 'article_format', 'author', 'slug', 'root_category', 'root_category_id')
 
     source = serializers.ReadOnlyField(source='source.name')
     category = serializers.ReadOnlyField(source='category.name')
     category_id = serializers.ReadOnlyField(source='category.id')
     source_id = serializers.ReadOnlyField(source='source.id')
     domain = serializers.ReadOnlyField(source='domain.domain_id')
+    root_category = serializers.SerializerMethodField()
+    root_category_id = serializers.SerializerMethodField()
     hash_tags = HashTagSerializer(many=True)
     author = serializers.SerializerMethodField()
 
@@ -64,6 +69,20 @@ class ArticleSerializer(serializers.ModelSerializer):
             return "{0} {1}".format(
                 instance.author.first_name, instance.author.last_name)
         return ""
+
+    def get_root_category(self, instance):
+        if instance.category.name not in ["Uncategorised", "Uncategorized"]:
+            root_category = CategoryAssociation.objects.get(child_cat=instance.category)
+            return root_category.parent_cat.name
+        else:
+            return instance.category.name
+
+    def get_root_category_id(self, instance):
+        if instance.category.name not in ["Uncategorised", "Uncategorized"]:
+            root_category = CategoryAssociation.objects.get(child_cat=instance.category)
+            return root_category.parent_cat_id
+        else:
+            return instance.category.id
 
 
 class UserSerializer(serializers.Serializer):
@@ -97,13 +116,14 @@ class LoginUserSerializer(serializers.Serializer):
 class BaseUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUserProfile
-        fields = ('id','passion', 'first_name', 'last_name')
+        fields = ('id', 'passion', 'first_name', 'last_name')
 
     passion = CategorySerializer(many=True)
 
 
 class BookmarkArticleSerializer(serializers.ModelSerializer):
     status = serializers.IntegerField(default=1)
+
     class Meta:
         model = BookmarkArticle
         fields = ('id', 'article', 'status')
@@ -112,7 +132,7 @@ class BookmarkArticleSerializer(serializers.ModelSerializer):
 class ArtilcleLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArtilcleLike
-        fields = ('id', 'article', 'user','is_like')
+        fields = ('id', 'article', 'user', 'is_like')
 
     def create(self, validated_data):
         article_obj = validated_data.get("article", "")
@@ -127,6 +147,7 @@ class ArtilcleLikeSerializer(serializers.ModelSerializer):
             return like_obj
         ArtilcleLike.objects.filter(article=article_obj, user=user).delete()
         return {"article": article_obj, "user": user}
+
 
 class SubMenuSerializer(serializers.ModelSerializer):
     class Meta:
@@ -170,6 +191,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ('breaking_news', 'daily_edition', 'personalized',)
+
 
 class TrendingArticleSerializer(serializers.ModelSerializer):
     articles = ArticleSerializer(read_only=True, many=True, context={"hash_tags_list": True})
@@ -284,6 +306,7 @@ class DraftMediaSerializer(serializers.ModelSerializer):
         model = DraftMedia
         fields = '__all__'
 
+
 class CommentSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
     replies = serializers.SerializerMethodField()
@@ -319,7 +342,7 @@ class CommentSerializer(serializers.ModelSerializer):
         if reply:
             if reply.article.id == article_id:
                 comment_reply_obj = Comment.objects.create(article=article_obj, comment=comment,
-                                                        user=user, reply=reply)
+                                                           user=user, reply=reply)
                 return comment_reply_obj
             raise serializers.ValidationError("Replying on wrong article")
         comment_obj = Comment.objects.create(article=article_obj, comment=comment, user=user)
@@ -336,6 +359,7 @@ class CommentSerializer(serializers.ModelSerializer):
             reply_data = CommentListSerializer(reply).data
             replies.append(reply_data)
         return replies
+
 
 class CommentListSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
