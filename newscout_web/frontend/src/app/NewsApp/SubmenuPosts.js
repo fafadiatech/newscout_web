@@ -62,6 +62,7 @@ class SubmenuPosts extends React.Component {
 				heading_dict['itemtext'] = item.heading.name
 				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
+				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
 			}
 		})
