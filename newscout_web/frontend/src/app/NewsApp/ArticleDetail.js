@@ -110,7 +110,7 @@ class ArticleDetail extends React.Component {
 			if(item.cover_image){
 				var article_dict = {}
 				article_dict['id'] = item.id
-				article_dict['header'] = item.title
+				article_dict['title'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY');
@@ -271,7 +271,7 @@ class ArticleDetail extends React.Component {
 														<JumboBox 
 															source_url={article.source_url}
 															image={article.src}
-															title={article.header}
+															title={article.title}
 															uploaded_on={article.date}
 															uploaded_by={article.source}
 															description={article.caption}
