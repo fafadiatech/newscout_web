@@ -4,7 +4,7 @@ import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, ImageOverlay, SideBar } from 'newscout';
+import { CardItem, Menu, ImageOverlay, SideBar, Footer } from 'newscout';
 
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -197,11 +197,15 @@ class MenuPosts extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="p-70">{result}</div>
+							<div className="footer-section">
+								<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
+							</div>
 						</div>
 					</div>
 				</div>

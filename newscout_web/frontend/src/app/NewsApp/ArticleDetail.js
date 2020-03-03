@@ -3,7 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
-import { JumboBox, Menu, SideBox } from 'newscout';
+import { JumboBox, Menu, SideBox, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
 import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
@@ -163,6 +163,7 @@ class ArticleDetail extends React.Component {
 			}, 3000);
         }
 	}
+
 	setCaptcha = (data) => {
 		var results = JSON.parse(data["body"]["result"])
 		var captcha_image = "http://newscout.in"+results["new_captch_image"]
@@ -171,11 +172,13 @@ class ArticleDetail extends React.Component {
 		state.captchaData = results
 		this.setState(state);
 	}
+
 	fetchCaptcha = () => {
 		let url = "http://newscout.in/api/v1/comment-captcha/";
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(url, this.setCaptcha, headers);
 	}
+
 	commentSubmitResponse = (data) => {
 		if(data.header.status === "1") {
 			this.setState({
@@ -219,6 +222,7 @@ class ArticleDetail extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
+				
 				<div className="pt-70">
 					<div className="container">
 						<div className="row">
@@ -288,6 +292,8 @@ class ArticleDetail extends React.Component {
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
 	}
