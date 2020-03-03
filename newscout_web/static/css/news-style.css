@@ -525,3 +525,37 @@ ul.usr li {
   width: 100% !important;
   background-color: #ddd !important;
 }
+
+.article-breadcrumb .breadcrumb {
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0,0,0,.05);
+  font-size: 13px;
+  color: #2f2f2f;
+  font-weight: 600;
+}
+
+.footer-section {
+  margin-left: -16px;
+  margin-right: -15px;
+}
+
+.footer-area {
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0,0,0,.05);
+}
+
+.footer-area p,
+.footer-area ul li a {
+  font-size: 14px;
+  color: #262626;
+}
+
+.footer-area p a,
+.footer-area ul li a {
+  font-weight: 600;
+}
+
+.footer-area p a,
+.footer-area ul li a:hover {
+  color: #f0442c;
+}

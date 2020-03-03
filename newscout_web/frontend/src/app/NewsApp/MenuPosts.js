@@ -4,7 +4,7 @@ import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, ImageOverlay, SideBar } from 'newscout';
+import { CardItem, Menu, ImageOverlay, SideBar, Footer } from 'newscout';
 
 import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -76,6 +76,7 @@ class MenuPosts extends React.Component {
 				heading_dict['itemtext'] = item.heading.name
 				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
+				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
 			}
 		})
@@ -87,11 +88,8 @@ class MenuPosts extends React.Component {
 	getNewsData = (data) => {
 		data.body.results.map((item, index) => {
 			if(item.heading){
-				var heading_dict = {}
-				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
-				heading_dict['item_id'] = item.heading.category_id
-				if(heading_dict['itemurl'] === CATEGORY){
+				var heading = item.heading.name.replace(" ", "-").toLowerCase()
+				if(heading === CATEGORY){
 					this.getPosts(item.heading.name, item.heading.category_id, item.heading.submenu)
 				}
 			}
@@ -102,7 +100,7 @@ class MenuPosts extends React.Component {
 		submenu.map((item, index) => {
 			this.setState({isLoading: true})
 			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
-			getRequest(url, this.newsData, false, item.name)
+			getRequest(url, this.newsData, false, item)
 		})
 	}
 
@@ -127,11 +125,15 @@ class MenuPosts extends React.Component {
 				}
 			}
 		})
-		news_dict['menuname'] = extra_data
+		news_dict['menuname'] = extra_data.name
+		news_dict['menuid'] = extra_data.category_id
 		news_dict['posts'] = news_array
 		submenu_array.push(news_dict)
+		var final_data = submenu_array.sort(function(a, b){
+			return a.menuid - b.menuid
+		})
 		this.setState({
-			newsPosts: submenu_array,
+			newsPosts: final_data,
 			isLoading: false
 		})
 	}
@@ -197,11 +199,15 @@ class MenuPosts extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="p-70">{result}</div>
+							<div className="footer-section">
+								<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
+							</div>
 						</div>
 					</div>
 				</div>

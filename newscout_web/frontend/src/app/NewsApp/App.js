@@ -5,7 +5,9 @@ import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
-import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar } from 'newscout';
+import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookSquare, faTwitter } from '@fortawesome/free-brands-svg-icons';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
@@ -82,6 +84,7 @@ class App extends React.Component {
 				heading_dict['itemtext'] = item.heading.name
 				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
+				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
 				this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
 			}
@@ -446,7 +449,7 @@ class App extends React.Component {
 										</div>
 									</div>
 								</div>
-				
+
 								<div className="pt-50">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
@@ -509,6 +512,8 @@ class App extends React.Component {
 						</div>
 					</div>
 				</div>
+				
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}
