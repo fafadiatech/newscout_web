@@ -42,7 +42,7 @@ class Trending extends React.Component {
 	}
 
 	handleScroll = () => {
-		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.6) {
 			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
