@@ -222,6 +222,7 @@ class Command(BaseCommand):
                             if member.source.name not in article_sources:
                                 trending.articles.add(member)
                                 trending.save()
+                                all_articles_in_trending.append(item_id)
                                 article_sources.append(member.source.name)
 
                 if trending.articles.count() <= 1:
