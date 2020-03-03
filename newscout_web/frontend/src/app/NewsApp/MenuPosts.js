@@ -200,17 +200,15 @@ class MenuPosts extends React.Component {
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
 
-				<div className="container-fluid">
+				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="p-70">{result}</div>
-							<div className="footer-section">
-								<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
-							</div>
 						</div>
 					</div>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
 	}

@@ -240,29 +240,29 @@ class ArticleDetail extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
-				<div className="container-fluid">
+				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
-                  <div className="row">
-                    <div className="col-lg-12 col-12">
-                      <div className="article-breadcrumb">
-                        <Breadcrumb className="mb-0">
-                          <BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
-                          {article.category ?
-                            <BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
-                          : ""
-                          }
-                          {article.sub_category ?
-                            <BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
-                          : ""
-                          }
-                        </Breadcrumb>
-                      </div>
-                    </div>
-                  </div>
+					                  <div className="row">
+					                    <div className="col-lg-12 col-12">
+					                      <div className="article-breadcrumb">
+					                        <Breadcrumb className="mb-0">
+					                          <BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
+					                          {article.category ?
+					                            <BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
+					                          : ""
+					                          }
+					                          {article.sub_category ?
+					                            <BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
+					                          : ""
+					                          }
+					                        </Breadcrumb>
+					                      </div>
+					                    </div>
+					                  </div>
 									<div className="row">
 										<div className="col-lg-8 col-12 mb-4">
 											<div className="row">

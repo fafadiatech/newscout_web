@@ -397,7 +397,7 @@ class App extends React.Component {
 		return (
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
-				<div className="container-fluid">
+				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
@@ -512,7 +512,6 @@ class App extends React.Component {
 						</div>
 					</div>
 				</div>
-				
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
