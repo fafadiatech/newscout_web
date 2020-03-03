@@ -1,4 +1,5 @@
 import os
+import glob
 import string
 import datetime
 
@@ -19,6 +20,19 @@ class Command(BaseCommand):
     stopwords = [current.strip() for current in open(os.path.join(settings.BASE_DIR, "news_site", "management", "commands", "stopwords.txt")).readlines()]
     epoch = 3
     MAX_TRENDING = 30
+
+    def get_log_file(self):
+        if not os.path.exists("trending_logs/"):
+            os.mkdir("trending_logs")
+        log_files = glob.glob("trending_logs/*.log")
+        if len(log_files) >= 30:
+            for f in log_files:
+                try:
+                    os.remove(f)
+                except:
+                    continue
+        file_name = datetime.datetime.now().strftime("%d_%m_%Y_%I_%M") + ".log"
+        return file_name
 
     def add_arguments(self, parser):
         parser.add_argument('--domain', '-d', nargs='+', type=str)
@@ -97,6 +111,8 @@ class Command(BaseCommand):
         if not domains:
             raise CommandError('Domain name is required')
 
+        log_file = self.get_log_file()
+        log = open(log_file, "w")
         for domain in Domain.objects.filter(domain_id__in=domains):
             old_objects = TrendingArticle.objects.filter(domain=domain)
             if old_objects:
@@ -209,7 +225,9 @@ class Command(BaseCommand):
             for item in sorted_cluster_id_to_ts:
                 i, ts = item
                 group = final_clusters[i]
-                print("Cluster {}:".format(i+1))
+                msg = "Cluster {}:".format(i+1)
+                print(msg)
+                log.write(msg + "\n")
                 trending = TrendingArticle(domain=domain)
                 trending.save()
                 article_sources = []
@@ -225,12 +243,16 @@ class Command(BaseCommand):
                                 all_articles_in_trending.append(item_id)
                                 article_sources.append(member.source.name)
 
+                print(article_sources)
+                log.write(article_sources + "\n")
                 if trending.articles.count() <= 1:
                     trending.delete()
                 else:
                     n += 1
                     if n >= self.MAX_TRENDING:
                         break
+            print(all_articles_in_trending)
+            log.write(all_articles_in_trending + "\n")
 
             print("Removing old trending objects")
             if old_objects:
