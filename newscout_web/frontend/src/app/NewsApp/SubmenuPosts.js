@@ -3,7 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem } from 'newscout';
+import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer } from 'newscout';
 
 import './style.css';
 import 'newscout/assets/Menu.css'
@@ -47,7 +47,7 @@ class SubmenuPosts extends React.Component {
 	}
 
 	handleScroll = () => {
-		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.6) {
 			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
@@ -62,6 +62,7 @@ class SubmenuPosts extends React.Component {
 				heading_dict['itemtext'] = item.heading.name
 				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
+				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
 			}
 		})
@@ -168,6 +169,7 @@ class SubmenuPosts extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
@@ -193,6 +195,7 @@ class SubmenuPosts extends React.Component {
 									</div>
 								</div>
 							</div>
+							<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 						</div>
 					</div>
 				</div>

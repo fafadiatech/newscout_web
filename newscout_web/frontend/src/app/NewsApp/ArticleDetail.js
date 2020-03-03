@@ -3,10 +3,10 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
-import { JumboBox, Menu, SideBox, SideBar } from 'newscout';
+import { JumboBox, Menu, SideBox, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
-import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 
 import Auth from './Auth';
 import Comments from './Comments'
@@ -87,11 +87,12 @@ class ArticleDetail extends React.Component {
 		state.article.id = data.body.article.id;
 		state.article.slug = data.body.article.slug;
 		state.article.altText = data.body.article.title;
-		state.article.header = data.body.article.title;
+		state.article.title = data.body.article.title;
 		state.article.caption = data.body.article.blurb;
 		state.article.source = data.body.article.source;
 		state.article.source_url = data.body.article.source_url;
 		state.article.category = data.body.article.category;
+		state.article.sub_category = data.body.article.sub_category;
 		state.article.hash_tags = data.body.article.hash_tags;
 		state.article.date = moment(data.body.article.published_on).format('D MMMM YYYY');
 		if(data.body.article.cover_image){
@@ -113,7 +114,7 @@ class ArticleDetail extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['slug'] = "/news/article/"+item.slug
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY');
-				article_dict['src'] = "http://images.newscout.in/unsafe/150x80/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/70x70/center/smart/"+decodeURIComponent(item.cover_image)
 				if(recommendations_array.length < 5){
 					recommendations_array.push(article_dict)
 				}
@@ -139,6 +140,7 @@ class ArticleDetail extends React.Component {
 				heading_dict['itemtext'] = item.heading.name
 				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
+				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
 			}
 		})
@@ -165,6 +167,7 @@ class ArticleDetail extends React.Component {
 			}, 3000);
         }
 	}
+
 	setCaptcha = (data) => {
 		var results = JSON.parse(data["body"]["result"])
 		var captcha_image = "http://newscout.in"+results["new_captch_image"]
@@ -173,11 +176,13 @@ class ArticleDetail extends React.Component {
 		state.captchaData = results
 		this.setState(state);
 	}
+
 	fetchCaptcha = () => {
 		let url = "http://newscout.in/api/v1/comment-captcha/";
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(url, this.setCaptcha, headers);
 	}
+
 	commentSubmitResponse = (data) => {
 		if(data.header.status === "1") {
 			this.setState({
@@ -224,6 +229,14 @@ class ArticleDetail extends React.Component {
 
 	render() {
 		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen } = this.state;
+    var sub_category = ""
+		var category = ""
+		if(article.sub_category) {
+			var sub_category = article.sub_category.replace(" ", "-").toLowerCase()
+		}
+		if(article.category) {
+			var category = article.category.replace(" ", "-").toLowerCase()
+		}
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
@@ -233,6 +246,23 @@ class ArticleDetail extends React.Component {
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
+                  <div className="row">
+                    <div className="col-lg-12 col-12">
+                      <div className="article-breadcrumb">
+                        <Breadcrumb className="mb-0">
+                          <BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
+                          {article.category ?
+                            <BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
+                          : ""
+                          }
+                          {article.sub_category ?
+                            <BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
+                          : ""
+                          }
+                        </Breadcrumb>
+                      </div>
+                    </div>
+                  </div>
 									<div className="row">
 										<div className="col-lg-8 col-12 mb-4">
 											<div className="row">
@@ -303,6 +333,8 @@ class ArticleDetail extends React.Component {
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
 	}
