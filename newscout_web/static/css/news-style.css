@@ -9,7 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f6f6f6;
-  padding-top: 76px;
+  padding: 76px 0px;
   color: #3b5265;
 }
 
@@ -253,6 +253,7 @@ nav .navbar-brand img {
   background: transparent;
   border-radius: 50px;
   line-height: 45px;
+  z-index: 1;
 }
 
 .slick-prev:hover,
@@ -322,9 +323,12 @@ nav .navbar-brand img {
 }
 
 @media (max-width: 380px) {
-  .slick-prev,
-  .slick-next {
+  .slick-prev {
       left: -7px;
+  }
+
+  .slick-next {
+      right: -7px;
   }
   
   [dir='rtl'] .slick-prev {
