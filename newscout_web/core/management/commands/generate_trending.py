@@ -212,14 +212,17 @@ class Command(BaseCommand):
                 print("Cluster {}:".format(i+1))
                 trending = TrendingArticle(domain=domain)
                 trending.save()
+                article_sources = []
                 for item in group:
                     item_id = int(item)
                     if item_id not in all_articles_in_trending:
                         print("\t", self.titles[item_id])
                         if Article.objects.filter(id=item_id).exists():
                             member = Article.objects.get(id=item_id)
-                            trending.articles.add(member)
-                            trending.save()
+                            if member.source.name not in article_sources:
+                                trending.articles.add(member)
+                                trending.save()
+                                article_sources.append(member.source.name)
 
                 if trending.articles.count() <= 1:
                     trending.delete()
