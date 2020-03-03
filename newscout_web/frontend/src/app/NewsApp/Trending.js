@@ -3,7 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, VerticleCardItem } from 'newscout';
+import { CardItem, Menu, VerticleCardItem, Footer } from 'newscout';
 
 import config_data from './config.json';
 
@@ -42,7 +42,7 @@ class Trending extends React.Component {
 	}
 
 	handleScroll = () => {
-		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.6) {
 			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
@@ -144,6 +144,7 @@ class Trending extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} />
+				
 				<div className="pt-70">
 					<div className="container">
 						<div className="row">
@@ -165,6 +166,8 @@ class Trending extends React.Component {
 						</div>
 					</div>
 				</div>
+
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
 	}

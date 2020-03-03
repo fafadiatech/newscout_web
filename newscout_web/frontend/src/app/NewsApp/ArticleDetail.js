@@ -3,7 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
-import { JumboBox, Menu, SideBox } from 'newscout';
+import { JumboBox, Menu, SideBox, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
 import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Breadcrumb, BreadcrumbItem } from 'reactstrap';
@@ -44,6 +44,7 @@ class ArticleDetail extends React.Component {
 			captchaImage: "",
 			InvalidCaptcha : false,
 			resetAll : false,
+			is_captcha : true,
 		};
 	}
 
@@ -54,6 +55,8 @@ class ArticleDetail extends React.Component {
 		})
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
+		this.fetchCaptcha();
+		this.setState({is_captcha:false})
 	}
 
 	toggle = () => {
@@ -71,7 +74,8 @@ class ArticleDetail extends React.Component {
     	cookies.remove('full_name')
         cookies.remove('token')
         this.setState({
-        	is_login: false
+			is_login: false,
+			is_captcha: true
         })
     }
 
@@ -172,7 +176,8 @@ class ArticleDetail extends React.Component {
 
 	fetchCaptcha = () => {
 		let url = "http://newscout.in/api/v1/comment-captcha/";
-		getRequest(url, this.setCaptcha);
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		getRequest(url, this.setCaptcha, headers);
 	}
 
 	commentSubmitResponse = (data) => {
@@ -210,8 +215,7 @@ class ArticleDetail extends React.Component {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
-		this.fetchCaptcha();
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);		
 	}
 
 	render() {
@@ -227,6 +231,7 @@ class ArticleDetail extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={false} />
+				
 				<div className="pt-70">
 					<div className="container">
 						<div className="row">
@@ -289,7 +294,8 @@ class ArticleDetail extends React.Component {
 											</div>
 											<div className="mt-4">
 												<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
-												fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}/>
+												fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}
+												is_captcha={this.state.is_captcha}/>
 											</div>
 										</div>
 									</div>
@@ -312,6 +318,8 @@ class ArticleDetail extends React.Component {
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
 	}
