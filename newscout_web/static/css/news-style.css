@@ -68,8 +68,16 @@ nav .navbar-brand img {
   padding-bottom: 70px;
 }
 
-.p-70 {
-  padding: 70px 70px 70px 50px;
+@media (min-width: 315px) {
+  .p-70 {
+    padding: 70px 0px 70px 0px;
+  }
+}
+
+@media (min-width: 992px) {
+  .p-70 {
+    padding: 70px 70px 70px 50px;
+  }
 }
 
 .bg-gray {
@@ -91,6 +99,8 @@ nav .navbar-brand img {
   text-align: center;
   vertical-align: middle;
   line-height: 200px;
+  box-shadow: 0px 0px 20px #e8e8e8;
+  margin: 0px;
 }
 
 .view-all a {
@@ -323,6 +333,7 @@ nav .navbar-brand img {
 }
 
 @media (max-width: 380px) {
+
   .slick-prev {
       left: -7px;
   }
@@ -351,6 +362,7 @@ nav .navbar-brand img {
 }
 
 @media only screen and (min-width: 381px) and (max-width: 767px) {
+
   .slick-prev, .slick-next {
     left: -7px;
   }
