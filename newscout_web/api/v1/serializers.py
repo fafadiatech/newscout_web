@@ -74,15 +74,13 @@ class ArticleSerializer(serializers.ModelSerializer):
         if instance.category.name not in ["Uncategorised", "Uncategorized"]:
             root_category = CategoryAssociation.objects.get(child_cat=instance.category)
             return root_category.parent_cat.name
-        else:
-            return instance.category.name
+        return instance.category.name
 
     def get_root_category_id(self, instance):
         if instance.category.name not in ["Uncategorised", "Uncategorized"]:
             root_category = CategoryAssociation.objects.get(child_cat=instance.category)
             return root_category.parent_cat_id
-        else:
-            return instance.category.id
+        return instance.category.id
 
 
 class UserSerializer(serializers.Serializer):
