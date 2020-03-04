@@ -11,7 +11,7 @@ import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, Mo
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT } from '../../utils/Constants';
+import { MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, BASE_URL, CAPTCHA_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -58,7 +58,7 @@ class ArticleDetail extends React.Component {
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 		this.fetchCaptcha();
-		this.setState({is_captcha:false})
+		this.setState({is_captcha:false});
 	}
 
 	toggle = () => {
@@ -78,7 +78,7 @@ class ArticleDetail extends React.Component {
         this.setState({
 			is_login: false,
 			is_captcha: true
-        })
+		})
     }
 
 	getArticleDetail = (data) => {
@@ -170,7 +170,7 @@ class ArticleDetail extends React.Component {
 
 	setCaptcha = (data) => {
 		var results = JSON.parse(data["body"]["result"])
-		var captcha_image = "http://newscout.in"+results["new_captch_image"]
+		var captcha_image = BASE_URL+results["new_captch_image"]
 		var state = this.state
 		state.captchaImage = captcha_image
 		state.captchaData = results
@@ -178,20 +178,15 @@ class ArticleDetail extends React.Component {
 	}
 
 	fetchCaptcha = () => {
-		let url = "http://newscout.in/api/v1/comment-captcha/";
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(url, this.setCaptcha, headers);
+		getRequest(CAPTCHA_URL, this.setCaptcha, headers);
 	}
 
 	commentSubmitResponse = (data) => {
 		if(data.header.status === "1") {
 			this.setState({
-				InvalidCaptcha:false
-			});
-			this.setState({
-				successComment :true
-			});
-			this.setState({
+				InvalidCaptcha: false,
+				successComment: true,
 				resetAll :true
 			});
 			setTimeout(() => {
@@ -221,10 +216,14 @@ class ArticleDetail extends React.Component {
 	}
 
 	componentDidMount() {
+		if(cookies.get('full_name')){
+			this.fetchCaptcha();
+			this.setState({is_login:true,is_captcha:false})
+		}
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);		
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 	}
 
 	render() {

@@ -84,20 +84,15 @@ class Comments extends React.Component {
 							<Input type="textarea" name="comment" id="exampleText" onChange={(e) => this.handleChange("comment", e)} value={this.state.comment} placeholder="Enter Comment"/>
 						</FormGroup>
 						<FormGroup>
-							<div className="clearfix" hidden={is_captcha}>
-								<div className="float-left">
-									<img src={captchaImage} alt={captchaImage} />
-									<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>
+							<div className="clearfix">
+								<div className="float-left" hidden={is_captcha}>
+									<img src={captchaImage} alt={captchaImage} style={{padding:10}}/>
+									<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()} style={{padding:10}}>
 										<FontAwesomeIcon icon={faRedo} />
 									</button>
-									<input type="text" onChange={(e) => this.handleChange("captcha", e)} placeholder="Enter Captcha" value={this.state.captcha}></input>
+									<input type="text" onChange={(e) => this.handleChange("captcha", e)} placeholder="Enter Captcha" value={this.state.captcha}  style={{padding:10}}></input>
 								</div>
-							</div>
-							<div className="clearfix">
-								<div className="float-left">
-									<button className="btn btn-danger" disabled={(this.state.comment && this.state.captcha) === "" ? true : false}>Submit</button>
-								</div>
-								<div className="float-left ml-2">
+								<div className="float-left ml-2" style={{padding:10}}>
 									<React.Fragment>
 										{successComment ?
 											<Alert color="success" className="success-comment">Comment submitted successfully.</Alert>
@@ -116,6 +111,9 @@ class Comments extends React.Component {
 											""
 										}
 									</React.Fragment>
+								</div>
+								<div className="float-right" style={{padding:10}}>
+									<button className="btn btn-danger" disabled={(this.state.comment && this.state.captcha) === "" ? true : false}>Submit</button>
 								</div>
 							</div>
 						</FormGroup>

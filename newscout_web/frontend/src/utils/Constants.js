@@ -36,3 +36,4 @@ export const ARTICLE_COMMENT = ARTICLE_API_URL + "comment/";
 export const MENUS = ARTICLE_API_URL + "menus/";
 export const TRENDING_NEWS = ARTICLE_API_URL + "trending/";
 export const ARTICLE_POSTS = ARTICLE_API_URL + "article/search/";
+export const CAPTCHA_URL = ARTICLE_API_URL + "comment-captcha/";
