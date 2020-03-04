@@ -30,8 +30,8 @@ const settings = {
 		{
 			breakpoint: 1024,
 			settings: {
-				slidesToShow: 3,
-				slidesToScroll: 3,
+				slidesToShow: 4,
+				slidesToScroll: 4,
 				infinite: false,
 				dots: false
 			}
@@ -119,7 +119,7 @@ class MenuPosts extends React.Component {
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/425x200/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(news_array.length <= 9){
 					news_array.push(article_dict)
 				}
