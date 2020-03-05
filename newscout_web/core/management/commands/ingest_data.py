@@ -47,7 +47,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--source', '-s', type=str, help='redis source name [Ex: theverge]')
-        parser.add_argument('--index', '-i', type=str, default='article', help='elastic search index name [default: article]')
+        parser.add_argument('--index', '-i', type=str, default='article',
+                            help='elastic search index name [default: article]')
 
     def get_data_from_redis(self, source):
         """
@@ -91,7 +92,8 @@ class Command(BaseCommand):
         for tag in clean_tags:
             final_tags = final_tags + self.remove_char(tag, " and ")
 
-        final_tags = [tag.replace("&", " ").replace(",", "").replace(":", "").replace("'", "").replace("#", "").replace("*", "").replace("(", "").replace(")", "").replace("@", "").replace("!", "").replace("-", " ").strip().lower() for tag in final_tags]
+        final_tags = [tag.replace("&", " ").replace(",", "").replace(":", "").replace("'", "").replace("#", "").replace(
+            "*", "").replace("(", "").replace(")", "").replace("@", "").replace("!", "").replace("-", " ").strip().lower() for tag in final_tags]
 
         return final_tags
 
@@ -197,7 +199,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['source'] == None:
-           raise CommandError("Option `--source=...` must be specified.")
+            raise CommandError("Option `--source=...` must be specified.")
 
         # start prometheus http server for metrics
         start_http_server(8686)
@@ -214,15 +216,19 @@ class Command(BaseCommand):
                     self.task_state.state("running")
                     self.sleep_time = 0
                     if os.path.isfile(file_path):
-                        doc = cPickle.loads(zlib.decompress(open(file_path).read()))
+                        doc = cPickle.loads(zlib.decompress(open(file_path, "rb").read()))
                         try:
                             self.create_model_obj(doc, domain, index)
                             if date == self.now:
-                                self.source_ingest.labels(source=doc.get("source", "source"), category=doc.get("category", "category")).inc()
+                                self.source_ingest.labels(
+                                    source=doc.get("source", "source"),
+                                    category=doc.get("category", "category")).inc()
                             else:
                                 self.now = datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d")
                                 # self.reset_stats()
-                                self.source_ingest.labels(source=doc.get("source", "source"), category=doc.get("category", "category")).inc()
+                                self.source_ingest.labels(
+                                    source=doc.get("source", "source"),
+                                    category=doc.get("category", "category")).inc()
                         except Exception as e:
                             print("error in doc read")
                             print(e)
