@@ -223,7 +223,7 @@ class SearchResult extends React.Component {
 						title={item.header}
 						description={item.caption}
 						uploaded_by={item.source}
-						source_url={item.source_url}
+						source_url={item.slug}
 						slug_url={item.slug}
 						category={item.category}
 						hash_tags={item.hash_tags}
