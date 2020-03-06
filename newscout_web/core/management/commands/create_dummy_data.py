@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         data_dir = "static/db"
-        dbname = "newscout_web1"
+        dbname = "newscout_web"
         db_path = data_dir + "/newscout.sql"
         os.system("tar -xvzf static/db/newscout.tar.gz -C static/db/")
         if not os.path.isdir(data_dir):
