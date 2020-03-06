@@ -222,7 +222,6 @@ class ArticleDetail extends React.Component {
 		}
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment);
 	}
 
