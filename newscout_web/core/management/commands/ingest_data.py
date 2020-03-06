@@ -245,7 +245,7 @@ class Command(BaseCommand):
                 self.batch.append(json_data)
                 # Generate recommendation
                 recommendation_document = {}
-                recommendation_document['id'] = article_id
+                recommendation_document['id'] = article_obj.id
                 recommendation_document['recommendation'] = \
                     self.get_recommendations(
                         article_obj.title, article_obj.domain.name)
