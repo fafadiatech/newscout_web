@@ -248,7 +248,7 @@ class Command(BaseCommand):
                 recommendation_document['id'] = article_obj.id
                 recommendation_document['recommendation'] = \
                     self.get_recommendations(
-                        article_obj.title, article_obj.domain.name)
+                        article_obj.title, article_obj.domain.domain_id)
                 self.recommendation_batch.append(recommendation_document)
                 # Ingest data and recommendation
                 if len(self.batch) == 99:
