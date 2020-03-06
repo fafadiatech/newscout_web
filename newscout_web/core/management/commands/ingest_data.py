@@ -5,6 +5,7 @@ import pytz
 import time
 import redis
 import pickle as cPickle
+from core.utils import es
 from random import randint
 from datetime import datetime
 from dateutil.parser import parse
@@ -32,6 +33,7 @@ class Command(BaseCommand):
         self.now = datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d")
         self.redis = redis.Redis()
         self.batch = []
+        self.recommendation_batch = []
         self.sleep_time = 0
         self.classify = RegexClassification()
         self.score = ArticleScore()
@@ -105,6 +107,55 @@ class Command(BaseCommand):
         for tag in tags:
             tag_list.append(tag["name"])
         return tag_list
+
+    def get_recommendations(self, title, domain, size=100, K=25):
+        """
+        this method is used to perform title search
+        """
+        suggestions = []
+
+        results = es.search(
+                index='article',
+                body={
+                    "query": {
+                        "bool" : {
+                            "must": [
+                                {
+                                    "multi_match" : {
+                                        "query": title,
+                                        "fields": ["title", "blurb^3"]
+                                    }
+                                },
+                                {
+                                    "match" : {
+                                        "domain": domain
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "size": 100
+                    })
+
+        while len(suggestions) != K:
+            rec = {}
+
+            lucky_number = randint(0, size-1)
+            try:
+                candidate = results['hits']['hits'][lucky_number]
+            except:
+                break
+
+            rec['id'] = candidate['_source']['id']
+
+            if rec['id'] in suggestions:
+                continue
+
+            rec = candidate['_source']['id']
+            ts = candidate['_source']['published_on']
+            suggestions.append((rec, ts))
+
+        return [item[0] for item in suggestions]
 
     def create_model_obj(self, doc, domain, index):
         """
@@ -192,9 +243,21 @@ class Command(BaseCommand):
                     tag_list = self.get_tags(json_data["hash_tags"])
                     json_data["hash_tags"] = tag_list
                 self.batch.append(json_data)
+                # Generate recommendation
+                recommendation_document = {}
+                recommendation_document['id'] = article_id
+                recommendation_document['recommendation'] = \
+                    self.get_recommendations(
+                        article_obj.title, article_obj.domain.name)
+                self.recommendation_batch.append(recommendation_document)
+                # Ingest data and recommendation
                 if len(self.batch) == 99:
                     ingest_to_elastic(self.batch, index, index, 'id')
+                    ingest_to_elastic(
+                        self.recommendation_batch, "recommendation",
+                            "recommendation", "id")
                     self.batch = []
+                    self.recommendation_batch = []
                     print("Ingesting Batch To Elastic...!!!")
 
     def handle(self, *args, **options):
