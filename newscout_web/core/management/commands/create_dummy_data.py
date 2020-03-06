@@ -1,13 +1,13 @@
 import os
 from getpass import getpass
 from psycopg2 import connect
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT  # <-- ADD THIS LINE
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = 'This command is used to load sample datatbase into postgres'
+    help = 'This command is used to load sample datatbase into postgres. Specified in static/db'
 
     def handle(self, *args, **options):
         data_dir = "static/db"
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         password = getpass("Password:")
         conn = connect(f"user='{user_name}' \
             host='localhost' password='{password}'")
-        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)  # <-- ADD THIS LINE
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         cursor = conn.cursor()
         cursor.execute("SELECT datname FROM pg_database WHERE datistemplate = false;")
         data_bases = cursor.fetchall()
