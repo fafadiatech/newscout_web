@@ -47,7 +47,7 @@ class SubmenuPosts extends React.Component {
 	}
 
 	handleScroll = () => {
-		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.6) {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.3) {
 			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
 			}
@@ -155,7 +155,7 @@ class SubmenuPosts extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.source_url}
+							source_url={item.slug}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
