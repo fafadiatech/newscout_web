@@ -242,11 +242,11 @@ class SearchResult extends React.Component {
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
 				
-				<div className="container-fluid pb-50">
+				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
-							<div className="pt-35">
+							<div className="pt-50 pb-5">
 								<div className="row">
 									<div className="col-lg-12">
 										<div className="clerfix">
