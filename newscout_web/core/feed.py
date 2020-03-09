@@ -5,6 +5,8 @@ from django.core.paginator import Paginator
 
 
 class CustomFeedGenerator(feedgenerator.DefaultFeed):
+    content_type = 'application/xml; charset=utf-8'
+
     def add_item_elements(self, handler, item):
         super(CustomFeedGenerator, self).add_item_elements(handler, item)
         handler.addQuickElement("source", str(item['source']))
