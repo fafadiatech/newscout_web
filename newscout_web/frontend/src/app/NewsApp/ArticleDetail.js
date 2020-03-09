@@ -39,8 +39,8 @@ class ArticleDetail extends React.Component {
 			username: cookies.get('full_name'),
 			articlecomments: [],
 			successComment: false,
-			is_login: false,
-			is_login_validation: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
 			captchaData : {},
 			captchaImage: "",
 			InvalidCaptcha : false,
@@ -53,7 +53,7 @@ class ArticleDetail extends React.Component {
 	loggedInUser = (data) => {
 		this.setState({
 			username: data,
-			is_login: true
+			is_loggedin: true
 		})
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
@@ -61,9 +61,9 @@ class ArticleDetail extends React.Component {
 		this.setState({is_captcha:false});
 	}
 
-	toggle = () => {
+	toggle = (data) => {
 		this.setState({
-			modal: !this.state.modal,
+			modal: !data,
 		})
 	}
 
@@ -76,7 +76,7 @@ class ArticleDetail extends React.Component {
     	cookies.remove('full_name')
         cookies.remove('token')
         this.setState({
-			is_login: false,
+			is_loggedin: false,
 			is_captcha: true
 		})
     }
@@ -91,8 +91,8 @@ class ArticleDetail extends React.Component {
 		state.article.caption = data.body.article.blurb;
 		state.article.source = data.body.article.source;
 		state.article.source_url = data.body.article.source_url;
+		state.article.root_category = data.body.article.root_category;
 		state.article.category = data.body.article.category;
-		state.article.sub_category = data.body.article.sub_category;
 		state.article.hash_tags = data.body.article.hash_tags;
 		state.article.date = moment(data.body.article.published_on).format('D MMMM YYYY');
 		if(data.body.article.cover_image){
@@ -158,11 +158,11 @@ class ArticleDetail extends React.Component {
         	postRequest(url, body, this.commentSubmitResponse, "POST", headers);
         } else {
         	this.setState({
-					is_login_validation: true
+					is_loggedin_validation: true
 				})
 			setTimeout(() => {
 				this.setState({
-					is_login_validation: false
+					is_loggedin_validation: false
 				})
 			}, 3000);
         }
@@ -218,7 +218,7 @@ class ArticleDetail extends React.Component {
 	componentDidMount() {
 		if(cookies.get('full_name')){
 			this.fetchCaptcha();
-			this.setState({is_login:true,is_captcha:false})
+			this.setState({is_loggedin:true, is_captcha:false})
 		}
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
@@ -226,15 +226,16 @@ class ArticleDetail extends React.Component {
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen } = this.state;
-    var sub_category = ""
+		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin } = this.state;
+    	var root_category = ""
 		var category = ""
-		if(article.sub_category) {
-			var sub_category = article.sub_category.replace(" ", "-").toLowerCase()
+		if(article.root_category) {
+			var root_category = article.root_category.replace(" ", "-").toLowerCase()
 		}
 		if(article.category) {
 			var category = article.category.replace(" ", "-").toLowerCase()
 		}
+
 		return(
 			<React.Fragment>
 				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
@@ -249,12 +250,12 @@ class ArticleDetail extends React.Component {
 					                      <div className="article-breadcrumb">
 					                        <Breadcrumb className="mb-0">
 					                          <BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
-					                          {article.category ?
-					                            <BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
+					                          {article.root_category ?
+					                            <BreadcrumbItem><a href={`/news/${root_category}`}>{article.root_category}</a></BreadcrumbItem>
 					                          : ""
 					                          }
-					                          {article.sub_category ?
-					                            <BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
+					                          {article.category ?
+					                            <BreadcrumbItem><a href={`/news/${root_category}/${category}`}>{article.category}</a></BreadcrumbItem>
 					                          : ""
 					                          }
 					                        </Breadcrumb>
@@ -286,7 +287,7 @@ class ArticleDetail extends React.Component {
 																	<h3 className="">Reviews</h3>
 																</div>
 																<div className="float-right">
-																	{this.state.is_login ?
+																	{is_loggedin ?
 																		<ul className="list-inline mb-0 usr">
 																			<li className="list-inline-item">
 																				<h6 className="h6-text mt-2 mb-0">{username}</h6>
@@ -296,16 +297,25 @@ class ArticleDetail extends React.Component {
 																				<FontAwesomeIcon icon={faPowerOff} />
 																			</li>
 																		</ul>
-																	:
-																		<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
+																	: ""
 																	}
 																</div>
 															</div>
 														</div>
 														<div className="mt-4">
-															<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
-															fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}
-															is_captcha={this.state.is_captcha}/>
+															<Comments comments={this.state.articlecomments} 
+																	  handleSubmit={this.handleSubmit} 
+																	  successComment={this.state.successComment} 
+																	  is_loggedin_validation={this.state.is_loggedin_validation} 
+																	  captchaImage={captchaImage} 
+																	  InvalidCaptcha={this.state.InvalidCaptcha} 
+																	  fetchCaptcha={this.fetchCaptcha} 
+																	  resetAll={this.state.resetAll} 
+																	  is_captcha={this.state.is_captcha} 
+																	  is_loggedin={is_loggedin} 
+																	  toggle={this.toggle}
+																	  is_open={modal} 
+															/>
 														</div>
 													</div>
 												</div>
