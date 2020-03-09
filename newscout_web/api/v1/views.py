@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from django.http import Http404
 
 from core.models import (Category, Article, Source, BaseUserProfile,
-                              BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
-                              SocialAccount, Category, CategoryAssociation,
-                              TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
+                         BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
+                         SocialAccount, Category, CategoryAssociation,
+                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
 
 from rest_framework.authtoken.models import Token
 
@@ -42,7 +42,7 @@ from rest_framework.utils.urls import replace_query_param
 from google.auth.transport import requests as grequests
 from google.oauth2 import id_token
 import facebook
-from .exception_handler import (create_error_response,TokenIDMissing, ProviderMissing,
+from .exception_handler import (create_error_response, TokenIDMissing, ProviderMissing,
                                 SocialAuthTokenException)
 import logging
 import operator
@@ -123,8 +123,8 @@ class LoginAPIView(generics.GenericAPIView):
         device_id = request.data.get("device_id")
         if device_id and device_name:
             device, _ = Devices.objects.get_or_create(user=user,
-                                                   device_name=device_name,
-                                                   device_id=device_id)
+                                                      device_name=device_name,
+                                                      device_id=device_id)
             notification_obj, _ = Notification.objects.get_or_create(device=device)
             notification = NotificationSerializer(notification_obj)
 
@@ -164,8 +164,8 @@ class UserHashTagAPIView(APIView):
         if user_tags:
             user.passion.clear()
             user.passion.add(*user_tags)
-            return Response(create_response({"Msg" : "Successfully saved tags"}))
-        return Response(create_error_response({"Msg" : "Invalid tags"}), status=400)
+            return Response(create_response({"Msg": "Successfully saved tags"}))
+        return Response(create_error_response({"Msg": "Invalid tags"}), status=400)
 
 
 class CategoryListAPIView(APIView):
@@ -239,10 +239,10 @@ class ArticleListAPIView(ListAPIView):
     ordering = ('-published_on',)
 
     def get_queryset(self):
-        q = self.request.GET.get("q","")
-        tag = self.request.GET.getlist("tag","")
-        category = self.request.GET.getlist("category","")
-        source = self.request.GET.getlist("source","")
+        q = self.request.GET.get("q", "")
+        tag = self.request.GET.getlist("tag", "")
+        category = self.request.GET.getlist("category", "")
+        source = self.request.GET.getlist("source", "")
         queryset = Article.objects.all()
 
         if self.request.user.domain:
@@ -263,9 +263,9 @@ class ArticleListAPIView(ListAPIView):
             q_list = q.split(" ")
             condition_1 = reduce(operator.or_, [Q(title__icontains=s) for s in q_list])
             condition_2 = reduce(operator.or_, [Q(full_text__icontains=s) for s in q_list])
-            queryset = queryset.filter(condition_1|condition_2)
+            queryset = queryset.filter(condition_1 | condition_2)
 
-        return queryset.distinct()
+        return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -277,10 +277,7 @@ class ArticleListAPIView(ListAPIView):
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
             else:
-                return Response(create_error_response({"Msg" : "News Doesn't Exist"}), status=400)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(create_response(serializer.data))
+                return Response(create_error_response({"Msg": "News Doesn't Exist"}), status=400)
 
 
 class ArticleDetailAPIView(APIView):
@@ -334,7 +331,7 @@ class ArticleDetailAPIView(APIView):
                         "Msg": "Invalid Input"
                     }))
             else:
-                return Response(create_error_response({ "Msg": "News doesn't exist"}), status=400)
+                return Response(create_error_response({"Msg": "News doesn't exist"}), status=400)
         raise Http404
 
 
@@ -380,10 +377,11 @@ class ArticleRecommendationsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         article_id = self.kwargs.get("article_id", "")
         if article_id:
-            results = es.search(index='recommendation',body={"query":{"match": {"id": int(article_id)}}})
+            results = es.search(index='recommendation', body={"query": {"match": {"id": int(article_id)}}})
             if results['hits']['hits']:
                 recommendation = results['hits']['hits'][0]['_source']['recommendation']
-                search_results = es.search(index='article',body={"query":{"terms": {"id": recommendation}},"size": 25})
+                search_results = es.search(index='article', body={
+                                           "query": {"terms": {"id": recommendation}}, "size": 25})
                 return Response(create_response({
                     "results": self.format_response(search_results)
                 }))
@@ -509,7 +507,7 @@ class ArtilcleLikeAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        like_list = [0,1]
+        like_list = [0, 1]
         user = self.request.user
         article_list = ArtilcleLikeSerializer(ArtilcleLike.objects.filter(user=user, is_like__in=like_list), many=True)
         return Response(create_response({"results": article_list.data}))
@@ -520,8 +518,8 @@ class HashTagAPIView(ListAPIView):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        weekly = self.request.GET.get("weekly","")
-        monthly = self.request.GET.get("monthly","")
+        weekly = self.request.GET.get("weekly", "")
+        monthly = self.request.GET.get("monthly", "")
         end = datetime.utcnow()
         pst = pytz.timezone('Asia/Kolkata')
         end = pst.localize(end)
@@ -533,7 +531,8 @@ class HashTagAPIView(ListAPIView):
         if weekly:
             weekly = int(weekly)
             start = end - timedelta(days=7*weekly)
-            hash_tags = articles.filter(published_on__range=(start,end)).values('hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = articles.filter(published_on__range=(start, end)).values(
+                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
                 hashtag['name'] = hashtag.pop('hash_tags__name')
             queryset = hash_tags
@@ -541,14 +540,16 @@ class HashTagAPIView(ListAPIView):
         if monthly:
             monthly = int(monthly)
             start = end - timedelta(days=30*monthly)
-            hash_tags = articles.filter(published_on__range=(start,end)).values('hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]  
+            hash_tags = articles.filter(published_on__range=(start, end)).values(
+                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
                 hashtag['name'] = hashtag.pop('hash_tags__name')
             queryset = hash_tags
 
         if not weekly and not monthly:
             start = end - timedelta(days=1)
-            hash_tags = articles.filter(published_on__range=(start,end)).values('hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = articles.filter(published_on__range=(start, end)).values(
+                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
                 hashtag['name'] = hashtag.pop('hash_tags__name')
             queryset = hash_tags
@@ -565,7 +566,7 @@ class HashTagAPIView(ListAPIView):
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
             else:
-                return Response(create_error_response({"Msg" : "No trending tags"}), status=400)
+                return Response(create_error_response({"Msg": "No trending tags"}), status=400)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(create_response(serializer.data))
@@ -597,7 +598,7 @@ class ArticleSearchAPI(APIView):
             if response.aggregations.hash_tags.buckets:
                 filters["hash_tags"] = sorted(
                     response.aggregations.hash_tags.buckets._l_,
-                     key=operator.itemgetter("key"))
+                    key=operator.itemgetter("key"))
         return results, filters
 
     def get(self, request):
@@ -632,12 +633,12 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query = {"multi_match": {"query": query,"fields": ["title", "blurb"]}}
+            must_query = {"multi_match": {"query": query, "fields": ["title", "blurb"]}}
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
             for tag in tags:
-                sq = {"match_phrase": {"hash_tags" : tag}}
+                sq = {"match_phrase": {"hash_tags": tag}}
                 should_query.append(sq)
 
         if must_query:
@@ -655,7 +656,9 @@ class ArticleSearchAPI(APIView):
         if category:
             cat_objs = Category.objects.filter(name__in=category)
             category = cat_objs.values_list("id", flat=True)
-            cat_assn_objs = CategoryAssociation.objects.filter(parent_cat__in=cat_objs).values_list("child_cat__id", flat=True)
+            cat_assn_objs = CategoryAssociation.objects.filter(
+                parent_cat__in=cat_objs).values_list(
+                "child_cat__id", flat=True)
             if cat_assn_objs:
                 new_category = set(list(cat_assn_objs) + list(category))
                 sr = sr.filter("terms", category_id=list(new_category))
@@ -667,15 +670,15 @@ class ArticleSearchAPI(APIView):
             source = [s.lower() for s in source]
             sr = sr.filter("terms", source=source)
 
-        sr = sr.sort({"article_score" : {"order" : sort}})
-        sr = sr.sort({"published_on" : {"order" : sort}})
+        sr = sr.sort({"article_score": {"order": sort}})
+        sr = sr.sort({"published_on": {"order": sort}})
 
         # pagination
         start = (page - 1) * size
         end = start + size
         sr = sr[start:end]
 
-        #generate facets
+        # generate facets
         sr.aggs.bucket("category", "terms", field="category.keyword")
         sr.aggs.bucket("source", "terms", field="source.keyword")
         sr.aggs.bucket("hash_tags", "terms", field="hash_tags.keyword", size=50)
@@ -736,7 +739,7 @@ class MenuAPIView(APIView):
             menu_dict['heading'] = menu
             new_menulist.append(menu_dict)
 
-        return Response(create_response({'results' : new_menulist}))
+        return Response(create_response({'results': new_menulist}))
 
 
 class DevicesAPIView(APIView):
@@ -789,10 +792,13 @@ class NotificationAPIView(APIView):
             if notification:
                 notification.update(breaking_news=breaking_news, daily_edition=daily_edition, personalized=personalized)
                 return Response(create_response({"Msg": "Notification updated successfully"}))
-            Notification.objects.create(breaking_news=breaking_news, daily_edition=daily_edition, personalized=personalized, device=device)
+            Notification.objects.create(breaking_news=breaking_news, daily_edition=daily_edition,
+                                        personalized=personalized, device=device)
             return Response(create_response({"Msg": "Notification created successfully"}))
         else:
-            return Response(create_error_response({"Msg": "device_id, device_name, breaking_news, daily_edition and personalized are required"}))
+            return Response(
+                create_error_response(
+                    {"Msg": "device_id, device_name, breaking_news, daily_edition and personalized are required"}))
 
     def get(self, request):
         device_id = request.GET.get("device_id")
@@ -846,7 +852,7 @@ class SocialLoginView(generics.GenericAPIView):
 
         return first_name, last_name
 
-    def create_user_profile(self, first_name, last_name, username, email,image_url, sid, provider):
+    def create_user_profile(self, first_name, last_name, username, email, image_url, sid, provider):
         """
         this method is used to create base user profile object for given
         social account
@@ -875,7 +881,8 @@ class SocialLoginView(generics.GenericAPIView):
         """
         graph = facebook.GraphAPI(access_token=token_id)
         try:
-            res_data = graph.get_object(id='me?fields=email,id,first_name,last_name,name,picture.width(150).height(150)')
+            res_data = graph.get_object(
+                id='me?fields=email,id,first_name,last_name,name,picture.width(150).height(150)')
             return res_data
         except Exception as e:
             log.debug("error in facebook fetch data: {0}".format(e))
@@ -1025,6 +1032,7 @@ class SocailMediaPublishing():
     """
     this class is to update news arrticles on social media
     """
+
     def twitter(self, data):
         """
         this function will tweet article title and its url in twitter
@@ -1061,8 +1069,8 @@ class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
             json_data["hash_tags"] = tag_list
         ingest_to_elastic([json_data], "article", "article", "id")
         tweet_data = {
-            "title" : serializer.instance.title,
-            "url" : serializer.instance.source_url,
+            "title": serializer.instance.title,
+            "url": serializer.instance.source_url,
         }
         self.twitter(tweet_data)
 
@@ -1138,8 +1146,8 @@ class ChangeArticleStatusView(APIView, SocailMediaPublishing):
                 json_data["hash_tags"] = tag_list
             ingest_to_elastic([json_data], "article", "article", "id")
             tweet_data = {
-                "title" : serializer.instance.title,
-                "url" : serializer.instance.source_url,
+                "title": serializer.instance.title,
+                "url": serializer.instance.source_url,
             }
             self.twitter(tweet_data)
         else:
@@ -1157,7 +1165,7 @@ class ChangeArticleStatusView(APIView, SocailMediaPublishing):
         return Response(create_response({
             "id": article.id,
             "active": article.active
-            }))
+        }))
 
 
 class CategoryBulkUpdate(APIView):
@@ -1205,7 +1213,7 @@ class GetDailyDigestView(ListAPIView):
         return results
 
     def get_queryset(self):
-        device_id = self.request.GET.get("device_id","")
+        device_id = self.request.GET.get("device_id", "")
         queryset = Devices.objects.filter(device_id=device_id).first()
         if not queryset:
             return queryset
@@ -1222,8 +1230,8 @@ class GetDailyDigestView(ListAPIView):
         if not queryset:
             sr = Search(using=es, index="article")
             sort = "desc"
-            sr = sr.sort({"article_score" : {"order" : sort}})
-            sr = sr.sort({"published_on" : {"order" : sort}})
+            sr = sr.sort({"article_score": {"order": sort}})
+            sr = sr.sort({"published_on": {"order": sort}})
             sr = sr[0:20]
             response = sr.execute()
             results = self.format_response(response)
@@ -1233,7 +1241,7 @@ class GetDailyDigestView(ListAPIView):
         if serializer.data:
             return Response(create_response(serializer.data))
         else:
-            return Response(create_error_response({"Msg" : "Daily Digest Doesn't Exist"}), status=400)
+            return Response(create_error_response({"Msg": "Daily Digest Doesn't Exist"}), status=400)
 
 
 class DraftMediaUploadViewSet(viewsets.ViewSet):
@@ -1321,11 +1329,13 @@ class CommentViewSet(viewsets.ViewSet):
         article_obj = Article.objects.filter(id=article_id).first()
         if not article_obj:
             return Response(create_error_response({"error": "Article does not exist"})
-            )
+                            )
         comment_list = Comment.objects.filter(article=article_obj, reply=None)
         serializer = CommentSerializer(comment_list, many=True)
-        return Response(create_response({"results": serializer.data,
-                    "total_article_likes": ArtilcleLike.objects.filter(article=article_obj).count()}))    
+        return Response(
+            create_response(
+                {"results": serializer.data, "total_article_likes": ArtilcleLike.objects.filter(
+                    article=article_obj).count()}))
 
     def destroy(self, request, pk):
         comment_obj = Comment.objects.filter(id=pk)
@@ -1351,6 +1361,7 @@ class LikeAPIView(APIView):
                 return Response(create_response({"Msg": "Liked"}))
             return Response(create_response({"Msg": "Removed Like"}))
         return Response(create_error_response({"error": "Invalid Data Entered"}))
+
 
 class CaptchaCommentApiView(APIView):
     permission_classes = (IsAuthenticated,)
