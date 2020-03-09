@@ -394,7 +394,7 @@ class Auth extends React.Component {
 					</React.Fragment>
 				:
 					<React.Fragment>
-						<ModalHeader toggle={this.toggle} className="text-danger"><strong>Forgot Password</strong></ModalHeader>
+						<ModalHeader toggle={this.toggle} className="text-danger"><strong>Forgot Password?</strong></ModalHeader>
 						<ModalBody>
 							<Form onSubmit={this.handleForgotPWDSubmit} className="authform">
 								<FormGroup>
