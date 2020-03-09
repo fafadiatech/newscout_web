@@ -7,11 +7,12 @@ from datetime import datetime, time, timedelta
 from django.views.generic.base import TemplateView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 from api.v1.views import create_response
 from api.v1.exception_handler import create_error_response
 from event_tracking.models import Event
+
 
 class IndexView(TemplateView):
     template_name = "analytics_index.html"
@@ -85,7 +86,7 @@ class ParseDateRange():
                     return start_date, end_date, ""
                 except Exception as e:
                     return "", "", create_error_response(
-                                        {"Msg": "Invalid date range"})
+                        {"Msg": "Invalid date range"})
         else:
             start_date, end_date, error = self.get_default_date_range()
             return start_date, end_date, error
@@ -93,34 +94,34 @@ class ParseDateRange():
 
 class AllArticlesOpen(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
         pipeline = [{
             "$match": {"$and": [
-            {"ts": {"$gte": start_date, "$lte": end_date}},
-            {"domain": domain_id}]}},
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain": domain_id}]}},
             {"$match": {
                 "$or": [{"action": "article_detail"},
-                    {"action": "article_search_details"}]}},
+                        {"action": "article_search_details"}]}},
             {"$project": {
                 "_id": 0, "datePartDay": {
                     "$concat": [{"$substr": [
-                        {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},
-                        "platform": "$platform"}},
+                        {"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$year": "$ts"}, 0, 4]}]},
+                "platform": "$platform"}},
             {"$group": {"_id": "$datePartDay", "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0, "dateStr": "$_id",
                 "dateObj": {
                     "$dateFromString": {"dateString": "$_id"}},
-                    "count": "$count"}},
+                "count": "$count"}},
             {"$group": {
-                "_id":"count","avg_count": {"$avg":"$count"}}},
+                "_id": "count", "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
             return {"avg_count": 0}
@@ -149,36 +150,36 @@ class AllArticlesOpen(APIView, ParseDateRange):
 
         domain_id = request.user.domain.domain_id
         pipeline = [
-        {"$match": {"$and": [
-            {"ts": {"$gte": start_date, "$lte": end_date}},
-            {"domain": domain_id}]}},
-        {"$match": {"$or": [
-            {"action": "article_detail"},
-            {"action": "article_search_details"}
-        ]}},
-        {"$project": {"_id": 0, "datePartDay": {
-            "$concat": [
-                {"$substr": [
-                    {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                    {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                    {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},
-            "platform": "$platform"}},
-        {"$group": {"_id": "$datePartDay", "count": {"$sum": 1}}},
-        {"$project": {
-            "_id": 0, "dateStr": "$_id", "dateObj": {"$dateFromString": {"dateString": "$_id"}},
-            "count": "$count"}},
-        {"$sort": {"dateObj": 1}}]
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain": domain_id}]}},
+            {"$match": {"$or": [
+                {"action": "article_detail"},
+                {"action": "article_search_details"}
+            ]}},
+            {"$project": {"_id": 0, "datePartDay": {
+                "$concat": [
+                    {"$substr": [
+                        {"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                    {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                    {"$substr": [{"$year": "$ts"}, 0, 4]}]},
+                "platform": "$platform"}},
+            {"$group": {"_id": "$datePartDay", "count": {"$sum": 1}}},
+            {"$project": {
+                "_id": 0, "dateStr": "$_id", "dateObj": {"$dateFromString": {"dateString": "$_id"}},
+                "count": "$count"}},
+            {"$sort": {"dateObj": 1}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if data:
-            max_func = lambda x: x["count"]
+            def max_func(x): return x["count"]
             max_values = max(data, key=max_func)
             avg = self.get_avg(start_date, end_date, domain_id)
             res = {
                 "data": data,
                 "max": {"count": max_values["count"],
-                "dateStr": max_values["dateStr"]}
-                }
+                        "dateStr": max_values["dateStr"]}
+            }
             no_data = False
         else:
             res = {
@@ -195,7 +196,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
 
 class ArticlesPerPlatform(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -209,28 +210,28 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
                     {"action": "article_search_details"}]}},
             {"$project":
                 {"_id": 0,
-                "datePartDay": {
-                    "$concat": [
-                        {"$substr": [ {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},
-                        "platform": "$platform"}},
+                 "datePartDay": {
+                     "$concat": [
+                         {"$substr": [{"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                         {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                         {"$substr": [{"$year": "$ts"}, 0, 4]}]},
+                 "platform": "$platform"}},
             {"$group":
                 {"_id":
                     {"datePartDay": "$datePartDay",
-                    "platform": "$platform"}, "count": {"$sum": 1}}},
+                     "platform": "$platform"}, "count": {"$sum": 1}}},
             {"$project":
                 {"_id": 0,
                     "dateObj":
                         {"$dateFromString":
                             {"dateString": "$_id.datePartDay"}},
-                            "count": "$count",
-                            "platform": "$_id.platform",
-                            "dateStr": "$_id.datePartDay"}},
+                 "count": "$count",
+                 "platform": "$_id.platform",
+                 "dateStr": "$_id.datePartDay"}},
             {"$group": {
-                "_id":"$platform","avg_count": {"$avg":"$count"}}},
+                "_id": "$platform", "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
@@ -265,24 +266,24 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
                     {"action": "article_search_details"}]}},
             {"$project":
                 {"_id": 0,
-                "datePartDay": {
-                    "$concat": [
-                        {"$substr": [ {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},
-                        "platform": "$platform"}},
+                 "datePartDay": {
+                     "$concat": [
+                         {"$substr": [{"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                         {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                         {"$substr": [{"$year": "$ts"}, 0, 4]}]},
+                 "platform": "$platform"}},
             {"$group":
                 {"_id":
                     {"datePartDay": "$datePartDay",
-                    "platform": "$platform"}, "count": {"$sum": 1}}},
+                     "platform": "$platform"}, "count": {"$sum": 1}}},
             {"$project":
                 {"_id": 0,
                     "dateObj":
                         {"$dateFromString":
                             {"dateString": "$_id.datePartDay"}},
-                            "count": "$count",
-                            "platform": "$_id.platform",
-                            "dateStr": "$_id.datePartDay"}},
+                 "count": "$count",
+                 "platform": "$_id.platform",
+                 "dateStr": "$_id.datePartDay"}},
             {"$sort": {"dateObj": 1}}]
 
         data = list(self.events.collection.aggregate(pipeline))
@@ -305,7 +306,7 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
 
 class ArticlesPerCategory(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -318,13 +319,13 @@ class ArticlesPerCategory(APIView, ParseDateRange):
                     {"action": "article_detail"},
                     {"action": "article_search_details"}]}},
             {"$group": {"_id":
-                {"category_id": "$category_id",
-                "category_name": "$category_name"},
-                "count": {"$sum": 1}}},
+                        {"category_id": "$category_id",
+                         "category_name": "$category_name"},
+                        "count": {"$sum": 1}}},
             {"$group": {
-                "_id":"$category_id","avg_count": {"$avg":"$count"}}},
+                "_id": "$category_id", "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
@@ -339,7 +340,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
             return Response(error, status=400)
 
         if not request.user.domain:
-            data = [{"category_id":0, "category_name": None, "count": 0}]
+            data = [{"category_id": 0, "category_name": None, "count": 0}]
             no_data = True
             avg = {"avg_count": 0}
             return Response(
@@ -359,9 +360,9 @@ class ArticlesPerCategory(APIView, ParseDateRange):
                     {"action": "article_detail"},
                     {"action": "article_search_details"}]}},
             {"$group": {"_id":
-                {"category_id": "$category_id",
-                "category_name": "$category_name"},
-                "count": {"$sum": 1}}},
+                        {"category_id": "$category_id",
+                         "category_name": "$category_name"},
+                        "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0, "category_id": "$_id.category_id",
                 "category_name": "$_id.category_name", "count": "$count"}}]
@@ -369,7 +370,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
         data = list(self.events.collection.aggregate(pipeline))
         no_data = False
         if not data:
-            data = [{"category_id":0, "category_name": None, "count": 0}]
+            data = [{"category_id": 0, "category_name": None, "count": 0}]
             no_data = True
             avg = {"avg_count": 0}
         else:
@@ -380,7 +381,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
 
 class InteractionsPerCategory(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -389,15 +390,15 @@ class InteractionsPerCategory(APIView, ParseDateRange):
                 {"ts": {"$gte": start_date, "$lte": end_date}},
                 {"domain": domain_id}]}},
             {"$group": {"_id": {"category": "$category_id",
-                "category_name": "$category_name", "action":"$action"},
-                "count": {"$sum": 1}}},
+                                "category_name": "$category_name", "action": "$action"},
+                        "count": {"$sum": 1}}},
             {"$group": {"_id": {"category": "$_id.category",
-                "category_name": "$_id.category_name"},
-                "total": {"$sum": "$count"} }},
+                                "category_name": "$_id.category_name"},
+                        "total": {"$sum": "$count"}}},
             {"$group": {
-                "_id":"$category", "avg_count": {"$avg":"$total"}}},
+                "_id": "$category", "avg_count": {"$avg": "$total"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
@@ -413,7 +414,7 @@ class InteractionsPerCategory(APIView, ParseDateRange):
 
         if not request.user.domain:
             data = [{"category_id": None,
-                "category_name": None, "total_transactions": 0}]
+                     "category_name": None, "total_transactions": 0}]
             no_data = True
             avg = {"avg_count": 0}
             return Response(
@@ -429,14 +430,14 @@ class InteractionsPerCategory(APIView, ParseDateRange):
                 {"ts": {"$gte": start_date, "$lte": end_date}},
                 {"domain": domain_id}]}},
             {"$group": {"_id": {"category": "$category_id",
-                "category_name": "$category_name", "action":"$action"},
-                "count": {"$sum": 1}}},
+                                "category_name": "$category_name", "action": "$action"},
+                        "count": {"$sum": 1}}},
             {"$group": {"_id": {"category": "$_id.category",
-                "category_name": "$_id.category_name"},
-                "total": {"$sum": "$count"} }},
+                                "category_name": "$_id.category_name"},
+                        "total": {"$sum": "$count"}}},
             {"$project": {"_id": 0, "category_id": "$_id.category",
-                "category_name": "$_id.category_name",
-                "total_interactions": "$total"}}]
+                          "category_name": "$_id.category_name",
+                          "total_interactions": "$total"}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         no_data = False
@@ -455,7 +456,7 @@ class InteractionsPerCategory(APIView, ParseDateRange):
 
 class ArticlesPerAuthor(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -468,9 +469,9 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
                 {"action": "article_search_details"}]}},
             {"$group": {"_id": "$author_name", "count": {"$sum": 1}}},
             {"$group": {
-                "_id":"_id", "avg_count": {"$avg":"$count"}}},
+                "_id": "_id", "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
@@ -522,7 +523,7 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
 
 class InteractionsPerAuthor(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -535,11 +536,11 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
                 {"action": "article_search_details"}]}},
             {"$group": {"_id": {
                 "action": "$action",
-                "author_name":"$author_name"}, "count": {"$sum": 1}}},
+                "author_name": "$author_name"}, "count": {"$sum": 1}}},
             {"$group": {
-                "_id":"_id", "avg_count": {"$avg":"$count"}}},
+                "_id": "_id", "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}
         ]
 
         data = list(self.events.collection.aggregate(pipeline))
@@ -578,11 +579,11 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
                 {"action": "article_search_details"}]}},
             {"$group": {"_id": {
                 "action": "$action",
-                "author_name":"$author_name"}, "count": {"$sum": 1}}},
+                "author_name": "$author_name"}, "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0, "author": "$_id.author_name",
                 "action": "$_id.action", "count": "$count"}},
-                {"$sort": {"author": 1}}
+            {"$sort": {"author": 1}}
         ]
 
         data = list(self.events.collection.aggregate(pipeline))
@@ -608,7 +609,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
 
 class ArticlesPerSession(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -616,39 +617,39 @@ class ArticlesPerSession(APIView, ParseDateRange):
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
                 {"domain": domain_id}]}},
-            {"$match":{"$or": [
+            {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
-            {"$project":{
+            {"$project": {
                 "_id": 0,
                 "datePartDay": {
                     "$concat": [
-                        {"$substr": [ {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},"sid": "$sid"}},
+                        {"$substr": [{"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$year": "$ts"}, 0, 4]}]}, "sid": "$sid"}},
             {"$group": {
                 "_id": {
                     "datePartDay": "$datePartDay",
                     "sid": "$sid"},
-                    "count": {"$sum": 1}}},
+                "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0,
                 "dateObj": {
-                    "$dateFromString":{"dateString": "$_id.datePartDay"}},
-                    "count": "$count",
-                    "sid": "$_id.sid",
-                    "dateStr": "$_id.datePartDay"}},
+                    "$dateFromString": {"dateString": "$_id.datePartDay"}},
+                "count": "$count",
+                "sid": "$_id.sid",
+                "dateStr": "$_id.datePartDay"}},
             {"$group": {
-                "_id":"$dateStr",
-                "avg_count": {"$avg":"$count"}}},
+                "_id": "$dateStr",
+                "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0,
+                "_id": 0,
                 "dateStr": "$_id",
                 "avg_count": {"$round": ["$avg_count", 1]}}},
             {"$group": {
-                "_id":"dateStr", "avg_count": {"$avg":"$avg_count"}}},
+                "_id": "dateStr", "avg_count": {"$avg": "$avg_count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
@@ -678,33 +679,33 @@ class ArticlesPerSession(APIView, ParseDateRange):
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
                 {"domain": domain_id}]}},
-            {"$match":{"$or": [
+            {"$match": {"$or": [
                 {"action": "article_detail"},
                 {"action": "article_search_details"}]}},
-            {"$project":{
+            {"$project": {
                 "_id": 0,
                 "datePartDay": {
                     "$concat": [
-                        {"$substr": [ {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},"sid": "$sid"}},
+                        {"$substr": [{"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$year": "$ts"}, 0, 4]}]}, "sid": "$sid"}},
             {"$group": {
                 "_id": {
                     "datePartDay": "$datePartDay",
                     "sid": "$sid"},
-                    "count": {"$sum": 1}}},
+                "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0,
                 "dateObj": {
-                    "$dateFromString":{"dateString": "$_id.datePartDay"}},
-                    "count": "$count",
-                    "sid": "$_id.sid",
-                    "dateStr": "$_id.datePartDay"}},
+                    "$dateFromString": {"dateString": "$_id.datePartDay"}},
+                "count": "$count",
+                "sid": "$_id.sid",
+                "dateStr": "$_id.datePartDay"}},
             {"$group": {
-                "_id":"$dateStr",
-                "avg_count": {"$avg":"$count"}}},
+                "_id": "$dateStr",
+                "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0,
+                "_id": 0,
                 "dateStr": "$_id",
                 "avg_count": {"$round": ["$avg_count", 1]}}},
             {"$sort": {"dateStr": -1}}]
@@ -726,7 +727,7 @@ class ArticlesPerSession(APIView, ParseDateRange):
 
 class InteractionsPerSession(APIView, ParseDateRange):
 
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     events = Event()
 
     def get_avg(self, start_date, end_date, domain_id):
@@ -734,36 +735,36 @@ class InteractionsPerSession(APIView, ParseDateRange):
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
                 {"domain": domain_id}]}},
-            {"$project":{
+            {"$project": {
                 "_id": 0,
                 "datePartDay": {
                     "$concat": [
-                        {"$substr": [ {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},"sid": "$sid"}},
+                        {"$substr": [{"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$year": "$ts"}, 0, 4]}]}, "sid": "$sid"}},
             {"$group": {
                 "_id": {
                     "datePartDay": "$datePartDay",
                     "sid": "$sid"},
-                    "count": {"$sum": 1}}},
+                "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0,
                 "dateObj": {
-                    "$dateFromString":{"dateString": "$_id.datePartDay"}},
-                    "count": "$count",
-                    "sid": "$_id.sid",
-                    "dateStr": "$_id.datePartDay"}},
+                    "$dateFromString": {"dateString": "$_id.datePartDay"}},
+                "count": "$count",
+                "sid": "$_id.sid",
+                "dateStr": "$_id.datePartDay"}},
             {"$group": {
-                "_id":"$dateStr",
-                "avg_count": {"$avg":"$count"}}},
+                "_id": "$dateStr",
+                "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0,
+                "_id": 0,
                 "dateStr": "$_id",
                 "avg_count": {"$round": ["$avg_count", 1]}}},
             {"$group": {
-                "_id":"dateStr", "avg_count": {"$avg":"$avg_count"}}},
+                "_id": "dateStr", "avg_count": {"$avg": "$avg_count"}}},
             {"$project": {
-                "_id":0, "avg_count": {"$round": ["$avg_count", 1]}}}]
+                "_id": 0, "avg_count": {"$round": ["$avg_count", 1]}}}]
 
         data = list(self.events.collection.aggregate(pipeline))
         if not data:
@@ -793,30 +794,30 @@ class InteractionsPerSession(APIView, ParseDateRange):
             {"$match": {"$and": [
                 {"ts": {"$gte": start_date, "$lte": end_date}},
                 {"domain": domain_id}]}},
-            {"$project":{
+            {"$project": {
                 "_id": 0,
                 "datePartDay": {
                     "$concat": [
-                        {"$substr": [ {"$dayOfMonth" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$month" : "$ts"}, 0, 2]}, "-",
-                        {"$substr" : [{"$year" : "$ts"}, 0, 4]}]},"sid": "$sid"}},
+                        {"$substr": [{"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                        {"$substr": [{"$year": "$ts"}, 0, 4]}]}, "sid": "$sid"}},
             {"$group": {
                 "_id": {
                     "datePartDay": "$datePartDay",
                     "sid": "$sid"},
-                    "count": {"$sum": 1}}},
+                "count": {"$sum": 1}}},
             {"$project": {
                 "_id": 0,
                 "dateObj": {
-                    "$dateFromString":{"dateString": "$_id.datePartDay"}},
-                    "count": "$count",
-                    "sid": "$_id.sid",
-                    "dateStr": "$_id.datePartDay"}},
+                    "$dateFromString": {"dateString": "$_id.datePartDay"}},
+                "count": "$count",
+                "sid": "$_id.sid",
+                "dateStr": "$_id.datePartDay"}},
             {"$group": {
-                "_id":"$dateStr",
-                "avg_count": {"$avg":"$count"}}},
+                "_id": "$dateStr",
+                "avg_count": {"$avg": "$count"}}},
             {"$project": {
-                "_id":0,
+                "_id": 0,
                 "dateStr": "$_id",
                 "avg_count": {"$round": ["$avg_count", 1]}}},
             {"$sort": {"dateStr": -1}}]
