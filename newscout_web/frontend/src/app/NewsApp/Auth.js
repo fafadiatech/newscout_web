@@ -4,7 +4,7 @@ import Cookies from 'universal-cookie';
 
 import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 
-import { ARTICLE_LOGIN, ARTICLE_SIGNUP } from '../../utils/Constants';
+import { ARTICLE_LOGIN, ARTICLE_SIGNUP, ARTICLE_FORGOTPASSWORD } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import config_data from './config.json';
@@ -18,7 +18,7 @@ class Auth extends React.Component {
 		super(props);
 		this.state = {
 			modal: this.props.is_open,
-			auth_section: true,
+			auth_section: "login",
 			fields: {
                 email: "",
                 password: "",
@@ -71,7 +71,23 @@ class Auth extends React.Component {
 
 	toggle = () => {
 		this.setState({
-			modal: this.props.is_open
+			modal: this.props.is_open,
+			fields: {
+				email: "",
+				password: "",
+				first_name: "",
+				last_name: ""
+			},
+			is_valid: false,
+			first_name_validation: false,
+			first_name_msg: "",
+			last_name_validation: false,
+			last_name_msg: "",
+			email_validation: false,
+			email_msg: "",
+			password_validation: false,
+			password_msg: "",
+			success_msg: ""
 		}, function(){
 			this.props.toggle(this.state.modal)
 		})
@@ -79,8 +95,47 @@ class Auth extends React.Component {
 
 	handleLoginSubmit = (event) => {
 		event.preventDefault();
-        var body = JSON.stringify(this.state.fields)
-        postRequest(ARTICLE_LOGIN+"?"+this.state.domain, body, this.authLoginResponse, "POST");
+
+		let state = this.state;
+		var email = state.fields.email
+		var password = state.fields.password
+
+		if(email === ""){
+			state.email_validation = true
+			state.email_msg = "This fields is required."
+		}
+
+		if(password === ""){
+			state.password_validation = true
+			state.password_msg = "This fields is required."
+		}
+
+		this.setState(state)
+
+		if(email || password){
+        	var body = JSON.stringify(this.state.fields)
+        	postRequest(ARTICLE_LOGIN+"?"+this.state.domain, body, this.authLoginResponse, "POST");
+        }
+    }
+
+    handleForgotPWDSubmit = (event) => {
+		event.preventDefault();
+
+		let state = this.state;
+		var email = state.fields.email
+
+		if(email === ""){
+			state.email_validation = true
+			state.email_msg = "This fields is required."
+		}
+
+		this.setState(state)
+		
+		if(email) {
+        	var body = JSON.stringify(this.state.fields)
+        	console.log(body)
+        	postRequest(ARTICLE_FORGOTPASSWORD+"?"+this.state.domain, body, this.authForgotPWDResponse, "POST");
+        }
     }
 
     handleSignupSubmit = (event) => {
@@ -121,7 +176,19 @@ class Auth extends React.Component {
     }
 
     authLoginResponse = (data) => {
-        if(data !== "error"){
+        if(data === "error" || data.errors) {
+        	var error = data.errors.invalid_credentials
+        	if(error){
+        		this.setState({
+        			password_validation: true,
+	                password_msg: error
+	            })
+        	} else {
+        		this.setState({
+	                is_valid: true
+	            })
+        	}
+        } else {
             let first_name = data.body.user.first_name;
             let last_name = data.body.user.last_name;
             let state = this.state;
@@ -134,11 +201,6 @@ class Auth extends React.Component {
     		cookies.set('token', data.body.user.token);
             cookies.set('full_name', first_name+" "+last_name);
             this.props.loggedInUser(cookies.get('full_name'))
-
-        } else {
-            this.setState({
-                is_valid: true
-            })
         }
     }
 
@@ -162,49 +224,103 @@ class Auth extends React.Component {
     		})
     		this.setState(state)
     	} else {
-    		state.success_msg = data.Msg
+    		state.success_msg = data.body.Msg
     		this.setState(state)
-    		window.location.reload()
+    		setTimeout(function(){
+    			window.location.reload()
+    		}, 4000)
     	}
     }
 
-	handleAuth = () => {
-		this.setState({
-			auth_section: !this.state.auth_section
-		})
+    authForgotPWDResponse = (data) => {
+    	console.log(data)
+    	// if(data !== "error"){
+     //        let state = this.state;
+     //        state.is_valid = false;
+     //        this.setState(state)
+     //        this.toggle()
+    		
+    	// 	cookies.set('token', data.body.user.token);
+     //        cookies.set('full_name', first_name+" "+last_name);
+     //        this.props.loggedInUser(cookies.get('full_name'))
+     //    } else {
+     //        this.setState({
+     //            is_valid: true
+     //        })
+     //    }
+    }
+
+	handleAuth = (e) => {
+		console.log(this.state.fields)
+		var state = this.state;
+		state.auth_section = e.target.dataset.authsection,
+		state.fields.email = "",
+		state.fields.password = "",
+		state.fields.first_name = "",
+		state.fields.last_name = "",
+		state.is_valid = false,
+		state.first_name_validation = false,
+		state.first_name_msg = "",
+		state.last_name_validation = false,
+		state.last_name_msg = "",
+		state.email_validation = false,
+		state.email_msg = "",
+		state.password_validation = false,
+		state.password_msg = "",
+		state.success_msg = ""
+		this.setState(state)
+		console.log(this.state.fields)
 	}
 
 	render() {
 		let { is_open } = this.props
+		let { fields } = this.state
 		return(
 			<Modal isOpen={is_open} toggle={this.toggle}>
-				{this.state.auth_section ?
+				{this.state.auth_section === "login" ?
 					<React.Fragment>
 						<ModalHeader toggle={this.toggle} className="text-danger"><strong>Login</strong></ModalHeader>
 						<ModalBody>
 							<Form onSubmit={this.handleLoginSubmit} className="authform">
 								<FormGroup>
 									<Label for="email">Email</Label>
-									<Input type="email" name="email" id="email" placeholder="Email" onChange={(e) => this.handleChange("email", e)} />
+									<Input type="email" name="email" id="email" placeholder="Email" onChange={(e) => this.handleChange("email", e)} value={fields.email} />
+									{this.state.email_validation ?
+										<span className="text-danger"><small>{this.state.email_msg}</small></span>
+									:
+										""
+									}
 								</FormGroup>
 								<FormGroup>
 									<Label for="password">Password</Label>
 									<Input type="password" name="password" id="password" placeholder="******" onChange={(e) => this.handleChange("password", e)} />
+									{this.state.password_validation ?
+										<span className="text-danger"><small>{this.state.password_msg}</small></span>
+									:
+										""
+									}
 								</FormGroup>
 								<FormGroup>
-									<button type="submit" className="btn btn-danger">Login</button>
+									<div class="clearfix">
+										<div class="float-left">
+											<button type="submit" class="btn btn-danger mr-3">Login</button>
+										</div>
+										<div class="float-left">
+											<h6 onClick={this.handleAuth} className="authtitle mt-2" data-authsection="forgotpwd">Forgot Password</h6>
+										</div>
+									</div>
 								</FormGroup>
 							</Form>
 							{this.state.is_valid ?
-                                <Alert color="danger">Wrong password or email.</Alert>
+                                <Alert color="danger">Wrong email or password.</Alert>
                             : ""
                             }
 						</ModalBody>
 						<ModalFooter>
-							<p onClick={this.handleAuth} className="authtitle">Need an account? Signup</p>
+							<p onClick={this.handleAuth} className="authtitle" data-authsection="signup">Need an account? Signup</p>
 						</ModalFooter>
 					</React.Fragment>
-				:
+				: this.state.auth_section === "signup" ?
 					<React.Fragment>
 						<ModalHeader toggle={this.toggle} className="text-danger"><strong>Signup</strong></ModalHeader>
 						<ModalBody>
@@ -273,7 +389,34 @@ class Auth extends React.Component {
 							</Form>
 						</ModalBody>
 						<ModalFooter>
-							<p onClick={this.handleAuth} className="authtitle">Already registered? Login</p>
+							<p onClick={this.handleAuth} className="authtitle" data-authsection="login">Already registered? Login</p>
+						</ModalFooter>
+					</React.Fragment>
+				:
+					<React.Fragment>
+						<ModalHeader toggle={this.toggle} className="text-danger"><strong>Forgot Password</strong></ModalHeader>
+						<ModalBody>
+							<Form onSubmit={this.handleForgotPWDSubmit} className="authform">
+								<FormGroup>
+									<Label for="email">Email</Label>
+									<Input type="email" name="email" id="email" placeholder="Email" onChange={(e) => this.handleChange("email", e)} value={fields.email} />
+									{this.state.email_validation ?
+										<span className="text-danger"><small>{this.state.email_msg}</small></span>
+									:
+										""
+									}
+								</FormGroup>
+								<FormGroup>
+									<button type="submit" class="btn btn-danger">Submit</button>
+								</FormGroup>
+							</Form>
+							{this.state.is_valid ?
+                                <Alert color="danger">Wrong email.</Alert>
+                            : ""
+                            }
+						</ModalBody>
+						<ModalFooter>
+							<p onClick={this.handleAuth} className="authtitle" data-authsection="login">Already registered? Login</p>
 						</ModalFooter>
 					</React.Fragment>
 				}

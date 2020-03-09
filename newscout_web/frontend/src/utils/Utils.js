@@ -129,7 +129,7 @@ export const postRequest = function postRequest(url, body, successFunc, method =
                     }
                 })
             }
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401 || response.status === 403 || response.status === 404) {
                 return response.json().then(data => {
                     if (!extra_data) {
                         return successFunc(data);
