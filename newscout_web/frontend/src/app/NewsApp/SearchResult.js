@@ -217,7 +217,7 @@ class SearchResult extends React.Component {
 
 		var result = searchResult.map((item, index) => {
 			return(
-				<div className="col-lg-3 mb-5">
+				<div className="col-lg-4 mb-5">
 					<VerticleCardItem
 						image={item.src}
 						title={item.header}
@@ -246,34 +246,35 @@ class SearchResult extends React.Component {
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
-							<div className="pt-35">
-								<div className="row">
-									<div className="col-lg-12">
-										<div className="clerfix">
-											<div className="float-left">
-												<div className="search">
-													Search result: <span className="text-capitalize">{QUERY}</span>
+							<div className="container">
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12 mb-4">
+											<div className="clerfix">
+												<div className="float-right">
+													<div className="filter" onClick={this.toggleFilter}>
+														<FontAwesomeIcon icon={faFilter} /> Filter
+													</div>
 												</div>
-											</div>
-											<div className="float-right">
-												<div className="filter" onClick={this.toggleFilter}>
-													<FontAwesomeIcon icon={faFilter} />
+												<div className="float-left">
+													<div className="section-title">
+														<h2 className="m-0 section-title">Search result: <span className="text-capitalize">{QUERY}</span></h2>
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-							</div>
-							<div className="pt-35">
-								<div className="row">
-									{result}
-									{
-										this.state.loadingPagination ?
-											<React.Fragment>
-												<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-											</React.Fragment>
-										: ""
-									}
+									
+									<div className="row">
+										{
+											this.state.loadingPagination ?
+												<React.Fragment>
+													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+												</React.Fragment>
+											: ""
+										}
+										{result}
+									</div>
 								</div>
 							</div>
 						</div>
