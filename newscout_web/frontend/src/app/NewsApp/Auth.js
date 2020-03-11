@@ -17,7 +17,6 @@ class Auth extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			modal: this.props.is_open,
 			auth_section: true,
 			fields: {
                 email: "",
@@ -70,11 +69,7 @@ class Auth extends React.Component {
     }
 
 	toggle = () => {
-		this.setState({
-			modal: this.props.is_open
-		}, function(){
-			this.props.toggle(this.state.modal)
-		})
+		this.props.toggle(this.props.is_open)
 	}
 
 	handleLoginSubmit = (event) => {
