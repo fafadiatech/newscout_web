@@ -431,7 +431,7 @@ class ForgotPasswordAPIView(APIView):
         msg.send(fail_silently=False)
 
     def post(self, request, *args, **kwargs):
-        email = self.request.POST.get("email", "")
+        email = request.data["email"]
         if email:
             user = BaseUserProfile.objects.filter(email=email)
             if user:

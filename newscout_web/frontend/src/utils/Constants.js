@@ -31,6 +31,7 @@ export const ANALYTICS_INTERACTIONSPERSESSION_URL = BASE_URL + "/analytics/inter
 
 export const ARTICLE_LOGIN = ARTICLE_API_URL + "login/";
 export const ARTICLE_SIGNUP = ARTICLE_API_URL + "signup/";
+export const ARTICLE_FORGOTPASSWORD = ARTICLE_API_URL + "forgot-password/";
 export const ARTICLE_LOGOUT = ARTICLE_API_URL + "logout/";
 export const ARTICLE_COMMENT = ARTICLE_API_URL + "comment/";
 export const MENUS = ARTICLE_API_URL + "menus/";
