@@ -48,6 +48,7 @@ class SearchResult extends React.Component {
 
 	getNext = () => {
 		this.setState({
+			isLoading: true,
 			loadingPagination: true,
 			page : this.state.page + 1
 		})
@@ -167,7 +168,8 @@ class SearchResult extends React.Component {
 			searchResult: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loadingPagination: false
+			loadingPagination: false,
+			isLoading: false
 		})
 	}
 
@@ -179,7 +181,8 @@ class SearchResult extends React.Component {
 		}
 		final_query = query_array.join("&");
 		this.setState({
-			final_query: final_query
+			final_query: final_query,
+			isLoading: true
 		})
 
 		if (history.pushState) {
@@ -213,22 +216,26 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-5">
-					<VerticleCardItem
-						image={item.src}
-						title={item.header}
-						description={item.caption}
-						uploaded_by={item.source}
-						source_url={item.slug}
-						slug_url={item.slug}
-						category={item.category}
-						hash_tags={item.hash_tags}
-						uploaded_on={item.published_on}
-					/>
+					{isLoading ?
+						<Skeleton height={525} />
+					:
+						<VerticleCardItem
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.slug}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+						/>
+					}
 				</div>
 			)
 		})
