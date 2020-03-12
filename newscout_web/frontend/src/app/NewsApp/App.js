@@ -7,7 +7,6 @@ import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookSquare, faTwitter } from '@fortawesome/free-brands-svg-icons';
 
 import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
