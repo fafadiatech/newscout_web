@@ -342,7 +342,10 @@ class ArticleBookMarkAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        article_id = self.request.POST.get("article_id", "")
+        if request.data:
+            article_id = request.data["article_id"]
+        else:    
+            article_id = self.request.POST.get("article_id", "")
         user = self.request.user
         if article_id:
             article = Article.objects.filter(id=article_id).first()

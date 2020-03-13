@@ -3,13 +3,16 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
+import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
+import Auth from './Auth';
+
+import { MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/ImageOverlay.css'
@@ -19,8 +22,9 @@ import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
-const tabnav_array = [];
+var article_array = [];
 const URL = "/news/search/"
+const cookies = new Cookies();
 
 const settings = {
 	dots: false,
@@ -72,7 +76,48 @@ class App extends React.Component {
 			domain: "domain="+DOMAIN,
 			isLoading: false,
 			isSideOpen: true,
+			modal: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
+			username: cookies.get('full_name'),
+			bookmark_ids: []
 		}
+	}
+
+	loggedInUser = (data) => {
+		this.setState({
+			username: data,
+			is_loggedin: true
+		})
+	}
+
+	toggle = (data) => {
+		this.setState({
+			modal: !data,
+		})
+	}
+
+	fetchArticleBookmark = (articleId) => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
+		var body = JSON.stringify({article_id: articleId})
+		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
+	}
+
+	articleBookmarkResponse = (data) => {
+		var bookmark_obj = data.body.bookmark_article
+		if(bookmark_obj.status === 1){
+			article_array.push(bookmark_obj.article)
+		} else {
+			var index = article_array.indexOf(bookmark_obj.article);
+			if (index > -1) {
+				article_array.splice(index, 1);
+			}
+		}
+		console.log(article_array)
+		this.setState({
+			bookmark_ids: article_array
+		})
 	}
 
 	getMenu = (data) => {
@@ -85,7 +130,7 @@ class App extends React.Component {
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
-				this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
+				// this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
 			}
 		})
 		this.setState({
@@ -101,7 +146,7 @@ class App extends React.Component {
 				for (var ele = 0; ele < articles.length; ele++) {
 					if(articles[ele].cover_image){
 						var article_dict = {}
-						article_dict['id'] = item.id
+						article_dict['id'] = articles[ele].id
 						article_dict['header'] = articles[ele].title
 						article_dict['altText'] = articles[ele].title
 						article_dict['caption'] = articles[ele].blurb
@@ -110,9 +155,16 @@ class App extends React.Component {
 						article_dict['slug'] = "/news/article/"+articles[ele].slug
 						article_dict['source_url'] = articles[ele].source_url
 						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
+						for(var j = 0; j < this.state.bookmark_ids.length; j++) {
+							if(articles[ele].id === this.state.bookmark_ids[j]) {
+								article_dict['is_bookmarked'] = true
+							} else {
+								article_dict['is_bookmarked'] = false
+							}
+						}
 						trending_array.push(article_dict)
-						break;
 					}
+					break;
 				}
 			}
 		})
@@ -142,6 +194,14 @@ class App extends React.Component {
 		} else if(cat_name == "Regional Updates") {
 			this.setState({isLoading: true})
 			getRequest(url, this.regionalUpdatePosts)
+		}
+	}
+
+	getArticleId = (articleId) => {
+		if(cookies.get('full_name')){
+			this.fetchArticleBookmark(articleId)
+		} else {
+			this.toggle()
 		}
 	}
 
@@ -276,14 +336,28 @@ class App extends React.Component {
 		})
 	}
 
+	getBookmarksArticles = (data) => {
+		var article_array = []
+		var article_ids = data.body.results;
+		for(var i = 0; i < article_ids.length; i++){
+			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+				article_array.push(article_ids[i].article)
+				this.setState({
+					bookmark_ids: article_array
+				})
+			}
+		}
+	}
+
 	componentDidMount() {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
+		getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen } = this.state
-		
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin } = this.state
 		var sector_update = sector_update.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
@@ -291,6 +365,7 @@ class App extends React.Component {
 						<Skeleton height={525} />
 					:
 						<VerticleCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -300,6 +375,10 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
 						/>
 					}
 				</div>
@@ -410,7 +489,8 @@ class App extends React.Component {
 												:
 													<React.Fragment>
 														{trending.length > 0 ?
-															<ImageOverlay 
+															<ImageOverlay
+																id={trending[0].id} 
 																image={trending[0].src}
 																title={trending[0].header}
 																description={trending[0].caption}
@@ -418,6 +498,11 @@ class App extends React.Component {
 																source_url={trending[0].source_url}
 																slug_url={trending[0].slug}
 																category={trending[0].category}
+																is_loggedin={is_loggedin}
+																toggle={this.toggle}
+																is_open={modal}
+																getArticleId={this.getArticleId}
+																is_bookmarked={trending[0].is_bookmarked}
 															/>
 														: ''
 														}
@@ -433,12 +518,18 @@ class App extends React.Component {
 													<React.Fragment>
 														{trending.length > 0 ?
 															<ContentOverlay
+																id={trending[1].id} 
 																title={trending[1].header}
 																description={trending[1].caption}
 																uploaded_by={trending[1].source}
 																source_url={trending[1].source_url}
 																slug_url={trending[1].slug}
 																category={trending[1].category}
+																is_loggedin={is_loggedin}
+																toggle={this.toggle}
+																is_open={modal}
+																getArticleId={this.getArticleId}
+																is_bookmarked={trending[1].is_bookmarked}
 															/>
 														: ""
 														}
@@ -511,6 +602,9 @@ class App extends React.Component {
 						</div>
 					</div>
 				</div>
+
+				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+				
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
