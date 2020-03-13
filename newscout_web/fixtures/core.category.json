@@ -1351,15 +1351,6 @@
 },
 {
     "model": "core.category",
-    "pk": 579,
-    "fields": {
-        "created_at": "2020-01-02T08:08:37.428Z",
-        "modified_at": "2020-01-02T08:08:37.428Z",
-        "name": "Warehouse Development"
-    }
-},
-{
-    "model": "core.category",
     "pk": 578,
     "fields": {
         "created_at": "2019-09-30T04:55:39.344Z",
@@ -3160,15 +3151,6 @@
 },
 {
     "model": "core.category",
-    "pk": 378,
-    "fields": {
-        "created_at": "2019-09-09T12:07:44.650Z",
-        "modified_at": "2019-09-09T12:07:44.650Z",
-        "name": "Food"
-    }
-},
-{
-    "model": "core.category",
     "pk": 377,
     "fields": {
         "created_at": "2019-09-09T12:07:44.542Z",
@@ -3489,15 +3471,6 @@
         "created_at": "2019-09-09T12:07:41.907Z",
         "modified_at": "2019-09-09T12:07:41.907Z",
         "name": "Company Analysis"
-    }
-},
-{
-    "model": "core.category",
-    "pk": 341,
-    "fields": {
-        "created_at": "2019-09-09T12:07:41.840Z",
-        "modified_at": "2019-09-09T12:07:41.840Z",
-        "name": "Columns"
     }
 },
 {
