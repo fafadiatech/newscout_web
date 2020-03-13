@@ -115,27 +115,27 @@ class Command(BaseCommand):
         suggestions = []
 
         results = es.search(
-                index='article',
-                body={
-                    "query": {
-                        "bool" : {
-                            "must": [
-                                {
-                                    "multi_match" : {
-                                        "query": title,
-                                        "fields": ["title", "blurb^3"]
-                                    }
-                                },
-                                {
-                                    "match" : {
-                                        "domain": domain
-                                    }
+            index='article',
+            body={
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "multi_match": {
+                                    "query": title,
+                                    "fields": ["title", "blurb^3"]
                                 }
-                            ]
-                        }
-                    },
-                    "size": 100
-                    })
+                            },
+                            {
+                                "match": {
+                                    "domain": domain
+                                }
+                            }
+                        ]
+                    }
+                },
+                "size": 100
+            })
 
         while len(suggestions) != K:
             rec = {}
@@ -180,7 +180,8 @@ class Command(BaseCommand):
             if video_data:
                 cover_image = video_data[0].get("video_image", "")
         if title and full_text:
-            if not Article.objects.filter(title=title).exists():
+            if (not Article.objects.filter(title=title).exists()) and \
+               (not Article.objects.filter(cover_image=cover_image).exists()):
                 if category == "Uncategorised":
                     # apply regex based category only if article is uncategorised
                     # get category id from regex classfication
@@ -255,7 +256,7 @@ class Command(BaseCommand):
                     ingest_to_elastic(self.batch, index, index, 'id')
                     ingest_to_elastic(
                         self.recommendation_batch, "recommendation",
-                            "recommendation", "id")
+                        "recommendation", "id")
                     self.batch = []
                     self.recommendation_batch = []
                     print("Ingesting Batch To Elastic...!!!")
