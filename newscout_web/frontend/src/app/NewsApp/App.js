@@ -296,7 +296,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.source_url}
+							source_url={item.slug}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -318,7 +318,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.source_url}
+							source_url={item.slug}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -340,7 +340,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.source_url}
+							source_url={item.slug}
 							slug_url={item.slug}
 							category={item.category}
 							size="sm"
@@ -361,7 +361,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.source_url}
+							source_url={item.slug}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -383,7 +383,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.source_url}
+							source_url={item.slug}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -416,7 +416,7 @@ class App extends React.Component {
 																title={trending[0].header}
 																description={trending[0].caption}
 																uploaded_by={trending[0].source}
-																source_url={trending[0].source_url}
+																source_url={trending[0].slug}
 																slug_url={trending[0].slug}
 																category={trending[0].category}
 															/>
@@ -437,7 +437,7 @@ class App extends React.Component {
 																title={trending[1].header}
 																description={trending[1].caption}
 																uploaded_by={trending[1].source}
-																source_url={trending[1].source_url}
+																source_url={trending[1].slug}
 																slug_url={trending[1].slug}
 																category={trending[1].category}
 															/>
