@@ -1,15 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
+import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
+import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import DashboardMenu from '../../components/DashboardMenu';
-import DashboardHeader from '../../components/DashboardHeader';
 import { GROUP_URL, CATEGORIES_CAMPAIGN_URL } from '../../utils/Constants';
 import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
 
 class Group extends React.Component {
 	constructor(props) {
@@ -27,7 +31,8 @@ class Group extends React.Component {
 			previous: null,
 			loading: false,
 			q: "",
-			page : 0
+			page : 0,
+			isSideOpen: true,
 		};
 	}
 
@@ -296,6 +301,12 @@ class Group extends React.Component {
 		}
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getGroups()
@@ -308,6 +319,8 @@ class Group extends React.Component {
 	}
 
 	render(){
+		var { menus, isSideOpen } = this.state
+
 		let result_array = this.state.results
 		let results = []
 
@@ -364,12 +377,12 @@ class Group extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="group">
-					<DashboardHeader />
+					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
 					<div className="container-fluid">
 						<div className="row">
-							<DashboardMenu />
-							<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-								<div className="mb-3">
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+								<div className="pt-50 mb-3">
 									<h1 className="h2">Groups</h1>
 									<div className="clearfix">
 										<div className="float-left">
@@ -407,7 +420,7 @@ class Group extends React.Component {
 										: ""
 									}
 								</div>
-							</main>
+							</div>
 						</div>
 					</div>
 
@@ -442,6 +455,7 @@ class Group extends React.Component {
 						</ModalFooter>
 					</Modal>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}
