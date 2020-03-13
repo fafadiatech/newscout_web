@@ -423,7 +423,7 @@ class ForgotPasswordAPIView(APIView):
             </html>"""
 
         msg = EmailMultiAlternatives(
-            email_subject, '', settings.EMAIL_HOST_USER, [email])
+            email_subject, '', settings.EMAIL_FROM, [email])
         ebody = email_body
         msg.attach_alternative(ebody, "text/html")
         msg.send(fail_silently=False)
