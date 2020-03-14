@@ -3,6 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
+import Skeleton from 'react-loading-skeleton';
 import { JumboBox, Menu, SideBox, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
@@ -11,7 +12,7 @@ import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, Mo
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, BASE_URL, CAPTCHA_URL } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -22,6 +23,7 @@ import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
+var article_array = [];
 const URL = "/news/search/";
 const cookies = new Cookies();
 
@@ -47,7 +49,20 @@ class ArticleDetail extends React.Component {
 			resetAll : false,
 			is_captcha : true,
 			isSideOpen: true,
+			modal: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
+			username: cookies.get('full_name'),
+			bookmark_ids: []
 		};
+	}
+
+	getArticleId = (articleId) => {
+		if(cookies.get('full_name')){
+			this.fetchArticleBookmark(articleId)
+		} else {
+			this.toggle()
+		}
 	}
 
 	loggedInUser = (data) => {
@@ -80,6 +95,29 @@ class ArticleDetail extends React.Component {
 			is_captcha: true
 		})
     }
+
+    fetchArticleBookmark = (articleId) => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
+		var body = JSON.stringify({article_id: articleId})
+		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
+	}
+
+	articleBookmarkResponse = (data) => {
+		var bookmark_obj = data.body.bookmark_article
+		var index = article_array.indexOf(bookmark_obj.article);
+		
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
+			article_array.push(bookmark_obj.article)
+		}
+		
+		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
+		this.setState({
+			bookmark_ids: article_array
+		})
+	}
 
 	getArticleDetail = (data) => {
 		var state = this.state;
@@ -215,10 +253,25 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+	getBookmarksArticles = (data) => {
+		var article_array = []
+		var article_ids = data.body.results;
+		for(var i = 0; i < article_ids.length; i++){
+			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+				article_array.push(article_ids[i].article)
+				this.setState({
+					bookmark_ids: article_array
+				})
+			}
+		}
+	}
+
 	componentDidMount() {
 		if(cookies.get('full_name')){
 			this.fetchCaptcha();
 			this.setState({is_loggedin:true, is_captcha:false})
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
@@ -226,7 +279,7 @@ class ArticleDetail extends React.Component {
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin } = this.state;
+		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids } = this.state;
     	var root_category = ""
 		var category = ""
 		if(article.root_category) {
@@ -267,7 +320,8 @@ class ArticleDetail extends React.Component {
 											<div className="row">
 												<div className="col-lg-12">
 													<div className="article-detail">
-														<JumboBox 
+														<JumboBox
+															id={article.id} 
 															image={article.src}
 															title={article.title}
 															description={article.caption}
@@ -276,7 +330,14 @@ class ArticleDetail extends React.Component {
 															slug_url={article.slug}
 															category={article.category}
 															hash_tags={article.hash_tags}
-															uploaded_on={article.date} />
+															uploaded_on={article.date}
+															is_loggedin={is_loggedin}
+															toggle={this.toggle}
+															is_open={modal}
+															getArticleId={this.getArticleId}
+															bookmark_ids={bookmark_ids}
+															base_url={BASE_URL}
+														/>
 													</div>
 												</div>
 											</div>
