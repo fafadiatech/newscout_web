@@ -1206,7 +1206,7 @@ class CategoryBulkUpdate(APIView):
 
 class GetDailyDigestView(ListAPIView):
     serializer_class = ArticleSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny)
 
     def format_response(self, response):
         results = []
