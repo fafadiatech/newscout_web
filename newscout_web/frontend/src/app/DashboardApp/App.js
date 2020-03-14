@@ -1,7 +1,7 @@
 import React from 'react';
 import Datetime from 'react-datetime';
 import logo from '../NewsApp/logo.png';
-import { getRequest } from '../../utils/Utils';
+import { getRequest, authHeaders } from '../../utils/Utils';
 import { Menu, SideBar, Footer } from 'newscout';
 import { Button, FormGroup, Label, Input } from 'reactstrap';
 
@@ -126,49 +126,49 @@ class App extends React.Component {
 	GetAllArticlesOpenData = (url) => {
 		var URL = url || ANALYTICS_ALLARTICLESOPEN_URL;
 		var extraData = {"loading": "AllArticlesOpenLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerPlatformData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERPLATFORM_URL;
 		var extraData = {"loading": "ArticlesPerPlatformLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerCategoryData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERCATEGORY_URL;
 		var extraData = {"loading": "ArticlesPerCategoryLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerCategoryData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERCATEGORY_URL;
 		var extraData = {"loading": "InteractionsPerCategoryLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerAuthorData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERAUTHOR_URL;
 		var extraData = {"loading": "ArticlesPerAuthorLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerAuthorData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERAUTHOR_URL;
 		var extraData = {"loading": "InteractionsPerAuthorLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerSessionData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERSESSION_URL;
 		var extraData = {"loading": "ArticlesPerSessionLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerSessionData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERSESSION_URL;
 		var extraData = {"loading": "InteractionsPerSessionLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	toggle = () => {

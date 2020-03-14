@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
 import { ADVERTISEMENT_URL, GROUP_GROUPTYPE_URL } from '../../utils/Constants';
-import { getRequest, postRequest, fileUploadHeaders, putRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, fileUploadHeaders, authHeaders, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -82,7 +82,7 @@ class Advertisement extends React.Component {
 				results: []
 			})
 			var url = ADVERTISEMENT_URL + "?q=" + this.state.q;
-			getRequest(url, this.getAdvertisementData);
+			getRequest(url, this.getAdvertisementData, authHeaders);
 		}
 	}
 
@@ -193,7 +193,7 @@ class Advertisement extends React.Component {
 		let dataindex = e.target.getAttribute('data-index');
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = ADVERTISEMENT_URL + dataindex + "/";
-		deleteRequest(url, this.deleteAdvertisementResponse)
+		deleteRequest(url, this.deleteAdvertisementResponse, authHeaders)
 		setTimeout(function() {
 			findrow.style.transition = '0.8s';
 			findrow.style.opacity = '0';
@@ -236,7 +236,7 @@ class Advertisement extends React.Component {
 			loading: true
 		})
 		var url = ADVERTISEMENT_URL;
-		getRequest(url, this.getAdvertisementData);
+		getRequest(url, this.getAdvertisementData, authHeaders);
 	}
 
 	getAdvertisementData = (data) => {
@@ -263,7 +263,7 @@ class Advertisement extends React.Component {
 			loading: true,
 			page : this.state.page + 1
 		})
-		getRequest(this.state.next, this.getAdvertisementData);
+		getRequest(this.state.next, this.getAdvertisementData, authHeaders);
 	}
 
 	handleScroll = () => {
@@ -284,7 +284,7 @@ class Advertisement extends React.Component {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getAdvertisements()
 		var group_type_url = GROUP_GROUPTYPE_URL;
-		getRequest(group_type_url, this.getGroupAndGroupType)
+		getRequest(group_type_url, this.getGroupAndGroupType, authHeaders)
 	}
 
 	componentWillUnmount = () => {

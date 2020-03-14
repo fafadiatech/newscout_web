@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
 import { GROUP_URL, CATEGORIES_CAMPAIGN_URL } from '../../utils/Constants';
-import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, putRequest, deleteRequest, notify, authHeaders } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -50,7 +50,7 @@ class Group extends React.Component {
 				results: []
 			})
 			var url = GROUP_URL + "?q=" + this.state.q;
-			getRequest(url, this.getGroupsData);
+			getRequest(url, this.getGroupsData, authHeaders);
 		}
 	}
 
@@ -136,7 +136,7 @@ class Group extends React.Component {
 		if(this.handleValidation()){
 			const body = JSON.stringify(this.state.fields)
 			var extra_data = {"clean_results": true};
-			postRequest(GROUP_URL, body, this.groupSubmitResponse, "POST", false, extra_data);
+			postRequest(GROUP_URL, body, this.groupSubmitResponse, "POST", authHeaders, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -157,7 +157,7 @@ class Group extends React.Component {
 			var body = {'campaign': this.state.fields['campaign'].value, 'category': final_category, 'id': this.state.fields.id}
 			var url = GROUP_URL + this.state.fields.id + "/";
 			var extra_data = {"clean_results": true};
-			putRequest(url, JSON.stringify(body), this.groupUpdateResponse, "PUT", false, extra_data);
+			putRequest(url, JSON.stringify(body), this.groupUpdateResponse, "PUT", authHeaders, extra_data);
 		}
 	}
 
@@ -223,7 +223,7 @@ class Group extends React.Component {
 		let dataindex = e.target.getAttribute('data-id');
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = GROUP_URL + dataindex + "/";
-		deleteRequest(url, this.deleteGroupResponse)
+		deleteRequest(url, this.deleteGroupResponse, authHeaders)
 		setTimeout(function() {
 			findrow.style.transition = '0.8s';
 			findrow.style.opacity = '0';
@@ -262,7 +262,7 @@ class Group extends React.Component {
 
 	getGroups = (data) => {
 		var url = GROUP_URL;
-		getRequest(url, this.getGroupsData);
+		getRequest(url, this.getGroupsData, authHeaders);
 	}
 
 	getGroupsData = (data) => {
@@ -290,7 +290,7 @@ class Group extends React.Component {
 			loading: true,
 			page : this.state.page + 1
 		})
-		getRequest(this.state.next, this.getGroupsData);
+		getRequest(this.state.next, this.getGroupsData, authHeaders);
 	}
 
 	handleScroll = () => {
@@ -311,7 +311,7 @@ class Group extends React.Component {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getGroups()
 		var campaign_category_url = CATEGORIES_CAMPAIGN_URL;
-		getRequest(campaign_category_url, this.getCampaignCategories);
+		getRequest(campaign_category_url, this.getCampaignCategories, authHeaders);
 	}
 
 	componentWillUnmount = () => {
