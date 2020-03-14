@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Auth from './Auth';
 
-import { MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -106,15 +106,15 @@ class App extends React.Component {
 
 	articleBookmarkResponse = (data) => {
 		var bookmark_obj = data.body.bookmark_article
-		if(bookmark_obj.status === 1){
+		var index = article_array.indexOf(bookmark_obj.article);
+		
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
-		} else {
-			var index = article_array.indexOf(bookmark_obj.article);
-			if (index > -1) {
-				article_array.splice(index, 1);
-			}
 		}
-		console.log(article_array)
+		
+		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
 		this.setState({
 			bookmark_ids: article_array
 		})
@@ -130,7 +130,7 @@ class App extends React.Component {
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
-				// this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
+				this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
 			}
 		})
 		this.setState({
@@ -141,30 +141,24 @@ class App extends React.Component {
 	getTrending = (data) => {
 		var trending_array = []
 		data.body.results.map((item, index) => {
-			var articles = item.articles;
-			if(articles.length < 3){
-				for (var ele = 0; ele < articles.length; ele++) {
-					if(articles[ele].cover_image){
-						var article_dict = {}
-						article_dict['id'] = articles[ele].id
-						article_dict['header'] = articles[ele].title
-						article_dict['altText'] = articles[ele].title
-						article_dict['caption'] = articles[ele].blurb
-						article_dict['source'] = articles[ele].source
-						article_dict['category'] = articles[ele].category
-						article_dict['slug'] = "/news/article/"+articles[ele].slug
-						article_dict['source_url'] = articles[ele].source_url
-						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
-						for(var j = 0; j < this.state.bookmark_ids.length; j++) {
-							if(articles[ele].id === this.state.bookmark_ids[j]) {
-								article_dict['is_bookmarked'] = true
-							} else {
-								article_dict['is_bookmarked'] = false
-							}
+			if(index+1 <= 5){
+				var articles = item.articles;
+				if(articles.length <= 2){
+					for (var ele = 0; ele < articles.length; ele++) {
+						if(articles[ele].cover_image){
+							var article_dict = {}
+							article_dict['id'] = articles[ele].id
+							article_dict['header'] = articles[ele].title
+							article_dict['altText'] = articles[ele].title
+							article_dict['caption'] = articles[ele].blurb
+							article_dict['source'] = articles[ele].source
+							article_dict['category'] = articles[ele].category
+							article_dict['slug'] = "/news/article/"+articles[ele].slug
+							article_dict['source_url'] = articles[ele].source_url
+							article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
+							trending_array.push(article_dict)
 						}
-						trending_array.push(article_dict)
 					}
-					break;
 				}
 			}
 		})
@@ -350,14 +344,16 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		if(cookies.get('full_name')){
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		}
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids } = this.state
 		var sector_update = sector_update.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
@@ -379,6 +375,8 @@ class App extends React.Component {
 							toggle={this.toggle}
 							is_open={modal}
 							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -401,6 +399,12 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -444,6 +448,12 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -466,6 +476,12 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -502,7 +518,8 @@ class App extends React.Component {
 																toggle={this.toggle}
 																is_open={modal}
 																getArticleId={this.getArticleId}
-																is_bookmarked={trending[0].is_bookmarked}
+																bookmark_ids={bookmark_ids}
+																base_url={BASE_URL}
 															/>
 														: ''
 														}
@@ -529,7 +546,8 @@ class App extends React.Component {
 																toggle={this.toggle}
 																is_open={modal}
 																getArticleId={this.getArticleId}
-																is_bookmarked={trending[1].is_bookmarked}
+																bookmark_ids={bookmark_ids}
+																base_url={BASE_URL}
 															/>
 														: ""
 														}

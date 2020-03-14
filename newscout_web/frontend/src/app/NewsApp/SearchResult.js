@@ -2,13 +2,16 @@ import React from 'react';
 import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
+import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { Menu, SideBar, Filter, VerticleCardItem, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
-import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
+import Auth from './Auth';
+
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
 import 'newscout/assets/Menu.css'
@@ -21,7 +24,9 @@ import config_data from './config.json';
 
 var query_array = [];
 var final_query = "";
-const URL = "/news/search/";
+var article_array = [];
+const URL = "/news/search/"
+const cookies = new Cookies();
 
 class SearchResult extends React.Component {
 	
@@ -42,8 +47,49 @@ class SearchResult extends React.Component {
 			previous: null,
 			isSideOpen: true,
 			domain: "domain="+DOMAIN,
-			isLoading: false
+			isLoading: false,
+			modal: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
+			username: cookies.get('full_name'),
+			bookmark_ids: []
 		};
+	}
+
+	loggedInUser = (data) => {
+		this.setState({
+			username: data,
+			is_loggedin: true
+		})
+	}
+
+	toggle = (data) => {
+		this.setState({
+			modal: !data,
+		})
+	}
+
+	fetchArticleBookmark = (articleId) => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
+		var body = JSON.stringify({article_id: articleId})
+		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
+	}
+
+	articleBookmarkResponse = (data) => {
+		var bookmark_obj = data.body.bookmark_article
+		var index = article_array.indexOf(bookmark_obj.article);
+		
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
+			article_array.push(bookmark_obj.article)
+		}
+		
+		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
+		this.setState({
+			bookmark_ids: article_array
+		})
 	}
 
 	getNext = () => {
@@ -201,6 +247,19 @@ class SearchResult extends React.Component {
 		})
 	}
 
+	getBookmarksArticles = (data) => {
+		var article_array = []
+		var article_ids = data.body.results;
+		for(var i = 0; i < article_ids.length; i++){
+			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+				article_array.push(article_ids[i].article)
+				this.setState({
+					bookmark_ids: article_array
+				})
+			}
+		}
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
@@ -208,6 +267,10 @@ class SearchResult extends React.Component {
 			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);
 		} else {
 			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY, this.getSearchResult);
+		}
+		if(cookies.get('full_name')){
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
 	}
 
@@ -225,6 +288,7 @@ class SearchResult extends React.Component {
 						<Skeleton height={525} />
 					:
 						<VerticleCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -234,6 +298,12 @@ class SearchResult extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>

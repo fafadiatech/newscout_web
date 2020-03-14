@@ -2,10 +2,11 @@ import React from 'react';
 import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
+import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, VerticleCardItem, SideBar, Footer } from 'newscout';
 
-import config_data from './config.json';
+import Auth from './Auth';
 
 import './style.css';
 import 'newscout/assets/Menu.css';
@@ -13,10 +14,14 @@ import 'newscout/assets/CardItem.css';
 import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/Sidebar.css'
 
-import { MENUS, TRENDING_NEWS, ARTICLE_POSTS } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { getRequest, postRequest } from '../../utils/Utils';
 
+import config_data from './config.json';
+
+var article_array = [];
 const URL = "/news/search/"
+const cookies = new Cookies();
 
 class Trending extends React.Component {
 	
@@ -32,7 +37,48 @@ class Trending extends React.Component {
 			domain: "domain="+DOMAIN,
 			isLoading: false,
 			isSideOpen: true,
+			modal: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
+			username: cookies.get('full_name'),
+			bookmark_ids: []
 		};
+	}
+
+	loggedInUser = (data) => {
+		this.setState({
+			username: data,
+			is_loggedin: true
+		})
+	}
+
+	toggle = (data) => {
+		this.setState({
+			modal: !data,
+		})
+	}
+
+	fetchArticleBookmark = (articleId) => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
+		var body = JSON.stringify({article_id: articleId})
+		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
+	}
+
+	articleBookmarkResponse = (data) => {
+		var bookmark_obj = data.body.bookmark_article
+		var index = article_array.indexOf(bookmark_obj.article);
+		
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
+			article_array.push(bookmark_obj.article)
+		}
+		
+		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
+		this.setState({
+			bookmark_ids: article_array
+		})
 	}
 
 	getNext = () => {
@@ -112,10 +158,27 @@ class Trending extends React.Component {
 		})
 	}
 
+	getBookmarksArticles = (data) => {
+		var article_array = []
+		var article_ids = data.body.results;
+		for(var i = 0; i < article_ids.length; i++){
+			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+				article_array.push(article_ids[i].article)
+				this.setState({
+					bookmark_ids: article_array
+				})
+			}
+		}
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		this.getTrendingPosts()
+		if(cookies.get('full_name')){
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		}
 	}
 
 	componentWillUnmount = () => {
@@ -123,7 +186,7 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, isLoading, isSideOpen } = this.state;
+		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids } = this.state;
 
 		var result = trending.map((item, index) => {
 			return (
@@ -135,6 +198,7 @@ class Trending extends React.Component {
 						</React.Fragment>
 					:
 						<VerticleCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -144,6 +208,12 @@ class Trending extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
