@@ -85,9 +85,9 @@ class ArticleDetail extends React.Component {
 		var state = this.state;
 		var article_dict = {}
 		state.article.id = data.body.article.id;
-		state.article.slug = data.body.article.slug;
-		state.article.altText = data.body.article.title;
+		state.article.slug = "/news/article/"+data.body.article.slug;
 		state.article.title = data.body.article.title;
+		state.article.altText = data.body.article.title;
 		state.article.caption = data.body.article.blurb;
 		state.article.source = data.body.article.source;
 		state.article.source_url = data.body.article.source_url;
@@ -268,13 +268,15 @@ class ArticleDetail extends React.Component {
 												<div className="col-lg-12">
 													<div className="article-detail">
 														<JumboBox 
-															source_url={article.source_url}
 															image={article.src}
 															title={article.title}
-															uploaded_on={article.date}
-															uploaded_by={article.source}
 															description={article.caption}
-															hash_tags={article.hash_tags} />
+															uploaded_by={article.source}
+															source_url={article.source_url}
+															slug_url={article.slug}
+															category={article.category}
+															hash_tags={article.hash_tags}
+															uploaded_on={article.date} />
 													</div>
 												</div>
 											</div>
