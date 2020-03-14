@@ -1,6 +1,10 @@
 import React from 'react';
-import DashboardMenu from '../../components/DashboardMenu';
-import DashboardHeader from '../../components/DashboardHeader';
+import Datetime from 'react-datetime';
+import logo from '../NewsApp/logo.png';
+import { getRequest } from '../../utils/Utils';
+import { Menu, SideBar, Footer } from 'newscout';
+import { Button, FormGroup, Label, Input } from 'reactstrap';
+
 import AllArticlesOpenGraph from '../../components/AllArticlesOpenGraph';
 import ArticlesPerAuthorGraph from '../../components/ArticlesPerAuthorGraph';
 import ArticlesPerPlatformGraph from '../../components/ArticlesPerPlatformGraph';
@@ -16,10 +20,11 @@ import { ANALYTICS_ALLARTICLESOPEN_URL,	ANALYTICS_ARTICLESPERPLATFORM_URL,
 		 ANALYTICS_INTERACTIONSPERAUTHOR_URL,
 		 ANALYTICS_ARTICLESPERSESSION_URL,
 		 ANALYTICS_INTERACTIONSPERSESSION_URL } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
-import Datetime from 'react-datetime';
-import { Button, FormGroup, Label, Input } from 'reactstrap';
 
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
 
 class App extends React.Component {
 	constructor(props) {
@@ -63,7 +68,8 @@ class App extends React.Component {
 			ArticlesPerAuthorAvgCount: 0,
 			InteractionsPerAuthorAvgCount: 0,
 			ArticlesPerSessionAvgCount: 0,
-			InteractionsPerSessionAvgCount: 0
+			InteractionsPerSessionAvgCount: 0,
+			isSideOpen: true,
 		};
 	}
 
@@ -249,6 +255,12 @@ class App extends React.Component {
 		this.setState(state)
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount(){
 		this.GetAllArticlesOpenData()
 		this.GetArticlesPerPlatformData()
@@ -261,14 +273,15 @@ class App extends React.Component {
 	}
 
 	render(){
+		var { menus, isSideOpen } = this.state
 		return(
 			<div className="App">
-				<DashboardHeader />
+				<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
 				<div className="container-fluid">
 					<div className="row">
-						<DashboardMenu />
-						<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-							<div className="row">
+						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+							<div className="row pt-50">
 								<div className="col-md-4">
 									<FormGroup>
 										<Label for="date_range">Select Date Range</Label>
@@ -482,9 +495,10 @@ class App extends React.Component {
 									<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
 								</div>
 							</div>
-						</main>
+						</div>
 					</div>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</div>
 		);
 	}

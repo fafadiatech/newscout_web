@@ -1,7 +1,9 @@
 import React from 'react';
 import moment from 'moment';
 import ReactDOM from 'react-dom';
+import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
+import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
 import {ARTICLE_LIST_URL, ARTICLE_STATUS_URL} from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
@@ -10,6 +12,10 @@ import { getRequest, postRequest } from '../../utils/Utils';
 import { Button, Form, Input, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
 
 class Article extends React.Component {
 	constructor(props) {
@@ -21,7 +27,8 @@ class Article extends React.Component {
 			previous: null,
 			loading: false,
 			q: "",
-			articleUpdateId: ""
+			articleUpdateId: "",
+			isSideOpen: true,
 		};
 	}
 
@@ -122,6 +129,12 @@ class Article extends React.Component {
         }, 3000);
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getArticles()
@@ -132,8 +145,11 @@ class Article extends React.Component {
 	}
 
 	render(){
+		var { menus, isSideOpen } = this.state
+
 		let result_array = this.state.results
 		let results = []
+		
 		result_array.map((el, index) => {
 			var published_on = moment(el.published_on).format('YYYY-MM-DD m:ss A');
 
@@ -181,12 +197,12 @@ class Article extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
-					<DashboardHeader />
+					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
 					<div className="container-fluid">
 						<div className="row">
-							<DashboardMenu />
-							<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-								<div className="mb-3">
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+								<div className="pt-50 mb-3">
 									<h1 className="h2">Articles</h1>
 									<div className="clearfix">
 										<div className="float-left">
@@ -224,10 +240,11 @@ class Article extends React.Component {
 										: ""
 									}
 								</div>
-							</main>
+							</div>
 						</div>
 					</div>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}
