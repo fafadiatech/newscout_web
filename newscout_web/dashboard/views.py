@@ -2,6 +2,7 @@
 
 from django.views.generic import FormView
 from django.http import HttpResponseRedirect
+from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic.base import TemplateView, RedirectView
 from braces.views import LoginRequiredMixin
@@ -110,10 +111,15 @@ class LoginView(FormView):
         user = authenticate(request=None, username=email, password=password)
         if user and user.is_active:
             login(self.request, user)
+            token, _ = Token.objects.get_or_create(user=user)
             if next_url:
-                return HttpResponseRedirect(next_url)
+                res = HttpResponseRedirect(next_url)
+                res.set_cookie("token", token)
+                return res
             else:
-                return HttpResponseRedirect(self.get_success_url())
+                res = HttpResponseRedirect(self.get_success_url())
+                res.set_cookie("token", token)
+                return res
 
         return self.form_invalid(form)
 
@@ -127,3 +133,9 @@ class LogOutView(RedirectView):
         url = "/login/"
         logout(self.request)
         return url
+
+    def get(self, request, *args, **kwargs):
+        url = self.get_redirect_url()
+        res = HttpResponseRedirect(url)
+        res.delete_cookie("token")
+        return res
