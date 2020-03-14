@@ -49,7 +49,7 @@ class Campaign extends React.Component {
 				results: []
 			})
 			var url = CAMPAIGN_URL + "?q=" + this.state.q;
-			getRequest(url, this.getCampaignsData);
+			getRequest(url, this.getCampaignsData, authHeaders);
 		}
 	}
 
@@ -147,7 +147,7 @@ class Campaign extends React.Component {
 			this.state.fields["is_active"] = true;
 			const body = JSON.stringify(this.state.fields)
 			var extra_data = {"clean_results": true};
-			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", false, extra_data);
+			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", authHeaders, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -167,7 +167,7 @@ class Campaign extends React.Component {
 			const body = JSON.stringify(this.state.fields)
 			var url = CAMPAIGN_URL + this.state.fields.id + "/";
 			var extra_data = {"clean_results": true};
-			putRequest(url, body, this.campaignUpdateResponse, "PUT", false, extra_data);
+			putRequest(url, body, this.campaignUpdateResponse, "PUT", authHeaders, extra_data);
 		}
 	}
 
@@ -211,12 +211,12 @@ class Campaign extends React.Component {
 		let dataindex = e.target.getAttribute('data-id');
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = CAMPAIGN_URL + dataindex + "/";
-		deleteRequest(url, this.deleteCampaignResponse)
+		deleteRequest(url, this.deleteCampaignResponse, authHeaders)
 	}
 
 	getCampaigns = () => {
 		var url = CAMPAIGN_URL;
-		getRequest(url, this.getCampaignsData);
+		getRequest(url, this.getCampaignsData, authHeaders);
 	}
 
 	getCampaignsData = (data) => {
@@ -243,7 +243,7 @@ class Campaign extends React.Component {
 			loading: true,
 			page : this.state.page + 1
 		})
-		getRequest(this.state.next, this.getCampaignsData);
+		getRequest(this.state.next, this.getCampaignsData, authHeaders);
 	}
 
 	handleScroll = () => {
