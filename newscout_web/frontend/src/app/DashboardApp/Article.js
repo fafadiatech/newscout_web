@@ -8,7 +8,7 @@ import * as serviceWorker from './serviceWorker';
 import {ARTICLE_LIST_URL, ARTICLE_STATUS_URL} from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
-import { getRequest, postRequest } from '../../utils/Utils';
+import { getRequest, postRequest, authHeaders } from '../../utils/Utils';
 import { Button, Form, Input, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
@@ -34,7 +34,7 @@ class Article extends React.Component {
 
 	getArticles = () => {
 		var url = ARTICLE_LIST_URL;
-		getRequest(url, this.setArticleData);
+		getRequest(url, this.setArticleData, authHeaders);
 	}
 
 	getNext = () => {
@@ -42,7 +42,7 @@ class Article extends React.Component {
 			loading: true,
 			page : this.state.page + 1
 		})
-		getRequest(this.state.next, this.setArticleData);
+		getRequest(this.state.next, this.setArticleData, authHeaders);
 	}
 
 	setArticleData = (data) => {
@@ -92,7 +92,7 @@ class Article extends React.Component {
 				results: []
 			})
 			var url = ARTICLE_LIST_URL + "?q=" + this.state.q;
-			getRequest(url, this.setArticleData);
+			getRequest(url, this.setArticleData, authHeaders);
 		}
 	}
 
@@ -106,7 +106,7 @@ class Article extends React.Component {
 		}
 		var post_data = {"id": _id, "activate": active}
 		var body = JSON.stringify(post_data)
-        postRequest(ARTICLE_STATUS_URL, body, this.handleArticleStatus, "POST");
+        postRequest(ARTICLE_STATUS_URL, body, this.handleArticleStatus, "POST", authHeaders);
 	}
 
 	handleArticleStatus = (data) => {

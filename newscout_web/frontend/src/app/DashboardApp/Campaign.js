@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
 import {CAMPAIGN_URL} from '../../utils/Constants';
-import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, putRequest, deleteRequest, notify, authHeaders } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';

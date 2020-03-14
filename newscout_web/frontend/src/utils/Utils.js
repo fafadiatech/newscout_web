@@ -13,6 +13,12 @@ export const readCookie = function (name) {
 
 export const location_origin = window.location.origin
 
+export const authHeaders = {
+    "X-CSRFToken": readCookie("csrftoken"),
+    "Authorization": readCookie("token"),
+    "Content-Type": "application/json"
+};
+
 export const postHeaders = {
     "X-CSRFToken": readCookie("csrftoken"),
     "Content-Type": "application/json"
@@ -29,7 +35,8 @@ export const getHeaders = {
 };
 
 export const fileUploadHeaders = {
-    "X-CSRFToken": readCookie("csrftoken")
+    "X-CSRFToken": readCookie("csrftoken"),
+    "Authorization": readCookie("token"),
 };
 
 export const fileResumeUploadHeaders = {
