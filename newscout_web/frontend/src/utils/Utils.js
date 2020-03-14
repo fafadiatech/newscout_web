@@ -15,7 +15,7 @@ export const location_origin = window.location.origin
 
 export const authHeaders = {
     "X-CSRFToken": readCookie("csrftoken"),
-    "Authorization": readCookie("token"),
+    "Authorization": "Token " + readCookie("token"),
     "Content-Type": "application/json"
 };
 
@@ -36,7 +36,7 @@ export const getHeaders = {
 
 export const fileUploadHeaders = {
     "X-CSRFToken": readCookie("csrftoken"),
-    "Authorization": readCookie("token"),
+    "Authorization": "Token " + readCookie("token"),
 };
 
 export const fileResumeUploadHeaders = {
