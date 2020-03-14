@@ -312,74 +312,58 @@ class App extends React.Component {
 								}
 								<div className="col-md-4">
 									<Label for="" className="d-block text-transparent">Select Date Range</Label>
-									<Button color="primary" onClick={this.handleSubmitBtn} disabled={this.state.disabled}>Submit</Button>
+									<Button color="danger" onClick={this.handleSubmitBtn} disabled={this.state.disabled}>Submit</Button>
 								</div>
 							</div>
-							<div className="row mt-5 mb-3">
+							<div className="row mt-5">
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles</p>
-														<h5 className="mb-0 mt-2">Open</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles</p>
+												<h5 className="mb-0 mt-1">Open</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Platform</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Platform</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Category</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Category</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Interactions Per</p>
-														<h5 className="mb-0 mt-2">Category</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Interactions Per</p>
+												<h5 className="mb-0 mt-1">Category</h5>
 											</div>
 										</div>
 									</div>
@@ -387,69 +371,53 @@ class App extends React.Component {
 							</div>
 							<div className="row mb-5">
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Author</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Author</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Interactions Per</p>
-														<h5 className="mb-0 mt-2">Author</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Interactions Per</p>
+												<h5 className="mb-0 mt-1">Author</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Session</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Session</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Interactions Per</p>
-														<h5 className="mb-0 mt-2">Session</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Interactions Per</p>
+												<h5 className="mb-0 mt-1">Session</h5>
 											</div>
 										</div>
 									</div>

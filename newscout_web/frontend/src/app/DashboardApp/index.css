@@ -1385,20 +1385,15 @@ div.modal-header {
   color: transparent !important;
 }
 
-.skewed-bg .float-left {
-  color: #FFF;
-  padding: 30px 12px;
-  background: rgb(255, 66, 99);
-  width: 104px;
+.skewed-bg {
+  color: #ec1f25;
   height: 90px;
-  margin: 0 auto;
+  padding: 15px;
+  background: rgb(240, 240, 240);
 }
 
-.skewed-bg .float-left h3 {
-  font-size: 25px;
-  text-shadow: 3px 3px 3px #d04040;
-}
-
-.skewed-bg .float-right .card-body {
-  padding: 18px 10px;
+.skewed-bg h3 {
+  font-size: 40px;
+  line-height: 60px;
+  text-shadow: 3px 3px 3px #d7cfcf;
 }
