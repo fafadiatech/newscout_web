@@ -10,7 +10,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -260,6 +260,21 @@ class SearchResult extends React.Component {
 		}
 	}
 
+	handleLogout = () => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+    }
+
+    authLogoutResponse = (data) => {
+    	cookies.remove('token', { path: '/' })
+    	cookies.remove('full_name', { path: '/' })
+        this.setState({
+			is_loggedin: false,
+			is_captcha: true,
+			bookmark_ids: []
+		})
+    }
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
@@ -269,6 +284,7 @@ class SearchResult extends React.Component {
 			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY, this.getSearchResult);
 		}
 		if(cookies.get('full_name')){
+			this.setState({is_loggedin:true})
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
@@ -279,7 +295,7 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return(
@@ -317,8 +333,17 @@ class SearchResult extends React.Component {
 		}
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
-				
+				<Menu
+					logo={logo}
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideOpen={this.isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+				/>
 				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
