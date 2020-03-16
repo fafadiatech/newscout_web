@@ -45,7 +45,7 @@ class ArticleCard extends React.Component {
                         </InputGroupAddon>
                         <Input placeholder={this.state.selected? "Selected": "Select"} />
                     </InputGroup><br/>
-                    <CardImg top width="100%" src={this.props.item.cover_image ? + this.props.item.cover_image: "/static/images/category/default/asia/01.jpg"} alt="Card image cap" />
+                    <CardImg top width="100%" src={this.props.item.cover_image ? this.props.item.cover_image: "/static/images/category/default/asia/01.jpg"} alt="Card image cap" />
                     <CardBody className="text-center">
                         <CardTitle><b>{this.truncateText(this.props.item.title, 100)}</b></CardTitle>
                         <CardSubtitle>via {this.props.item.source}</CardSubtitle>

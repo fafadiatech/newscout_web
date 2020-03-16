@@ -3,6 +3,7 @@ import ArticleCard from '../../components/ArticleCard';
 import {Alert, Button} from 'reactstrap';
 import Select from 'react-select';
 import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
+import { authHeaders } from '../../utils/Utils';
 
 // Be sure to include styles at some point, probably during your bootstraping
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
@@ -20,7 +21,8 @@ class App extends React.Component {
       isLoading: true,
       page: 1,
       selected: 'home',
-      expanded: false
+      expanded: false,
+      domain: DOMAIN
     };
   }
 
@@ -28,9 +30,9 @@ class App extends React.Component {
     var URL;
 
     if(model === 'articles'){
-      URL = `/api/v1/article/search/?category=123&format=json&rows=100&page=${page}`;
+      URL = `http://www.newscout.in/api/v1/article/search/?category=uncategorized&format=json&rows=100&page=${page}&domain=${this.state.domain}`;
     }else{
-      URL = `/api/v1/menus/?format=json`;
+      URL = `/api/v1/menus/?format=json&domain=${this.state.domain}`;
     }
 
     fetch(URL)
@@ -85,12 +87,9 @@ class App extends React.Component {
   }
 
   bulkUpdateHandler = () => {
-    fetch('/api/v1/categories/bulk/', {
+    fetch('http://www.newscout.in/api/v1/categories/bulk/', {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: authHeaders,
       body: JSON.stringify({
        categories: this.state.selectedCategory,
        articles: this.state.selectedArticles,
