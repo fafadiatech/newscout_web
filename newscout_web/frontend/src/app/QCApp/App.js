@@ -30,7 +30,7 @@ class App extends React.Component {
     var URL;
 
     if(model === 'articles'){
-      URL = `http://www.newscout.in/api/v1/article/search/?category=Uncategorized&format=json&rows=100&page=${page}&domain=${this.state.domain}`;
+      URL = `http://www.newscout.in/api/v1/article/search/?category=Uncategorised&format=json&rows=100&page=${page}&domain=${this.state.domain}`;
     }else{
       URL = `/api/v1/menus/?format=json&domain=${this.state.domain}`;
     }
