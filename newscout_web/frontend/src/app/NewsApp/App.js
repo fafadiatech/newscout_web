@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -343,17 +343,33 @@ class App extends React.Component {
 		}
 	}
 
+	handleLogout = () => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+    }
+
+    authLogoutResponse = (data) => {
+    	cookies.remove('token', { path: '/' })
+    	cookies.remove('full_name', { path: '/' })
+        this.setState({
+			is_loggedin: false,
+			bookmark_ids: []
+		})
+    }
+
 	componentDidMount() {
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		if(cookies.get('full_name')){
+			this.setState({is_loggedin:true})
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username } = this.state
+		
 		var sector_update = sector_update.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
@@ -490,7 +506,17 @@ class App extends React.Component {
 
 		return (
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<Menu
+					logo={logo}
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideOpen={this.isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+				/>
 				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />

@@ -49,10 +49,6 @@ class ArticleDetail extends React.Component {
 			resetAll : false,
 			is_captcha : true,
 			isSideOpen: true,
-			modal: false,
-			is_loggedin: false,
-			is_loggedin_validation: false,
-			username: cookies.get('full_name'),
 			bookmark_ids: []
 		};
 	}
@@ -88,11 +84,12 @@ class ArticleDetail extends React.Component {
     }
 
     authLogoutResponse = (data) => {
-    	cookies.remove('full_name')
-        cookies.remove('token')
+        cookies.remove('token', { path: '/' })
+    	cookies.remove('full_name', { path: '/' })
         this.setState({
 			is_loggedin: false,
-			is_captcha: true
+			is_captcha: true,
+			bookmark_ids: []
 		})
     }
 
@@ -291,7 +288,17 @@ class ArticleDetail extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<Menu
+					logo={logo}
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideOpen={this.isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+				/>
 				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
@@ -366,18 +373,19 @@ class ArticleDetail extends React.Component {
 															</div>
 														</div>
 														<div className="mt-4">
-															<Comments comments={this.state.articlecomments} 
-																	  handleSubmit={this.handleSubmit} 
-																	  successComment={this.state.successComment} 
-																	  is_loggedin_validation={this.state.is_loggedin_validation} 
-																	  captchaImage={captchaImage} 
-																	  InvalidCaptcha={this.state.InvalidCaptcha} 
-																	  fetchCaptcha={this.fetchCaptcha} 
-																	  resetAll={this.state.resetAll} 
-																	  is_captcha={this.state.is_captcha} 
-																	  is_loggedin={is_loggedin} 
-																	  toggle={this.toggle}
-																	  is_open={modal} 
+															<Comments 
+																comments={this.state.articlecomments} 
+																handleSubmit={this.handleSubmit} 
+																successComment={this.state.successComment} 
+																is_loggedin_validation={this.state.is_loggedin_validation} 
+																captchaImage={captchaImage} 
+																InvalidCaptcha={this.state.InvalidCaptcha} 
+																fetchCaptcha={this.fetchCaptcha} 
+																resetAll={this.state.resetAll} 
+																is_captcha={this.state.is_captcha} 
+																is_loggedin={is_loggedin} 
+																toggle={this.toggle}
+																is_open={modal} 
 															/>
 														</div>
 													</div>

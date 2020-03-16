@@ -14,7 +14,7 @@ import 'newscout/assets/CardItem.css';
 import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/Sidebar.css'
 
-import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import config_data from './config.json';
@@ -171,11 +171,26 @@ class Trending extends React.Component {
 		}
 	}
 
+	handleLogout = () => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+    }
+
+    authLogoutResponse = (data) => {
+    	cookies.remove('token', { path: '/' })
+    	cookies.remove('full_name', { path: '/' })
+        this.setState({
+			is_loggedin: false,
+			bookmark_ids: []
+		})
+    }
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		this.getTrendingPosts()
 		if(cookies.get('full_name')){
+			this.setState({is_loggedin:true})
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
@@ -186,7 +201,7 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids } = this.state;
+		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username } = this.state;
 
 		var result = trending.map((item, index) => {
 			return (
@@ -222,7 +237,17 @@ class Trending extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<Menu
+					logo={logo}
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideOpen={this.isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+				/>
 				<div className="container-fluid pb-50">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
@@ -252,6 +277,8 @@ class Trending extends React.Component {
 					</div>
 				</div>
 
+				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+				
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)

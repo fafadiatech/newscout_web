@@ -133,7 +133,6 @@ class Auth extends React.Component {
 		
 		if(email) {
         	var body = JSON.stringify(this.state.fields)
-        	console.log(body)
         	postRequest(ARTICLE_FORGOTPASSWORD+"?"+this.state.domain, body, this.authForgotPWDResponse, "POST");
         }
     }
@@ -198,8 +197,8 @@ class Auth extends React.Component {
             this.setState(state)
             this.toggle()
     		
-    		cookies.set('token', data.body.user.token);
-            cookies.set('full_name', first_name+" "+last_name);
+    		cookies.set('token', data.body.user.token, { path: '/' });
+            cookies.set('full_name', first_name+" "+last_name, { path: '/' });
             this.props.loggedInUser(cookies.get('full_name'))
         }
     }
@@ -251,7 +250,6 @@ class Auth extends React.Component {
     }
 
 	handleAuth = (e) => {
-		console.log(this.state.fields)
 		var state = this.state;
 		state.auth_section = e.target.dataset.authsection,
 		state.fields.email = "",
@@ -269,7 +267,6 @@ class Auth extends React.Component {
 		state.password_msg = "",
 		state.success_msg = ""
 		this.setState(state)
-		console.log(this.state.fields)
 	}
 
 	render() {
