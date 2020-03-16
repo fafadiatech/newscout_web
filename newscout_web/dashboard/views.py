@@ -104,6 +104,15 @@ class ArticleEditView(EditorTemplateView):
         return context
 
 
+class QCToolView(EditorTemplateView):
+    template_name = "qc_index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(QCToolView, self).get_context_data(**kwargs)
+        context["domain"] = self.request.user.domain.domain_id
+        return context
+
+
 class LoginView(FormView):
     template_name = "login.html"
     form_class = LoginForm
