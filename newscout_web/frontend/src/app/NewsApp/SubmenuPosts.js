@@ -4,11 +4,11 @@ import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer } from 'newscout';
+import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, VerticleCardAd } from 'newscout';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -44,7 +44,12 @@ class SubmenuPosts extends React.Component {
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
-			bookmark_ids: []
+			bookmark_ids: [],
+			cat_name: '',
+			ad_content: {
+				id: 0,
+
+			}
 		};
 	}
 
@@ -90,6 +95,15 @@ class SubmenuPosts extends React.Component {
 		this.setState({
 			bookmark_ids: article_array
 		})
+	}
+
+	fetchAds = () => {
+		var url = SCHEDULES_URL+"?"+this.state.domain+"&category="+this.state.cat_name
+		getRequest(url, this.fetchAdsResponse)
+	}
+
+	fetchAdsResponse = (data) => {
+		console.log(data)
 	}
 
 	getNext = () => {
@@ -145,7 +159,7 @@ class SubmenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
-		this.setState({isLoading: true})
+		this.setState({isLoading: true, cat_name: cat_name})
 		getRequest(url, this.newsData)
 	}
 
@@ -223,6 +237,7 @@ class SubmenuPosts extends React.Component {
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
+		this.fetchAds()
 	}
 
 	componentWillUnmount = () => {
@@ -288,7 +303,17 @@ class SubmenuPosts extends React.Component {
 								</div>
 								<div className="row">
 									<div className="col-lg-12 p-5">
-										<div className="row">{result}</div>
+										<div className="row">
+											<div className="col-lg-3 mb-4">
+												<VerticleCardAd
+													id={0}
+													image="http://images.newscout.in/unsafe/368x276/left/top/https://thenypost.files.wordpress.com/2020/03/jk_20200315_coronavirus_katz_deli_0119.jpg?quality=90&strip=all&w=1200"
+													description="NEW YORK (AFP, BLOOMBERG) - New York on Sunday (March 15) ordered all its bars and restaurants to close except for take-outs, in the latest dramatic shutdown as authorities worldwide struggle to tackle the coronavirus outbreak."
+													source_url="http://newscout.in/news/article/new-york-bars-restaurants-to-be-take-out-only-cdc-says-mass-gatherings-in-us-should-be-scrapped-1497950/"
+												/>
+											</div>
+											{result}
+										</div>
 										{
 											this.state.loadingPagination ?
 												<React.Fragment>
