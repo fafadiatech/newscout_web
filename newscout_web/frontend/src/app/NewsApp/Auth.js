@@ -35,7 +35,9 @@ class Auth extends React.Component {
 			email_msg: "",
 			password_validation: false,
 			password_msg: "",
-			success_msg: ""
+			success_msg: "",
+			response_email_msg: "",
+			is_invalid_email: true,
 		};
 	}
 
@@ -233,21 +235,28 @@ class Auth extends React.Component {
     }
 
     authForgotPWDResponse = (data) => {
-    	console.log(data)
-    	// if(data !== "error"){
-     //        let state = this.state;
-     //        state.is_valid = false;
-     //        this.setState(state)
-     //        this.toggle()
-    		
-    	// 	cookies.set('token', data.body.user.token);
-     //        cookies.set('full_name', first_name+" "+last_name);
-     //        this.props.loggedInUser(cookies.get('full_name'))
-     //    } else {
-     //        this.setState({
-     //            is_valid: true
-     //        })
-     //    }
+		var state = this.state;
+		if (data["header"]["status"] === "0"){
+			setTimeout(() => {
+				this.setState({
+					response_email_msg: ""
+				})
+			}, 3000);
+			this.setState({response_email_msg:data["errors"]["Msg"]})
+		}
+		else{
+			setTimeout(() => {
+				this.setState({
+					is_invalid_email: true,
+					response_email_msg: ""
+				})
+			}, 3000);
+			state.fields.email = ""
+			state.is_invalid_email = false
+			state.response_email_msg = data["body"]["Msg"]
+			this.setState(state);
+			
+		}
     }
 
 	handleAuth = (e) => {
@@ -399,7 +408,7 @@ class Auth extends React.Component {
 							<Form onSubmit={this.handleForgotPWDSubmit} className="authform">
 								<FormGroup>
 									<Label for="email">Email</Label>
-									<Input type="email" name="email" id="email" placeholder="Email" onChange={(e) => this.handleChange("email", e)} value={fields.email} />
+									<Input type="email" name="email" id="email" placeholder="Email" onChange={(e) => this.handleChange("email", e)} value={this.state.fields.email} />
 									{this.state.email_validation ?
 										<span className="text-danger"><small>{this.state.email_msg}</small></span>
 									:
@@ -407,7 +416,21 @@ class Auth extends React.Component {
 									}
 								</FormGroup>
 								<FormGroup>
-									<button type="submit" class="btn btn-danger">Submit</button>
+									<div className="clearfix">
+										<div className="float-left">
+											<button type="submit" class="btn btn-danger">Submit</button>
+										</div>
+										<div className="float-left ml-2">
+											<React.Fragment>
+												{this.state.response_email_msg !== "" ?
+													this.state.is_invalid_email?
+													<Alert className="success-comment" color="danger">{this.state.response_email_msg}</Alert>
+													:<Alert className="success-comment" color="success">{this.state.response_email_msg}</Alert>
+													: ""
+												}
+											</React.Fragment>
+										</div>
+									</div>	
 								</FormGroup>
 							</Form>
 							{this.state.is_valid ?
