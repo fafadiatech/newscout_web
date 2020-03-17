@@ -1,4 +1,5 @@
 import os
+import pytz
 import glob
 import string
 import datetime
@@ -31,7 +32,7 @@ class Command(BaseCommand):
                     os.remove(f)
                 except:
                     continue
-        file_name = datetime.datetime.now().strftime("%d_%m_%Y_%I_%M") + ".log"
+        file_name = "trending_logs/" + datetime.datetime.now(pytz.timezone('Asia/Kolkata')).strftime("%d_%m_%Y_%I_%M") + ".log"
         return file_name
 
     def add_arguments(self, parser):
@@ -244,7 +245,7 @@ class Command(BaseCommand):
                                 article_sources.append(member.source.name)
 
                 print(article_sources)
-                log.write(article_sources + "\n")
+                log.write(str(article_sources) + "\n")
                 if trending.articles.count() <= 1:
                     trending.delete()
                 else:
