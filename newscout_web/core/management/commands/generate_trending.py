@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     batch = []
     titles = {}
-    stopwords = [current.strip() for current in open(os.path.join(settings.BASE_DIR, "news_site", "management", "commands", "stopwords.txt")).readlines()]
+    stopwords = [current.strip() for current in open(os.path.join(settings.BASE_DIR, "core", "management", "commands", "stopwords.txt")).readlines()]
     epoch = 3
     MAX_TRENDING = 30
 
