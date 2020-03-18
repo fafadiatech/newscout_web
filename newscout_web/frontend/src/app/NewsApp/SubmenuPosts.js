@@ -46,9 +46,11 @@ class SubmenuPosts extends React.Component {
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
 			cat_name: '',
-			ad_content: {
+			ads_article: {
 				id: 0,
-
+				description: '',
+				source_url: '',
+				image: ''
 			}
 		};
 	}
@@ -103,7 +105,15 @@ class SubmenuPosts extends React.Component {
 	}
 
 	fetchAdsResponse = (data) => {
-		console.log(data)
+		var result = data.body
+		this.setState({
+			ads_article: {
+				id: result.id,
+				description: result.ad_text,
+				source_url: result.ad_url,
+				image: result.media,
+			}
+		})
 	}
 
 	getNext = () => {
@@ -118,6 +128,7 @@ class SubmenuPosts extends React.Component {
 		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.3) {
 			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
+				this.fetchAds()
 			}
 		}
 	}
@@ -237,7 +248,6 @@ class SubmenuPosts extends React.Component {
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
-		this.fetchAds()
 	}
 
 	componentWillUnmount = () => {
@@ -245,13 +255,14 @@ class SubmenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username } = this.state;
-		var result = newsPosts.map((item, index) => {
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article } = this.state;
+		
+		var items = newsPosts.map((item, index) => {
 			return (
-				<div className="col-lg-3 mb-4">
+				<div className="col-lg-3 col-md-4 mb-4">
 					{isLoading ?
 						<Skeleton height={525} />
-					:
+					: 
 						<VerticleCardItem
 							id={item.id}
 							image={item.src}
@@ -274,6 +285,23 @@ class SubmenuPosts extends React.Component {
 				</div>
 			)
 		})
+
+		var resultsRender = [];
+		for (var i = 0; i < items.length; i++) {
+			resultsRender.push(items[i]);
+			if ((i+1) % 25 === 0) {
+				resultsRender.push(
+					<div className="col-lg-3 col-md-4 mb-4">
+						<VerticleCardAd
+							id={ads_article.id}
+							image={ads_article.image}
+							description={ads_article.description}
+							source_url={ads_article.source_url}
+						/>
+					</div>
+				);
+			}
+		}
 
 		return(
 			<React.Fragment>
@@ -304,15 +332,7 @@ class SubmenuPosts extends React.Component {
 								<div className="row">
 									<div className="col-lg-12 p-5">
 										<div className="row">
-											<div className="col-lg-3 mb-4">
-												<VerticleCardAd
-													id={0}
-													image="http://images.newscout.in/unsafe/368x276/left/top/https://thenypost.files.wordpress.com/2020/03/jk_20200315_coronavirus_katz_deli_0119.jpg?quality=90&strip=all&w=1200"
-													description="NEW YORK (AFP, BLOOMBERG) - New York on Sunday (March 15) ordered all its bars and restaurants to close except for take-outs, in the latest dramatic shutdown as authorities worldwide struggle to tackle the coronavirus outbreak."
-													source_url="http://newscout.in/news/article/new-york-bars-restaurants-to-be-take-out-only-cdc-says-mass-gatherings-in-us-should-be-scrapped-1497950/"
-												/>
-											</div>
-											{result}
+											{resultsRender}
 										</div>
 										{
 											this.state.loadingPagination ?
