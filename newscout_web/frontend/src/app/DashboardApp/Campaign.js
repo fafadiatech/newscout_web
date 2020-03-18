@@ -2,15 +2,19 @@ import React from 'react';
 import moment from 'moment';
 import ReactDOM from 'react-dom';
 import Datetime from 'react-datetime';
+import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
+import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
 import {CAMPAIGN_URL} from '../../utils/Constants';
-import DashboardMenu from '../../components/DashboardMenu';
-import DashboardHeader from '../../components/DashboardHeader';
-import { getRequest, postRequest, putRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, putRequest, deleteRequest, notify, authHeaders } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
 
 class Campaign extends React.Component {
 	constructor(props) {
@@ -26,7 +30,8 @@ class Campaign extends React.Component {
 			previous: null,
 			loading: false,
 			q: "",
-			page : 0
+			page : 0,
+			isSideOpen: true,
 		};
 	}
 
@@ -44,7 +49,7 @@ class Campaign extends React.Component {
 				results: []
 			})
 			var url = CAMPAIGN_URL + "?q=" + this.state.q;
-			getRequest(url, this.getCampaignsData);
+			getRequest(url, this.getCampaignsData, authHeaders);
 		}
 	}
 
@@ -142,7 +147,7 @@ class Campaign extends React.Component {
 			this.state.fields["is_active"] = true;
 			const body = JSON.stringify(this.state.fields)
 			var extra_data = {"clean_results": true};
-			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", false, extra_data);
+			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", authHeaders, extra_data);
 		}else{
 			this.setState({'formSuccess': false});
 		}
@@ -162,7 +167,7 @@ class Campaign extends React.Component {
 			const body = JSON.stringify(this.state.fields)
 			var url = CAMPAIGN_URL + this.state.fields.id + "/";
 			var extra_data = {"clean_results": true};
-			putRequest(url, body, this.campaignUpdateResponse, "PUT", false, extra_data);
+			putRequest(url, body, this.campaignUpdateResponse, "PUT", authHeaders, extra_data);
 		}
 	}
 
@@ -206,12 +211,12 @@ class Campaign extends React.Component {
 		let dataindex = e.target.getAttribute('data-id');
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = CAMPAIGN_URL + dataindex + "/";
-		deleteRequest(url, this.deleteCampaignResponse)
+		deleteRequest(url, this.deleteCampaignResponse, authHeaders)
 	}
 
 	getCampaigns = () => {
 		var url = CAMPAIGN_URL;
-		getRequest(url, this.getCampaignsData);
+		getRequest(url, this.getCampaignsData, authHeaders);
 	}
 
 	getCampaignsData = (data) => {
@@ -238,7 +243,7 @@ class Campaign extends React.Component {
 			loading: true,
 			page : this.state.page + 1
 		})
-		getRequest(this.state.next, this.getCampaignsData);
+		getRequest(this.state.next, this.getCampaignsData, authHeaders);
 	}
 
 	handleScroll = () => {
@@ -247,6 +252,12 @@ class Campaign extends React.Component {
 				this.getNext();
 			}
 		}
+	}
+
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
 	}
 
 	componentDidMount() {
@@ -259,6 +270,8 @@ class Campaign extends React.Component {
 	}
 
 	render(){
+		var { menus, isSideOpen } = this.state
+		
 		let result_array = this.state.results
 		let results = []
 
@@ -347,12 +360,12 @@ class Campaign extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
-					<DashboardHeader />
+					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
 					<div className="container-fluid">
 						<div className="row">
-							<DashboardMenu />
-							<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-								<div className="mb-3">
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+								<div className="pt-50 mb-3">
 									<h1 className="h2">Campaigns</h1>
 									<div className="clearfix">
 										<div className="float-left">
@@ -393,7 +406,7 @@ class Campaign extends React.Component {
 										: ""
 									}
 								</div>
-							</main>
+							</div>
 						</div>
 					</div>
 
@@ -455,6 +468,7 @@ class Campaign extends React.Component {
 						</ModalFooter>
 					</Modal>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}

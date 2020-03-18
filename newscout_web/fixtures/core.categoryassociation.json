@@ -1,1 +1,710 @@
-[{"model": "core.categoryassociation", "pk": 1, "fields": {"parent_cat": 124, "child_cat": 125}}, {"model": "core.categoryassociation", "pk": 2, "fields": {"parent_cat": 124, "child_cat": 126}}, {"model": "core.categoryassociation", "pk": 3, "fields": {"parent_cat": 124, "child_cat": 127}}, {"model": "core.categoryassociation", "pk": 4, "fields": {"parent_cat": 124, "child_cat": 128}}, {"model": "core.categoryassociation", "pk": 6, "fields": {"parent_cat": 124, "child_cat": 129}}, {"model": "core.categoryassociation", "pk": 7, "fields": {"parent_cat": 124, "child_cat": 130}}, {"model": "core.categoryassociation", "pk": 8, "fields": {"parent_cat": 124, "child_cat": 131}}, {"model": "core.categoryassociation", "pk": 31, "fields": {"parent_cat": 132, "child_cat": 135}}, {"model": "core.categoryassociation", "pk": 32, "fields": {"parent_cat": 132, "child_cat": 156}}, {"model": "core.categoryassociation", "pk": 33, "fields": {"parent_cat": 149, "child_cat": 155}}, {"model": "core.categoryassociation", "pk": 34, "fields": {"parent_cat": 149, "child_cat": 154}}, {"model": "core.categoryassociation", "pk": 35, "fields": {"parent_cat": 149, "child_cat": 153}}, {"model": "core.categoryassociation", "pk": 36, "fields": {"parent_cat": 149, "child_cat": 152}}, {"model": "core.categoryassociation", "pk": 37, "fields": {"parent_cat": 149, "child_cat": 151}}, {"model": "core.categoryassociation", "pk": 38, "fields": {"parent_cat": 149, "child_cat": 150}}, {"model": "core.categoryassociation", "pk": 39, "fields": {"parent_cat": 140, "child_cat": 148}}, {"model": "core.categoryassociation", "pk": 40, "fields": {"parent_cat": 140, "child_cat": 147}}, {"model": "core.categoryassociation", "pk": 41, "fields": {"parent_cat": 140, "child_cat": 146}}, {"model": "core.categoryassociation", "pk": 43, "fields": {"parent_cat": 140, "child_cat": 144}}, {"model": "core.categoryassociation", "pk": 44, "fields": {"parent_cat": 140, "child_cat": 143}}, {"model": "core.categoryassociation", "pk": 45, "fields": {"parent_cat": 140, "child_cat": 142}}, {"model": "core.categoryassociation", "pk": 46, "fields": {"parent_cat": 140, "child_cat": 141}}, {"model": "core.categoryassociation", "pk": 47, "fields": {"parent_cat": 137, "child_cat": 139}}, {"model": "core.categoryassociation", "pk": 48, "fields": {"parent_cat": 137, "child_cat": 138}}, {"model": "core.categoryassociation", "pk": 49, "fields": {"parent_cat": 132, "child_cat": 136}}, {"model": "core.categoryassociation", "pk": 50, "fields": {"parent_cat": 132, "child_cat": 134}}, {"model": "core.categoryassociation", "pk": 51, "fields": {"parent_cat": 132, "child_cat": 133}}, {"model": "core.categoryassociation", "pk": 54, "fields": {"parent_cat": 132, "child_cat": 160}}, {"model": "core.categoryassociation", "pk": 53, "fields": {"parent_cat": 137, "child_cat": 159}}, {"model": "core.categoryassociation", "pk": 52, "fields": {"parent_cat": 137, "child_cat": 158}}, {"model": "core.categoryassociation", "pk": 55, "fields": {"parent_cat": 124, "child_cat": 162}}, {"model": "core.categoryassociation", "pk": 56, "fields": {"parent_cat": 137, "child_cat": 164}}, {"model": "core.categoryassociation", "pk": 57, "fields": {"parent_cat": 124, "child_cat": 165}}, {"model": "core.categoryassociation", "pk": 58, "fields": {"parent_cat": 149, "child_cat": 166}}, {"model": "core.categoryassociation", "pk": 59, "fields": {"parent_cat": 149, "child_cat": 167}}, {"model": "core.categoryassociation", "pk": 60, "fields": {"parent_cat": 149, "child_cat": 168}}, {"model": "core.categoryassociation", "pk": 61, "fields": {"parent_cat": 132, "child_cat": 169}}]
+[
+{
+    "model": "core.category",
+    "pk": 169,
+    "fields": {
+        "created_at": "2019-05-13T11:20:54.277Z",
+        "modified_at": "2019-05-13T11:20:54.277Z",
+        "name": "Europe"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 168,
+    "fields": {
+        "created_at": "2019-05-13T11:17:24.040Z",
+        "modified_at": "2019-05-13T11:17:24.040Z",
+        "name": "Environment"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 167,
+    "fields": {
+        "created_at": "2019-05-13T11:17:15.903Z",
+        "modified_at": "2019-05-13T11:17:15.903Z",
+        "name": "Entrepreneurship"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 166,
+    "fields": {
+        "created_at": "2019-05-13T11:17:10.032Z",
+        "modified_at": "2019-05-13T11:17:10.032Z",
+        "name": "Career"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 165,
+    "fields": {
+        "created_at": "2019-05-13T11:16:49.745Z",
+        "modified_at": "2019-05-13T11:16:49.746Z",
+        "name": "Media"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 164,
+    "fields": {
+        "created_at": "2019-05-13T11:16:17.545Z",
+        "modified_at": "2019-05-13T11:16:17.545Z",
+        "name": "Earning Reports"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 162,
+    "fields": {
+        "created_at": "2019-04-30T10:24:21.709Z",
+        "modified_at": "2019-04-30T10:24:21.709Z",
+        "name": "FinTech"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 160,
+    "fields": {
+        "created_at": "2019-04-24T08:47:35.875Z",
+        "modified_at": "2019-04-24T08:47:35.875Z",
+        "name": "India"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 159,
+    "fields": {
+        "created_at": "2019-04-23T12:28:57.280Z",
+        "modified_at": "2019-04-23T12:28:57.280Z",
+        "name": "IPO"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 158,
+    "fields": {
+        "created_at": "2019-04-23T11:21:36.832Z",
+        "modified_at": "2019-04-23T11:21:36.832Z",
+        "name": "Funding"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 133,
+    "fields": {
+        "created_at": "2019-03-28T07:54:11.958Z",
+        "modified_at": "2019-03-28T07:54:11.958Z",
+        "name": "US"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 134,
+    "fields": {
+        "created_at": "2019-03-28T07:54:26.414Z",
+        "modified_at": "2019-03-28T07:54:26.414Z",
+        "name": "China"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 136,
+    "fields": {
+        "created_at": "2019-03-28T07:54:53.430Z",
+        "modified_at": "2019-03-28T07:54:53.430Z",
+        "name": "Japan"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 138,
+    "fields": {
+        "created_at": "2019-03-28T07:55:28.604Z",
+        "modified_at": "2019-04-24T08:36:19.196Z",
+        "name": "Recession"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 139,
+    "fields": {
+        "created_at": "2019-03-28T07:55:47.243Z",
+        "modified_at": "2019-03-28T07:55:47.243Z",
+        "name": "Personal Finance"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 137,
+    "fields": {
+        "created_at": "2019-03-28T07:55:09.781Z",
+        "modified_at": "2019-03-28T07:55:09.781Z",
+        "name": "Finance"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 141,
+    "fields": {
+        "created_at": "2019-03-28T07:56:18.322Z",
+        "modified_at": "2019-04-24T09:24:42.861Z",
+        "name": "Policy"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 142,
+    "fields": {
+        "created_at": "2019-03-28T07:56:34.898Z",
+        "modified_at": "2019-03-28T07:56:34.898Z",
+        "name": "US Economy"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 143,
+    "fields": {
+        "created_at": "2019-03-28T07:56:49.617Z",
+        "modified_at": "2019-03-28T07:56:49.617Z",
+        "name": "Global Economy"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 144,
+    "fields": {
+        "created_at": "2019-03-28T07:57:05.528Z",
+        "modified_at": "2019-03-28T07:57:05.528Z",
+        "name": "Housing Market"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 145,
+    "fields": {
+        "created_at": "2019-03-28T07:57:22.272Z",
+        "modified_at": "2019-03-28T07:57:22.272Z",
+        "name": "Interest Rate"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 146,
+    "fields": {
+        "created_at": "2019-03-28T07:57:40.806Z",
+        "modified_at": "2019-04-24T09:25:10.091Z",
+        "name": "Growth"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 147,
+    "fields": {
+        "created_at": "2019-03-28T07:58:02.118Z",
+        "modified_at": "2019-03-28T07:58:02.118Z",
+        "name": "Commodities"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 148,
+    "fields": {
+        "created_at": "2019-03-28T07:58:16.301Z",
+        "modified_at": "2019-03-28T07:58:16.301Z",
+        "name": "Inflation"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 140,
+    "fields": {
+        "created_at": "2019-03-28T07:56:03.317Z",
+        "modified_at": "2019-03-28T07:56:03.317Z",
+        "name": "Economics"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 150,
+    "fields": {
+        "created_at": "2019-03-28T07:58:47.476Z",
+        "modified_at": "2019-03-28T07:58:47.476Z",
+        "name": "Currencies"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 151,
+    "fields": {
+        "created_at": "2019-03-28T07:59:03.995Z",
+        "modified_at": "2019-03-28T07:59:03.995Z",
+        "name": "Companies"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 152,
+    "fields": {
+        "created_at": "2019-03-28T07:59:18.586Z",
+        "modified_at": "2019-03-28T07:59:18.586Z",
+        "name": "Consumer Affairs"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 153,
+    "fields": {
+        "created_at": "2019-03-28T07:59:36.817Z",
+        "modified_at": "2019-03-28T07:59:36.817Z",
+        "name": "Regulators"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 154,
+    "fields": {
+        "created_at": "2019-03-28T07:59:55.489Z",
+        "modified_at": "2019-03-28T07:59:55.489Z",
+        "name": "Analysis"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 155,
+    "fields": {
+        "created_at": "2019-03-28T08:00:12.032Z",
+        "modified_at": "2019-03-28T08:00:12.032Z",
+        "name": "Mergers and Acquisitions"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 149,
+    "fields": {
+        "created_at": "2019-03-28T07:58:32.505Z",
+        "modified_at": "2019-03-28T07:58:32.505Z",
+        "name": "Misc"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 156,
+    "fields": {
+        "created_at": "2019-03-28T08:00:30.063Z",
+        "modified_at": "2019-03-28T08:00:30.063Z",
+        "name": "Trade Unions"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 135,
+    "fields": {
+        "created_at": "2019-03-28T07:54:38.933Z",
+        "modified_at": "2019-03-28T07:54:38.934Z",
+        "name": "Asia"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 132,
+    "fields": {
+        "created_at": "2019-03-28T07:53:52.167Z",
+        "modified_at": "2019-03-28T07:53:52.167Z",
+        "name": "Regional Updates"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 131,
+    "fields": {
+        "created_at": "2019-03-28T07:53:31.463Z",
+        "modified_at": "2019-04-24T09:22:11.216Z",
+        "name": "Manufacturing"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 130,
+    "fields": {
+        "created_at": "2019-03-28T07:53:13.599Z",
+        "modified_at": "2019-04-24T09:22:26.516Z",
+        "name": "Food & Drinks"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 129,
+    "fields": {
+        "created_at": "2019-03-28T07:52:52.769Z",
+        "modified_at": "2019-04-24T08:53:54.530Z",
+        "name": "Energy"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 157,
+    "fields": {
+        "created_at": "2019-03-28T08:00:50.278Z",
+        "modified_at": "2019-03-28T08:00:50.278Z",
+        "name": "Automotive Industry"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 128,
+    "fields": {
+        "created_at": "2019-03-28T07:52:34.697Z",
+        "modified_at": "2019-03-28T07:52:34.697Z",
+        "name": "Transport"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 127,
+    "fields": {
+        "created_at": "2019-03-28T07:52:17.818Z",
+        "modified_at": "2019-04-24T08:00:03.616Z",
+        "name": "Tech"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 126,
+    "fields": {
+        "created_at": "2019-03-28T07:52:03.011Z",
+        "modified_at": "2019-04-24T08:53:43.480Z",
+        "name": "Retail"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 125,
+    "fields": {
+        "created_at": "2019-03-28T07:51:48.209Z",
+        "modified_at": "2019-03-28T07:51:48.209Z",
+        "name": "Banking"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 124,
+    "fields": {
+        "created_at": "2019-03-28T07:51:31.491Z",
+        "modified_at": "2019-03-28T07:51:31.491Z",
+        "name": "Sector Updates"
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 61,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 169
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 60,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 168
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 59,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 167
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 58,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 166
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 57,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 165
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 56,
+    "fields": {
+        "parent_cat": 137,
+        "child_cat": 164
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 55,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 162
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 54,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 160
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 53,
+    "fields": {
+        "parent_cat": 137,
+        "child_cat": 159
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 52,
+    "fields": {
+        "parent_cat": 137,
+        "child_cat": 158
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 51,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 133
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 50,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 134
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 49,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 136
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 48,
+    "fields": {
+        "parent_cat": 137,
+        "child_cat": 138
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 47,
+    "fields": {
+        "parent_cat": 137,
+        "child_cat": 139
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 46,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 141
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 45,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 142
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 44,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 143
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 43,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 144
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 42,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 145
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 41,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 146
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 40,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 147
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 39,
+    "fields": {
+        "parent_cat": 140,
+        "child_cat": 148
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 38,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 150
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 37,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 151
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 36,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 152
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 35,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 153
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 34,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 154
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 33,
+    "fields": {
+        "parent_cat": 149,
+        "child_cat": 155
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 32,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 156
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 31,
+    "fields": {
+        "parent_cat": 132,
+        "child_cat": 135
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 8,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 131
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 7,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 130
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 6,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 129
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 5,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 157
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 4,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 128
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 3,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 127
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 2,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 126
+    }
+},
+{
+    "model": "core.categoryassociation",
+    "pk": 1,
+    "fields": {
+        "parent_cat": 124,
+        "child_cat": 125
+    }
+}
+]

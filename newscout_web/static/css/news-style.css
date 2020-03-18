@@ -583,3 +583,7 @@ ul.usr li {
 .footer-area ul li a:hover {
   color: #f0442c;
 }
+
+.bookmarked {
+  color: #fc0a02c2;
+}

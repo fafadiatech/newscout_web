@@ -3,6 +3,7 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
+import Skeleton from 'react-loading-skeleton';
 import { JumboBox, Menu, SideBox, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
@@ -11,7 +12,7 @@ import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, Mo
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -22,6 +23,7 @@ import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
+var article_array = [];
 const URL = "/news/search/";
 const cookies = new Cookies();
 
@@ -39,31 +41,40 @@ class ArticleDetail extends React.Component {
 			username: cookies.get('full_name'),
 			articlecomments: [],
 			successComment: false,
-			is_login: false,
-			is_login_validation: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
 			captchaData : {},
 			captchaImage: "",
 			InvalidCaptcha : false,
 			resetAll : false,
 			is_captcha : true,
 			isSideOpen: true,
+			bookmark_ids: []
 		};
+	}
+
+	getArticleId = (articleId) => {
+		if(cookies.get('full_name')){
+			this.fetchArticleBookmark(articleId)
+		} else {
+			this.toggle()
+		}
 	}
 
 	loggedInUser = (data) => {
 		this.setState({
 			username: data,
-			is_login: true
+			is_loggedin: true
 		})
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);
 		this.fetchCaptcha();
-		this.setState({is_captcha:false})
+		this.setState({is_captcha:false});
 	}
 
-	toggle = () => {
+	toggle = (data) => {
 		this.setState({
-			modal: !this.state.modal,
+			modal: !data,
 		})
 	}
 
@@ -73,26 +84,50 @@ class ArticleDetail extends React.Component {
     }
 
     authLogoutResponse = (data) => {
-    	cookies.remove('full_name')
-        cookies.remove('token')
+        cookies.remove('token', { path: '/' })
+    	cookies.remove('full_name', { path: '/' })
         this.setState({
-			is_login: false,
-			is_captcha: true
-        })
+			is_loggedin: false,
+			is_captcha: true,
+			bookmark_ids: []
+		})
     }
+
+    fetchArticleBookmark = (articleId) => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
+		var body = JSON.stringify({article_id: articleId})
+		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
+	}
+
+	articleBookmarkResponse = (data) => {
+		var bookmark_obj = data.body.bookmark_article
+		var index = article_array.indexOf(bookmark_obj.article);
+		
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
+			article_array.push(bookmark_obj.article)
+		}
+		
+		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
+		this.setState({
+			bookmark_ids: article_array
+		})
+	}
 
 	getArticleDetail = (data) => {
 		var state = this.state;
 		var article_dict = {}
 		state.article.id = data.body.article.id;
-		state.article.slug = data.body.article.slug;
-		state.article.altText = data.body.article.title;
+		state.article.slug = "/news/article/"+data.body.article.slug;
 		state.article.title = data.body.article.title;
+		state.article.altText = data.body.article.title;
 		state.article.caption = data.body.article.blurb;
 		state.article.source = data.body.article.source;
 		state.article.source_url = data.body.article.source_url;
+		state.article.root_category = data.body.article.root_category;
 		state.article.category = data.body.article.category;
-		state.article.sub_category = data.body.article.sub_category;
 		state.article.hash_tags = data.body.article.hash_tags;
 		state.article.date = moment(data.body.article.published_on).format('D MMMM YYYY');
 		if(data.body.article.cover_image){
@@ -138,7 +173,7 @@ class ArticleDetail extends React.Component {
 			if(item.heading){
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
+				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
@@ -158,11 +193,11 @@ class ArticleDetail extends React.Component {
         	postRequest(url, body, this.commentSubmitResponse, "POST", headers);
         } else {
         	this.setState({
-					is_login_validation: true
+					is_loggedin_validation: true
 				})
 			setTimeout(() => {
 				this.setState({
-					is_login_validation: false
+					is_loggedin_validation: false
 				})
 			}, 3000);
         }
@@ -170,7 +205,7 @@ class ArticleDetail extends React.Component {
 
 	setCaptcha = (data) => {
 		var results = JSON.parse(data["body"]["result"])
-		var captcha_image = "http://newscout.in"+results["new_captch_image"]
+		var captcha_image = BASE_URL+results["new_captch_image"]
 		var state = this.state
 		state.captchaImage = captcha_image
 		state.captchaData = results
@@ -178,20 +213,15 @@ class ArticleDetail extends React.Component {
 	}
 
 	fetchCaptcha = () => {
-		let url = "http://newscout.in/api/v1/comment-captcha/";
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(url, this.setCaptcha, headers);
+		getRequest(CAPTCHA_URL, this.setCaptcha, headers);
 	}
 
 	commentSubmitResponse = (data) => {
 		if(data.header.status === "1") {
 			this.setState({
-				InvalidCaptcha:false
-			});
-			this.setState({
-				successComment :true
-			});
-			this.setState({
+				InvalidCaptcha: false,
+				successComment: true,
 				resetAll :true
 			});
 			setTimeout(() => {
@@ -220,26 +250,55 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+	getBookmarksArticles = (data) => {
+		var article_array = []
+		var article_ids = data.body.results;
+		for(var i = 0; i < article_ids.length; i++){
+			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+				article_array.push(article_ids[i].article)
+				this.setState({
+					bookmark_ids: article_array
+				})
+			}
+		}
+	}
+
 	componentDidMount() {
+		if(cookies.get('full_name')){
+			this.fetchCaptcha();
+			this.setState({is_loggedin:true, is_captcha:false})
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		}
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment, headers);		
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment);
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen } = this.state;
-    var sub_category = ""
+		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids } = this.state;
+    	var root_category = ""
 		var category = ""
-		if(article.sub_category) {
-			var sub_category = article.sub_category.replace(" ", "-").toLowerCase()
+		if(article.root_category) {
+			var root_category = article.root_category.replace(" ", "-").toLowerCase()
 		}
 		if(article.category) {
 			var category = article.category.replace(" ", "-").toLowerCase()
 		}
+
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
+				<Menu
+					logo={logo}
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideOpen={this.isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+				/>
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
@@ -251,12 +310,12 @@ class ArticleDetail extends React.Component {
 					                      <div className="article-breadcrumb">
 					                        <Breadcrumb className="mb-0">
 					                          <BreadcrumbItem><a href="/">Home</a></BreadcrumbItem>
-					                          {article.category ?
-					                            <BreadcrumbItem><a href={`/news/${category}`}>{article.category}</a></BreadcrumbItem>
+					                          {article.root_category ?
+					                            <BreadcrumbItem><a href={`/news/${root_category}`}>{article.root_category}</a></BreadcrumbItem>
 					                          : ""
 					                          }
-					                          {article.sub_category ?
-					                            <BreadcrumbItem><a href={`/news/${category}/${sub_category}`}>{article.sub_category}</a></BreadcrumbItem>
+					                          {article.category ?
+					                            <BreadcrumbItem><a href={`/news/${root_category}/${category}`}>{article.category}</a></BreadcrumbItem>
 					                          : ""
 					                          }
 					                        </Breadcrumb>
@@ -268,14 +327,24 @@ class ArticleDetail extends React.Component {
 											<div className="row">
 												<div className="col-lg-12">
 													<div className="article-detail">
-														<JumboBox 
-															source_url={article.source_url}
+														<JumboBox
+															id={article.id} 
 															image={article.src}
 															title={article.title}
-															uploaded_on={article.date}
-															uploaded_by={article.source}
 															description={article.caption}
-															hash_tags={article.hash_tags} />
+															uploaded_by={article.source}
+															source_url={article.source_url}
+															slug_url={article.slug}
+															category={article.category}
+															hash_tags={article.hash_tags}
+															uploaded_on={article.date}
+															is_loggedin={is_loggedin}
+															toggle={this.toggle}
+															is_open={modal}
+															getArticleId={this.getArticleId}
+															bookmark_ids={bookmark_ids}
+															base_url={BASE_URL}
+														/>
 													</div>
 												</div>
 											</div>
@@ -288,7 +357,7 @@ class ArticleDetail extends React.Component {
 																	<h3 className="">Reviews</h3>
 																</div>
 																<div className="float-right">
-																	{this.state.is_login ?
+																	{is_loggedin ?
 																		<ul className="list-inline mb-0 usr">
 																			<li className="list-inline-item">
 																				<h6 className="h6-text mt-2 mb-0">{username}</h6>
@@ -298,16 +367,26 @@ class ArticleDetail extends React.Component {
 																				<FontAwesomeIcon icon={faPowerOff} />
 																			</li>
 																		</ul>
-																	:
-																		<h6 className="h6-text mt-2 mb-0" onClick={this.toggle}>Login</h6>
+																	: ""
 																	}
 																</div>
 															</div>
 														</div>
 														<div className="mt-4">
-															<Comments comments={this.state.articlecomments} handleSubmit={this.handleSubmit} successComment={this.state.successComment} is_login={this.state.is_login_validation} captchaImage={captchaImage} InvalidCaptcha={this.state.InvalidCaptcha}
-															fetchCaptcha={this.fetchCaptcha} resetAll={this.state.resetAll}
-															is_captcha={this.state.is_captcha}/>
+															<Comments 
+																comments={this.state.articlecomments} 
+																handleSubmit={this.handleSubmit} 
+																successComment={this.state.successComment} 
+																is_loggedin_validation={this.state.is_loggedin_validation} 
+																captchaImage={captchaImage} 
+																InvalidCaptcha={this.state.InvalidCaptcha} 
+																fetchCaptcha={this.fetchCaptcha} 
+																resetAll={this.state.resetAll} 
+																is_captcha={this.state.is_captcha} 
+																is_loggedin={is_loggedin} 
+																toggle={this.toggle}
+																is_open={modal} 
+															/>
 														</div>
 													</div>
 												</div>

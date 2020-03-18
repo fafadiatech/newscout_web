@@ -5,6 +5,7 @@ import pytz
 import time
 import redis
 import pickle as cPickle
+from core.utils import es
 from random import randint
 from datetime import datetime
 from dateutil.parser import parse
@@ -32,6 +33,7 @@ class Command(BaseCommand):
         self.now = datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d")
         self.redis = redis.Redis()
         self.batch = []
+        self.recommendation_batch = []
         self.sleep_time = 0
         self.classify = RegexClassification()
         self.score = ArticleScore()
@@ -47,7 +49,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--source', '-s', type=str, help='redis source name [Ex: theverge]')
-        parser.add_argument('--index', '-i', type=str, default='article', help='elastic search index name [default: article]')
+        parser.add_argument('--index', '-i', type=str, default='article',
+                            help='elastic search index name [default: article]')
 
     def get_data_from_redis(self, source):
         """
@@ -91,7 +94,8 @@ class Command(BaseCommand):
         for tag in clean_tags:
             final_tags = final_tags + self.remove_char(tag, " and ")
 
-        final_tags = [tag.replace("&", " ").replace(",", "").replace(":", "").replace("'", "").replace("#", "").replace("*", "").replace("(", "").replace(")", "").replace("@", "").replace("!", "").replace("-", " ").strip().lower() for tag in final_tags]
+        final_tags = [tag.replace("&", " ").replace(",", "").replace(":", "").replace("'", "").replace("#", "").replace(
+            "*", "").replace("(", "").replace(")", "").replace("@", "").replace("!", "").replace("-", " ").strip().lower() for tag in final_tags]
 
         return final_tags
 
@@ -103,6 +107,55 @@ class Command(BaseCommand):
         for tag in tags:
             tag_list.append(tag["name"])
         return tag_list
+
+    def get_recommendations(self, title, domain, size=100, K=25):
+        """
+        this method is used to perform title search
+        """
+        suggestions = []
+
+        results = es.search(
+            index='article',
+            body={
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "multi_match": {
+                                    "query": title,
+                                    "fields": ["title", "blurb^3"]
+                                }
+                            },
+                            {
+                                "match": {
+                                    "domain": domain
+                                }
+                            }
+                        ]
+                    }
+                },
+                "size": 100
+            })
+
+        while len(suggestions) != K:
+            rec = {}
+
+            lucky_number = randint(0, size-1)
+            try:
+                candidate = results['hits']['hits'][lucky_number]
+            except:
+                break
+
+            rec['id'] = candidate['_source']['id']
+
+            if rec['id'] in suggestions:
+                continue
+
+            rec = candidate['_source']['id']
+            ts = candidate['_source']['published_on']
+            suggestions.append((rec, ts))
+
+        return [item[0] for item in suggestions]
 
     def create_model_obj(self, doc, domain, index):
         """
@@ -127,7 +180,8 @@ class Command(BaseCommand):
             if video_data:
                 cover_image = video_data[0].get("video_image", "")
         if title and full_text:
-            if not Article.objects.filter(title=title).exists():
+            if (not Article.objects.filter(title=title).exists()) and \
+               (not Article.objects.filter(cover_image=cover_image).exists()):
                 if category == "Uncategorised":
                     # apply regex based category only if article is uncategorised
                     # get category id from regex classfication
@@ -190,14 +244,26 @@ class Command(BaseCommand):
                     tag_list = self.get_tags(json_data["hash_tags"])
                     json_data["hash_tags"] = tag_list
                 self.batch.append(json_data)
+                # Generate recommendation
+                recommendation_document = {}
+                recommendation_document['id'] = article_obj.id
+                recommendation_document['recommendation'] = \
+                    self.get_recommendations(
+                        article_obj.title, article_obj.domain.domain_id)
+                self.recommendation_batch.append(recommendation_document)
+                # Ingest data and recommendation
                 if len(self.batch) == 99:
                     ingest_to_elastic(self.batch, index, index, 'id')
+                    ingest_to_elastic(
+                        self.recommendation_batch, "recommendation",
+                        "recommendation", "id")
                     self.batch = []
+                    self.recommendation_batch = []
                     print("Ingesting Batch To Elastic...!!!")
 
     def handle(self, *args, **options):
         if options['source'] == None:
-           raise CommandError("Option `--source=...` must be specified.")
+            raise CommandError("Option `--source=...` must be specified.")
 
         # start prometheus http server for metrics
         start_http_server(8686)
@@ -214,15 +280,19 @@ class Command(BaseCommand):
                     self.task_state.state("running")
                     self.sleep_time = 0
                     if os.path.isfile(file_path):
-                        doc = cPickle.loads(zlib.decompress(open(file_path).read()))
+                        doc = cPickle.loads(zlib.decompress(open(file_path, "rb").read()))
                         try:
                             self.create_model_obj(doc, domain, index)
                             if date == self.now:
-                                self.source_ingest.labels(source=doc.get("source", "source"), category=doc.get("category", "category")).inc()
+                                self.source_ingest.labels(
+                                    source=doc.get("source", "source"),
+                                    category=doc.get("category", "category")).inc()
                             else:
                                 self.now = datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d")
                                 # self.reset_stats()
-                                self.source_ingest.labels(source=doc.get("source", "source"), category=doc.get("category", "category")).inc()
+                                self.source_ingest.labels(
+                                    source=doc.get("source", "source"),
+                                    category=doc.get("category", "category")).inc()
                         except Exception as e:
                             print("error in doc read")
                             print(e)

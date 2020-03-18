@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from .views import (IndexView, CampaignView, GroupView, AdvertisementView,
-                    ArticleView, ArticleCreateView, ArticleEditView)
+                    ArticleView, ArticleCreateView, ArticleEditView,
+                    QCToolView)
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index"),
@@ -10,4 +11,5 @@ urlpatterns = [
     url(r'^articles/$', ArticleView.as_view(), name="articles"),
     url(r'^article/create/$', ArticleCreateView.as_view(), name="article-create"),
     url(r'^article/edit/(?P<slug>[\w-]+)/$', ArticleEditView.as_view(), name="article-edit"),
+    url(r'^qc/$', QCToolView.as_view(), name="qc-tool"),
 ]

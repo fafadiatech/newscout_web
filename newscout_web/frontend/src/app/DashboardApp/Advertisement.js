@@ -1,15 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
+import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
+import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import DashboardMenu from '../../components/DashboardMenu';
-import DashboardHeader from '../../components/DashboardHeader';
 import { ADVERTISEMENT_URL, GROUP_GROUPTYPE_URL } from '../../utils/Constants';
-import { getRequest, postRequest, fileUploadHeaders, putRequest, deleteRequest, notify } from '../../utils/Utils';
+import { getRequest, postRequest, fileUploadHeaders, authHeaders, putRequest, deleteRequest, notify } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
 import './index.css';
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
 
 class Advertisement extends React.Component {
 	constructor(props) {
@@ -27,7 +31,8 @@ class Advertisement extends React.Component {
 			previous: null,
 			loading: false,
 			q: "",
-			page : 0
+			page : 0,
+			isSideOpen: true,
 		};
 	}
 
@@ -77,7 +82,7 @@ class Advertisement extends React.Component {
 				results: []
 			})
 			var url = ADVERTISEMENT_URL + "?q=" + this.state.q;
-			getRequest(url, this.getAdvertisementData);
+			getRequest(url, this.getAdvertisementData, authHeaders);
 		}
 	}
 
@@ -188,7 +193,7 @@ class Advertisement extends React.Component {
 		let dataindex = e.target.getAttribute('data-index');
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = ADVERTISEMENT_URL + dataindex + "/";
-		deleteRequest(url, this.deleteAdvertisementResponse)
+		deleteRequest(url, this.deleteAdvertisementResponse, authHeaders)
 		setTimeout(function() {
 			findrow.style.transition = '0.8s';
 			findrow.style.opacity = '0';
@@ -231,7 +236,7 @@ class Advertisement extends React.Component {
 			loading: true
 		})
 		var url = ADVERTISEMENT_URL;
-		getRequest(url, this.getAdvertisementData);
+		getRequest(url, this.getAdvertisementData, authHeaders);
 	}
 
 	getAdvertisementData = (data) => {
@@ -258,7 +263,7 @@ class Advertisement extends React.Component {
 			loading: true,
 			page : this.state.page + 1
 		})
-		getRequest(this.state.next, this.getAdvertisementData);
+		getRequest(this.state.next, this.getAdvertisementData, authHeaders);
 	}
 
 	handleScroll = () => {
@@ -269,11 +274,17 @@ class Advertisement extends React.Component {
 		}
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getAdvertisements()
 		var group_type_url = GROUP_GROUPTYPE_URL;
-		getRequest(group_type_url, this.getGroupAndGroupType)
+		getRequest(group_type_url, this.getGroupAndGroupType, authHeaders)
 	}
 
 	componentWillUnmount = () => {
@@ -281,6 +292,8 @@ class Advertisement extends React.Component {
 	}
 
 	render(){
+		var { menus, isSideOpen } = this.state
+
 		let result_array = this.state.results
 		let results = []
 		let state = this.state;
@@ -401,12 +414,12 @@ class Advertisement extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="group">
-					<DashboardHeader />
+					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
 					<div className="container-fluid">
 						<div className="row">
-							<DashboardMenu />
-							<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-								<div className="mb-3">
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+								<div className="pt-50 mb-3">
 									<h1 className="h2">Advertisement</h1>
 									<div className="clearfix">
 										<div className="float-left">
@@ -447,7 +460,7 @@ class Advertisement extends React.Component {
 										: ""
 									}
 								</div>
-							</main>
+							</div>
 						</div>
 					</div>
 
@@ -497,6 +510,7 @@ class Advertisement extends React.Component {
 						</ModalFooter>
 					</Modal>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}

@@ -1,6 +1,10 @@
 import React from 'react';
-import DashboardMenu from '../../components/DashboardMenu';
-import DashboardHeader from '../../components/DashboardHeader';
+import Datetime from 'react-datetime';
+import logo from '../NewsApp/logo.png';
+import { getRequest, authHeaders } from '../../utils/Utils';
+import { Menu, SideBar, Footer } from 'newscout';
+import { Button, FormGroup, Label, Input } from 'reactstrap';
+
 import AllArticlesOpenGraph from '../../components/AllArticlesOpenGraph';
 import ArticlesPerAuthorGraph from '../../components/ArticlesPerAuthorGraph';
 import ArticlesPerPlatformGraph from '../../components/ArticlesPerPlatformGraph';
@@ -16,10 +20,11 @@ import { ANALYTICS_ALLARTICLESOPEN_URL,	ANALYTICS_ARTICLESPERPLATFORM_URL,
 		 ANALYTICS_INTERACTIONSPERAUTHOR_URL,
 		 ANALYTICS_ARTICLESPERSESSION_URL,
 		 ANALYTICS_INTERACTIONSPERSESSION_URL } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
-import Datetime from 'react-datetime';
-import { Button, FormGroup, Label, Input } from 'reactstrap';
 
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
 
 class App extends React.Component {
 	constructor(props) {
@@ -63,7 +68,8 @@ class App extends React.Component {
 			ArticlesPerAuthorAvgCount: 0,
 			InteractionsPerAuthorAvgCount: 0,
 			ArticlesPerSessionAvgCount: 0,
-			InteractionsPerSessionAvgCount: 0
+			InteractionsPerSessionAvgCount: 0,
+			isSideOpen: true,
 		};
 	}
 
@@ -120,49 +126,49 @@ class App extends React.Component {
 	GetAllArticlesOpenData = (url) => {
 		var URL = url || ANALYTICS_ALLARTICLESOPEN_URL;
 		var extraData = {"loading": "AllArticlesOpenLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerPlatformData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERPLATFORM_URL;
 		var extraData = {"loading": "ArticlesPerPlatformLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerCategoryData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERCATEGORY_URL;
 		var extraData = {"loading": "ArticlesPerCategoryLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerCategoryData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERCATEGORY_URL;
 		var extraData = {"loading": "InteractionsPerCategoryLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerAuthorData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERAUTHOR_URL;
 		var extraData = {"loading": "ArticlesPerAuthorLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerAuthorData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERAUTHOR_URL;
 		var extraData = {"loading": "InteractionsPerAuthorLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerSessionData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERSESSION_URL;
 		var extraData = {"loading": "ArticlesPerSessionLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerSessionData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERSESSION_URL;
 		var extraData = {"loading": "InteractionsPerSessionLoading"}
-		getRequest(URL, this.SetResponseData, false, extraData);
+		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	toggle = () => {
@@ -249,6 +255,12 @@ class App extends React.Component {
 		this.setState(state)
 	}
 
+	isSideOpen = (data) => {
+		this.setState({
+			isSideOpen: data
+		})
+	}
+
 	componentDidMount(){
 		this.GetAllArticlesOpenData()
 		this.GetArticlesPerPlatformData()
@@ -261,14 +273,15 @@ class App extends React.Component {
 	}
 
 	render(){
+		var { menus, isSideOpen } = this.state
 		return(
 			<div className="App">
-				<DashboardHeader />
+				<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
 				<div className="container-fluid">
 					<div className="row">
-						<DashboardMenu />
-						<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-							<div className="row">
+						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+							<div className="row pt-50">
 								<div className="col-md-4">
 									<FormGroup>
 										<Label for="date_range">Select Date Range</Label>
@@ -299,74 +312,58 @@ class App extends React.Component {
 								}
 								<div className="col-md-4">
 									<Label for="" className="d-block text-transparent">Select Date Range</Label>
-									<Button color="primary" onClick={this.handleSubmitBtn} disabled={this.state.disabled}>Submit</Button>
+									<Button color="danger" onClick={this.handleSubmitBtn} disabled={this.state.disabled}>Submit</Button>
 								</div>
 							</div>
-							<div className="row mt-5 mb-3">
+							<div className="row mt-5">
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles</p>
-														<h5 className="mb-0 mt-2">Open</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles</p>
+												<h5 className="mb-0 mt-1">Open</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Platform</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Platform</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Category</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Category</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Interactions Per</p>
-														<h5 className="mb-0 mt-2">Category</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Interactions Per</p>
+												<h5 className="mb-0 mt-1">Category</h5>
 											</div>
 										</div>
 									</div>
@@ -374,69 +371,53 @@ class App extends React.Component {
 							</div>
 							<div className="row mb-5">
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Author</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Author</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Interactions Per</p>
-														<h5 className="mb-0 mt-2">Author</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Interactions Per</p>
+												<h5 className="mb-0 mt-1">Author</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Articles Per</p>
-														<h5 className="mb-0 mt-2">Session</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Articles Per</p>
+												<h5 className="mb-0 mt-1">Session</h5>
 											</div>
 										</div>
 									</div>
 								</div>
 								<div className="col-lg-3">
-									<div className="card skewed-bg">
-										<div className="clearfix">
-											<div className="float-left">
-												<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}</h3>
-											</div>
-											<div className="float-right">
-												<div className="card-body">
-													<div className="text-center">
-														<p className="mb-0">Average Interactions Per</p>
-														<h5 className="mb-0 mt-2">Session</h5>
-													</div>
-												</div>
+									<div className="card mb-4">
+										<div className="skewed-bg">
+											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}</h3>
+										</div>
+										<div className="card-body">
+											<div className="text-center">
+												<p className="mb-0">Average Interactions Per</p>
+												<h5 className="mb-0 mt-1">Session</h5>
 											</div>
 										</div>
 									</div>
@@ -482,9 +463,10 @@ class App extends React.Component {
 									<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
 								</div>
 							</div>
-						</main>
+						</div>
 					</div>
 				</div>
+				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</div>
 		);
 	}

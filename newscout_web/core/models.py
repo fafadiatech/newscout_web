@@ -153,7 +153,7 @@ class Article(NewsSiteBaseModel):
     slug = models.SlugField(max_length=250, allow_unicode=True, blank=True, null=True)
 
     def __unicode__(self):
-        return '{} - {} - {} - {} -{}\n'.format(self.id,self.title, self.published_on, self.source, self.hash_tags)
+        return '{} - {} - {} - {} -{}\n'.format(self.id, self.title, self.published_on, self.source, self.hash_tags)
 
     def save(self, *args, **kwargs):
         super(Article, self).save(*args, **kwargs)
@@ -251,11 +251,12 @@ class Devices(models.Model):
 class Notification(models.Model):
     breaking_news = models.BooleanField(default=False)
     daily_edition = models.BooleanField(default=False)
-    personalized  = models.BooleanField(default=False)
+    personalized = models.BooleanField(default=False)
     device = models.ForeignKey(Devices, on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return "breaking_news={}, daily_edition={}, personalized={}".format(self.breaking_news, self.daily_edition, self.personalized)
+        return "breaking_news={}, daily_edition={}, personalized={}".format(
+            self.breaking_news, self.daily_edition, self.personalized)
 
 
 class SocialAccount(models.Model):
@@ -276,6 +277,7 @@ class SocialAccount(models.Model):
 
 class Feed:
     pass
+
 
 class ScoutFrontier(models.Model):
     """
@@ -322,8 +324,8 @@ class TrendingArticle(NewsSiteBaseModel):
 
 
 class DailyDigest(NewsSiteBaseModel):
-    device = models.ForeignKey(Devices, on_delete=models.CASCADE)
-    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
+    device = models.ForeignKey(Devices, blank=True, null=True, on_delete=models.CASCADE)
+    domain = models.ForeignKey(Domain, blank=True, null=True, on_delete=models.CASCADE)
     articles = models.ManyToManyField(Article)
 
     def __unicode__(self):
@@ -339,13 +341,14 @@ class DraftMedia(NewsSiteBaseModel):
     def __unicode__(self):
         return self.image
 
+
 class Comment(NewsSiteBaseModel):
     article = models.ForeignKey(
         Article, on_delete=models.CASCADE
     )
     user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
     comment = models.CharField(max_length=250)
-    reply = models.ForeignKey("Comment", null=True, blank=True,on_delete=models.CASCADE, related_name="replies")
+    reply = models.ForeignKey("Comment", null=True, blank=True, on_delete=models.CASCADE, related_name="replies")
 
     def __str__(self):
         return self.comment

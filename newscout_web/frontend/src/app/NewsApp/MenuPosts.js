@@ -3,11 +3,14 @@ import moment from 'moment';
 import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
+import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, ImageOverlay, SideBar, Footer } from 'newscout';
 
-import { MENUS, ARTICLE_POSTS } from '../../utils/Constants';
+import { MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
+
+import Auth from './Auth';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/ImageOverlay.css'
@@ -16,8 +19,10 @@ import 'newscout/assets/Sidebar.css'
 
 import config_data from './config.json';
 
-const URL = "/news/search/";
+var article_array = [];
 const submenu_array = [];
+const URL = "/news/search/"
+const cookies = new Cookies();
 
 const settings = {
 	dots: false,
@@ -64,8 +69,26 @@ class MenuPosts extends React.Component {
 			menus: [],
 			isSideOpen: true,
 			domain: "domain="+DOMAIN,
-			isLoading: false
+			isLoading: false,
+			modal: false,
+			is_loggedin: false,
+			is_loggedin_validation: false,
+			username: cookies.get('full_name'),
+			bookmark_ids: []
 		};
+	}
+
+	loggedInUser = (data) => {
+		this.setState({
+			username: data,
+			is_loggedin: true
+		})
+	}
+
+	toggle = (data) => {
+		this.setState({
+			modal: !data,
+		})
 	}
 
 	getMenu = (data) => {
@@ -74,7 +97,7 @@ class MenuPosts extends React.Component {
 			if(item.heading){
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
+				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
@@ -144,13 +167,31 @@ class MenuPosts extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	handleLogout = () => {
+		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+    }
+
+    authLogoutResponse = (data) => {
+    	cookies.remove('token', { path: '/' })
+    	cookies.remove('full_name', { path: '/' })
+        this.setState({
+			is_loggedin: false,
+			is_captcha: true,
+			bookmark_ids: []
+		})
+    }
+
+	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
+		if(cookies.get('full_name')){
+			this.setState({is_loggedin:true})
+		}
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal } = this.state;
 		var result = newsPosts.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
@@ -198,8 +239,17 @@ class MenuPosts extends React.Component {
 
 		return(
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
-
+				<Menu
+					logo={logo}
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideOpen={this.isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+				/>
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
@@ -208,6 +258,9 @@ class MenuPosts extends React.Component {
 						</div>
 					</div>
 				</div>
+
+				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+				
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)

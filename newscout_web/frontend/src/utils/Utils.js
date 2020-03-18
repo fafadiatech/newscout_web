@@ -13,6 +13,12 @@ export const readCookie = function (name) {
 
 export const location_origin = window.location.origin
 
+export const authHeaders = {
+    "X-CSRFToken": readCookie("csrftoken"),
+    "Authorization": "Token " + readCookie("token"),
+    "Content-Type": "application/json"
+};
+
 export const postHeaders = {
     "X-CSRFToken": readCookie("csrftoken"),
     "Content-Type": "application/json"
@@ -29,7 +35,8 @@ export const getHeaders = {
 };
 
 export const fileUploadHeaders = {
-    "X-CSRFToken": readCookie("csrftoken")
+    "X-CSRFToken": readCookie("csrftoken"),
+    "Authorization": "Token " + readCookie("token"),
 };
 
 export const fileResumeUploadHeaders = {
@@ -129,7 +136,7 @@ export const postRequest = function postRequest(url, body, successFunc, method =
                     }
                 })
             }
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401 || response.status === 403 || response.status === 404) {
                 return response.json().then(data => {
                     if (!extra_data) {
                         return successFunc(data);

@@ -1,1 +1,2722 @@
-[{"model": "core.menu", "pk": 10, "fields": {"domain": 1, "name": 140, "submenu": [58, 57, 56, 54, 53, 52, 51]}}, {"model": "core.menu", "pk": 8, "fields": {"domain": 1, "name": 132, "submenu": [72, 69, 47, 46, 45, 48]}}, {"model": "core.menu", "pk": 9, "fields": {"domain": 1, "name": 137, "submenu": [73, 68, 67, 50, 49]}}, {"model": "core.menu", "pk": 7, "fields": {"domain": 1, "name": 124, "submenu": [77, 70, 44, 43, 42, 41, 40, 39, 38]}}, {"model": "core.menu", "pk": 11, "fields": {"domain": 1, "name": 149, "submenu": [64, 65, 59, 60, 61, 62, 63, 66, 71, 74, 75, 76]}}]
+[
+{
+    "model": "core.category",
+    "pk": 729,
+    "fields": {
+        "created_at": "2020-01-05T11:22:42.118Z",
+        "modified_at": "2020-01-05T11:22:42.118Z",
+        "name": "Best Supply Chain Practices"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 35,
+    "fields": {
+        "created_at": "2020-01-02T07:54:00.580Z",
+        "modified_at": "2020-01-02T07:54:00.580Z",
+        "domain_name": "Best Supply Chain Practices",
+        "domain_id": "bestsupplychainpractices",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 728,
+    "fields": {
+        "created_at": "2020-01-05T11:17:02.577Z",
+        "modified_at": "2020-01-05T11:17:02.577Z",
+        "name": "Economic and Political Weekly"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 54,
+    "fields": {
+        "created_at": "2020-01-04T21:23:29.501Z",
+        "modified_at": "2020-01-04T21:23:29.501Z",
+        "domain_name": "Economic and Political Weekly",
+        "domain_id": "epw",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 703,
+    "fields": {
+        "created_at": "2020-01-04T21:23:25.215Z",
+        "modified_at": "2020-01-04T21:23:25.215Z",
+        "name": "Solar Quarter"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 53,
+    "fields": {
+        "created_at": "2020-01-04T21:20:05.196Z",
+        "modified_at": "2020-01-04T21:20:05.196Z",
+        "domain_name": "Solar Quarter",
+        "domain_id": "solarquarter",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 702,
+    "fields": {
+        "created_at": "2020-01-04T21:20:04.307Z",
+        "modified_at": "2020-01-04T21:20:04.307Z",
+        "name": "Licensing Corner"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 52,
+    "fields": {
+        "created_at": "2020-01-04T20:46:08.306Z",
+        "modified_at": "2020-01-04T20:46:08.306Z",
+        "domain_name": "Licensing Corner",
+        "domain_id": "licensingcorner",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 691,
+    "fields": {
+        "created_at": "2020-01-04T20:46:07.317Z",
+        "modified_at": "2020-01-04T20:46:07.318Z",
+        "name": "The Teenager Today"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 51,
+    "fields": {
+        "created_at": "2020-01-04T20:21:06.551Z",
+        "modified_at": "2020-01-04T20:21:06.551Z",
+        "domain_name": "The Teenager Today",
+        "domain_id": "theteenagertoday",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 680,
+    "fields": {
+        "created_at": "2020-01-04T20:21:05.572Z",
+        "modified_at": "2020-01-04T20:21:05.572Z",
+        "name": "Retail Jewellers India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 50,
+    "fields": {
+        "created_at": "2020-01-04T19:58:30.097Z",
+        "modified_at": "2020-01-04T19:58:30.097Z",
+        "domain_name": "Retail Jewellers India",
+        "domain_id": "rjindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 676,
+    "fields": {
+        "created_at": "2020-01-04T19:58:29.011Z",
+        "modified_at": "2020-01-04T19:58:29.011Z",
+        "name": "Diabetes Health"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 49,
+    "fields": {
+        "created_at": "2020-01-04T19:56:40.076Z",
+        "modified_at": "2020-01-04T19:56:40.076Z",
+        "domain_name": "Diabetes Health",
+        "domain_id": "diabeteshealth",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 672,
+    "fields": {
+        "created_at": "2020-01-04T19:56:39.077Z",
+        "modified_at": "2020-01-04T19:56:39.077Z",
+        "name": "EPR Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 48,
+    "fields": {
+        "created_at": "2020-01-04T19:08:04.017Z",
+        "modified_at": "2020-01-04T19:08:04.017Z",
+        "domain_name": "EPR Magazine",
+        "domain_id": "eprmag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 669,
+    "fields": {
+        "created_at": "2020-01-04T19:08:02.806Z",
+        "modified_at": "2020-01-04T19:08:02.806Z",
+        "name": "Crains Detroit"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 47,
+    "fields": {
+        "created_at": "2020-01-03T17:49:42.926Z",
+        "modified_at": "2020-01-03T17:49:42.926Z",
+        "domain_name": "Crains Detroit",
+        "domain_id": "crainsdetroit",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 661,
+    "fields": {
+        "created_at": "2020-01-03T17:49:31.366Z",
+        "modified_at": "2020-01-03T17:49:31.366Z",
+        "name": "Charlotte Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 46,
+    "fields": {
+        "created_at": "2020-01-03T15:22:42.633Z",
+        "modified_at": "2020-01-03T15:22:42.633Z",
+        "domain_name": "Charlotte Magazine",
+        "domain_id": "charlottemag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 654,
+    "fields": {
+        "created_at": "2020-01-03T15:22:39.732Z",
+        "modified_at": "2020-01-03T15:22:39.732Z",
+        "name": "I 4 Business"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 45,
+    "fields": {
+        "created_at": "2020-01-03T14:59:46.330Z",
+        "modified_at": "2020-01-03T14:59:46.330Z",
+        "domain_name": "I 4 Business",
+        "domain_id": "i4business",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 648,
+    "fields": {
+        "created_at": "2020-01-03T14:59:45.242Z",
+        "modified_at": "2020-01-03T14:59:45.242Z",
+        "name": "Tampa Bay Business and Wealth"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 44,
+    "fields": {
+        "created_at": "2020-01-03T14:54:34.337Z",
+        "modified_at": "2020-01-03T14:54:34.337Z",
+        "domain_name": "Tampa Bay Business and Wealth",
+        "domain_id": "tbbw",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 641,
+    "fields": {
+        "created_at": "2020-01-03T14:54:33.480Z",
+        "modified_at": "2020-01-03T14:54:33.480Z",
+        "name": "Hawaii Business"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 43,
+    "fields": {
+        "created_at": "2020-01-03T14:24:00.757Z",
+        "modified_at": "2020-01-03T14:24:00.757Z",
+        "domain_name": "Hawaii Business",
+        "domain_id": "hawaiibusiness",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 635,
+    "fields": {
+        "created_at": "2020-01-03T14:23:59.687Z",
+        "modified_at": "2020-01-03T14:23:59.687Z",
+        "name": "Cuisine Oir Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 42,
+    "fields": {
+        "created_at": "2020-01-03T14:14:32.321Z",
+        "modified_at": "2020-01-03T14:14:32.321Z",
+        "domain_name": "Cuisine Oir Magazine",
+        "domain_id": "cuisinemag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 628,
+    "fields": {
+        "created_at": "2020-01-03T14:14:31.493Z",
+        "modified_at": "2020-01-03T14:14:31.493Z",
+        "name": "Community Rec Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 41,
+    "fields": {
+        "created_at": "2020-01-03T14:11:53.154Z",
+        "modified_at": "2020-01-03T14:11:53.154Z",
+        "domain_name": "Community Magazine",
+        "domain_id": "communitymag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 625,
+    "fields": {
+        "created_at": "2020-01-03T14:11:52.366Z",
+        "modified_at": "2020-01-03T14:11:52.367Z",
+        "name": "Indian Business Journal"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 40,
+    "fields": {
+        "created_at": "2020-01-03T14:11:33.737Z",
+        "modified_at": "2020-01-03T14:11:33.737Z",
+        "domain_name": "Indian Business Journal",
+        "domain_id": "ibj",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 611,
+    "fields": {
+        "created_at": "2020-01-03T14:11:33.009Z",
+        "modified_at": "2020-01-03T14:11:33.009Z",
+        "name": "Pets Plus Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 39,
+    "fields": {
+        "created_at": "2020-01-03T13:39:51.050Z",
+        "modified_at": "2020-01-03T13:39:51.050Z",
+        "domain_name": "Pets Plus Mag",
+        "domain_id": "petsplusmag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 604,
+    "fields": {
+        "created_at": "2020-01-03T13:39:49.749Z",
+        "modified_at": "2020-01-03T13:39:49.749Z",
+        "name": "Gigabit Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 38,
+    "fields": {
+        "created_at": "2020-01-03T13:16:44.713Z",
+        "modified_at": "2020-01-03T13:16:44.713Z",
+        "domain_name": "Gigabit Magazine",
+        "domain_id": "gigabitmag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 600,
+    "fields": {
+        "created_at": "2020-01-03T13:16:43.425Z",
+        "modified_at": "2020-01-03T13:16:43.425Z",
+        "name": "QSR Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 37,
+    "fields": {
+        "created_at": "2020-01-03T06:42:10.984Z",
+        "modified_at": "2020-01-03T06:42:10.984Z",
+        "domain_name": "QSR Magazine",
+        "domain_id": "qsrmagazine",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 595,
+    "fields": {
+        "created_at": "2020-01-02T15:42:23.702Z",
+        "modified_at": "2020-01-02T15:42:23.702Z",
+        "name": "Tube Filter"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 36,
+    "fields": {
+        "created_at": "2020-01-02T10:23:52.035Z",
+        "modified_at": "2020-01-02T10:23:52.035Z",
+        "domain_name": "Tube Filter",
+        "domain_id": "tubefilter",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 578,
+    "fields": {
+        "created_at": "2019-09-30T04:55:39.344Z",
+        "modified_at": "2019-09-30T04:55:39.344Z",
+        "name": "Construction World"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 34,
+    "fields": {
+        "created_at": "2019-09-30T04:47:27.455Z",
+        "modified_at": "2019-09-30T04:47:27.455Z",
+        "domain_name": "Construction World",
+        "domain_id": "constructionworld",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 569,
+    "fields": {
+        "created_at": "2019-09-24T04:39:58.020Z",
+        "modified_at": "2019-09-24T04:39:58.020Z",
+        "name": "Print Week"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 33,
+    "fields": {
+        "created_at": "2019-09-24T04:34:20.793Z",
+        "modified_at": "2019-09-24T04:34:20.793Z",
+        "domain_name": "Print Week",
+        "domain_id": "printweek",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 566,
+    "fields": {
+        "created_at": "2019-09-23T07:35:25.747Z",
+        "modified_at": "2019-09-23T07:35:25.747Z",
+        "name": "Business Goa"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 32,
+    "fields": {
+        "created_at": "2019-09-23T07:31:57.671Z",
+        "modified_at": "2019-09-23T07:31:57.671Z",
+        "domain_name": "Business Goa",
+        "domain_id": "businessgoa",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 557,
+    "fields": {
+        "created_at": "2019-09-20T11:03:54.615Z",
+        "modified_at": "2019-09-20T11:03:54.615Z",
+        "name": "Maritime Gateway"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 31,
+    "fields": {
+        "created_at": "2019-09-20T11:00:20.131Z",
+        "modified_at": "2019-09-20T11:00:20.131Z",
+        "domain_name": "Maritime Gateway",
+        "domain_id": "maritimegateway",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 556,
+    "fields": {
+        "created_at": "2019-09-20T07:30:34.527Z",
+        "modified_at": "2019-09-20T07:30:34.527Z",
+        "name": "Tyre Asia"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 30,
+    "fields": {
+        "created_at": "2019-09-20T07:26:08.544Z",
+        "modified_at": "2019-09-20T07:26:08.544Z",
+        "domain_name": "Tyre Asia",
+        "domain_id": "tyreasia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 548,
+    "fields": {
+        "created_at": "2019-09-19T11:28:55.461Z",
+        "modified_at": "2019-09-19T11:28:55.461Z",
+        "name": "Rubber Asia"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 29,
+    "fields": {
+        "created_at": "2019-09-19T11:19:38.887Z",
+        "modified_at": "2019-09-19T11:19:38.887Z",
+        "domain_name": "Rubber Asia",
+        "domain_id": "rubberasia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 543,
+    "fields": {
+        "created_at": "2019-09-19T06:57:24.008Z",
+        "modified_at": "2019-09-19T06:57:24.008Z",
+        "name": "Motor India Online"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 28,
+    "fields": {
+        "created_at": "2019-09-19T06:45:56.799Z",
+        "modified_at": "2019-09-19T06:45:56.799Z",
+        "domain_name": "Motor India Online",
+        "domain_id": "motorindiaonline",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 529,
+    "fields": {
+        "created_at": "2019-09-19T06:31:54.237Z",
+        "modified_at": "2019-09-19T06:31:54.237Z",
+        "name": "SME Channels"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 27,
+    "fields": {
+        "created_at": "2019-09-19T06:18:16.472Z",
+        "modified_at": "2019-09-19T06:18:16.472Z",
+        "domain_name": "SME Channels",
+        "domain_id": "smechannels",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 505,
+    "fields": {
+        "created_at": "2019-09-18T13:04:14.999Z",
+        "modified_at": "2019-09-18T13:04:14.999Z",
+        "name": "Startup 360"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 26,
+    "fields": {
+        "created_at": "2019-09-18T13:00:51.115Z",
+        "modified_at": "2019-09-18T13:00:51.115Z",
+        "domain_name": "Startup 360",
+        "domain_id": "startup360",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 498,
+    "fields": {
+        "created_at": "2019-09-18T12:26:36.850Z",
+        "modified_at": "2019-09-18T12:26:36.850Z",
+        "name": "Banking Frontiers"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 25,
+    "fields": {
+        "created_at": "2019-09-18T12:21:28.982Z",
+        "modified_at": "2019-09-18T12:21:28.982Z",
+        "domain_name": "Banking Frontiers",
+        "domain_id": "bankingfrontiers",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 490,
+    "fields": {
+        "created_at": "2019-09-14T07:25:39.364Z",
+        "modified_at": "2019-09-14T07:25:39.364Z",
+        "name": "Auto CarPro"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 24,
+    "fields": {
+        "created_at": "2019-09-14T07:02:54.872Z",
+        "modified_at": "2019-09-14T07:17:34.695Z",
+        "domain_name": "Auto CarPro",
+        "domain_id": "autocarpro",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 199,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.610Z",
+        "modified_at": "2019-09-09T12:03:21.610Z",
+        "name": "India Retail"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 9,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.182Z",
+        "modified_at": "2019-09-09T11:27:12.182Z",
+        "domain_name": "India Retailing",
+        "domain_id": "indiaretail",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 198,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.546Z",
+        "modified_at": "2019-09-09T12:03:21.546Z",
+        "name": "The Machinist"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 18,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.947Z",
+        "modified_at": "2019-09-09T11:27:12.947Z",
+        "domain_name": "The Machinist",
+        "domain_id": "machine",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 197,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.483Z",
+        "modified_at": "2019-09-09T12:03:21.483Z",
+        "name": "What HiFi"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 23,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.375Z",
+        "modified_at": "2019-09-09T11:27:13.375Z",
+        "domain_name": "What HiFi",
+        "domain_id": "hifi",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 196,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.419Z",
+        "modified_at": "2019-09-09T12:03:21.419Z",
+        "name": "Manufacturing Today"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 12,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.437Z",
+        "modified_at": "2019-09-09T11:27:12.437Z",
+        "domain_name": "Manufacturing Today",
+        "domain_id": "mitoday",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 195,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.346Z",
+        "modified_at": "2019-09-09T12:03:21.346Z",
+        "name": "Auto Components India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 17,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.862Z",
+        "modified_at": "2019-09-09T11:27:12.862Z",
+        "domain_name": "Auto Components India",
+        "domain_id": "acindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 194,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.281Z",
+        "modified_at": "2019-09-09T12:03:21.281Z",
+        "name": "Steel 360"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 8,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.096Z",
+        "modified_at": "2019-09-09T11:27:12.096Z",
+        "domain_name": "Steel 360",
+        "domain_id": "steel360",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 193,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.217Z",
+        "modified_at": "2019-09-09T12:03:21.217Z",
+        "name": "Diamond World"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 22,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.288Z",
+        "modified_at": "2019-09-09T11:27:13.288Z",
+        "domain_name": "Diamond World",
+        "domain_id": "diamond",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 192,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.152Z",
+        "modified_at": "2019-09-09T12:03:21.152Z",
+        "name": "Transreporter"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 21,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.202Z",
+        "modified_at": "2019-09-09T11:27:13.202Z",
+        "domain_name": "Transreporter",
+        "domain_id": "transreporter",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 191,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.088Z",
+        "modified_at": "2019-09-09T12:03:21.088Z",
+        "name": "Fortune India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 7,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.010Z",
+        "modified_at": "2019-09-09T11:27:12.010Z",
+        "domain_name": "Fortune India",
+        "domain_id": "fortuneindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 190,
+    "fields": {
+        "created_at": "2019-09-09T12:03:21.021Z",
+        "modified_at": "2019-09-09T12:03:21.021Z",
+        "name": "Data Quest India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 10,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.268Z",
+        "modified_at": "2019-09-09T11:27:12.268Z",
+        "domain_name": "Data Quest India",
+        "domain_id": "dqindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 189,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.957Z",
+        "modified_at": "2019-09-09T12:03:20.957Z",
+        "name": "Construction Work Online"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 16,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.777Z",
+        "modified_at": "2019-09-09T11:27:12.777Z",
+        "domain_name": "Construction Work Online",
+        "domain_id": "cwonline",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 188,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.891Z",
+        "modified_at": "2019-09-09T12:03:20.891Z",
+        "name": "Bio Spectrum India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 20,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.117Z",
+        "modified_at": "2019-09-09T11:27:13.117Z",
+        "domain_name": "Bio Spectrum India",
+        "domain_id": "biosindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 187,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.611Z",
+        "modified_at": "2019-09-09T12:03:20.612Z",
+        "name": "Analytics India Magazine"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 6,
+    "fields": {
+        "created_at": "2019-09-09T11:27:11.877Z",
+        "modified_at": "2019-09-09T11:27:11.877Z",
+        "domain_name": "Analytics India Magazine",
+        "domain_id": "aim",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 186,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.546Z",
+        "modified_at": "2019-09-09T12:03:20.546Z",
+        "name": "Marwar India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 15,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.691Z",
+        "modified_at": "2019-09-09T11:27:12.691Z",
+        "domain_name": "Marwar India",
+        "domain_id": "marwarindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 185,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.484Z",
+        "modified_at": "2019-09-09T12:03:20.484Z",
+        "name": "Food And Hospitality"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 19,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.033Z",
+        "modified_at": "2019-09-09T11:27:13.033Z",
+        "domain_name": "Food And Hospitality",
+        "domain_id": "foodandhospitality",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 184,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.418Z",
+        "modified_at": "2019-09-09T12:03:20.418Z",
+        "name": "Indian Economy and Market"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 5,
+    "fields": {
+        "created_at": "2019-09-09T11:27:11.790Z",
+        "modified_at": "2019-09-09T11:27:11.790Z",
+        "domain_name": "Indian Economy and Market",
+        "domain_id": "ieam",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 183,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.354Z",
+        "modified_at": "2019-09-09T12:03:20.354Z",
+        "name": "Legal Era Online"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 14,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.606Z",
+        "modified_at": "2019-09-09T11:27:12.606Z",
+        "domain_name": "Legal Era Online",
+        "domain_id": "legaleraonline",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 182,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.290Z",
+        "modified_at": "2019-09-09T12:03:20.290Z",
+        "name": "Hotelier India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 13,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.522Z",
+        "modified_at": "2019-09-09T11:27:12.522Z",
+        "domain_name": "Hotelier India",
+        "domain_id": "hotelierindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 181,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.225Z",
+        "modified_at": "2019-09-09T12:03:20.225Z",
+        "name": "Business World"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 4,
+    "fields": {
+        "created_at": "2019-09-09T11:27:11.700Z",
+        "modified_at": "2019-09-09T11:27:11.700Z",
+        "domain_name": "Business World",
+        "domain_id": "businessworld",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 180,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.143Z",
+        "modified_at": "2019-09-09T12:03:20.143Z",
+        "name": "Human Capital"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 179,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.079Z",
+        "modified_at": "2019-09-09T12:03:20.079Z",
+        "name": "Technology"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 178,
+    "fields": {
+        "created_at": "2019-09-09T12:03:20.014Z",
+        "modified_at": "2019-09-09T12:03:20.014Z",
+        "name": "Human Capital & Careers"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 177,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.950Z",
+        "modified_at": "2019-09-09T12:03:19.950Z",
+        "name": "Accounting"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 176,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.885Z",
+        "modified_at": "2019-09-09T12:03:19.885Z",
+        "name": "Credit & Capital"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 175,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.821Z",
+        "modified_at": "2019-09-09T12:03:19.821Z",
+        "name": "Strategy"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 174,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.755Z",
+        "modified_at": "2019-09-09T12:03:19.755Z",
+        "name": "Accounting & Tax"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 173,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.691Z",
+        "modified_at": "2019-09-09T12:03:19.691Z",
+        "name": "Budgeting & Planning"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 172,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.625Z",
+        "modified_at": "2019-09-09T12:03:19.625Z",
+        "name": "Risk & Compliance"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 171,
+    "fields": {
+        "created_at": "2019-09-09T12:03:19.552Z",
+        "modified_at": "2019-09-09T12:03:19.552Z",
+        "name": "Growth Companies"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 3,
+    "fields": {
+        "created_at": "2019-07-31T10:32:45.059Z",
+        "modified_at": "2019-09-09T11:27:11.582Z",
+        "domain_name": "CFO-USA",
+        "domain_id": "cfousa",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 170,
+    "fields": {
+        "created_at": "2019-09-09T12:01:50.055Z",
+        "modified_at": "2019-09-09T12:01:50.055Z",
+        "name": "CFO India"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 2,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.458Z",
+        "modified_at": "2019-09-09T11:27:13.458Z",
+        "domain_name": "CFO-India",
+        "domain_id": "cfoindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 149,
+    "fields": {
+        "created_at": "2019-03-28T07:58:32.505Z",
+        "modified_at": "2019-03-28T07:58:32.505Z",
+        "name": "Misc"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 140,
+    "fields": {
+        "created_at": "2019-03-28T07:56:03.317Z",
+        "modified_at": "2019-03-28T07:56:03.317Z",
+        "name": "Economics"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 137,
+    "fields": {
+        "created_at": "2019-03-28T07:55:09.781Z",
+        "modified_at": "2019-03-28T07:55:09.781Z",
+        "name": "Finance"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 132,
+    "fields": {
+        "created_at": "2019-03-28T07:53:52.167Z",
+        "modified_at": "2019-03-28T07:53:52.167Z",
+        "name": "Regional Updates"
+    }
+},
+{
+    "model": "core.category",
+    "pk": 124,
+    "fields": {
+        "created_at": "2019-03-28T07:51:31.491Z",
+        "modified_at": "2019-03-28T07:51:31.491Z",
+        "name": "Sector Updates"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 1,
+    "fields": {
+        "created_at": "2019-09-09T11:11:22.114Z",
+        "modified_at": "2019-09-09T11:11:22.114Z",
+        "domain_name": "NewsCout",
+        "domain_id": "newscout",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 74,
+    "fields": {
+        "domain": 35,
+        "name": 729,
+        "icon": "",
+        "submenu": [
+            640,
+            39,
+            231,
+            638,
+            204,
+            639,
+            632,
+            633,
+            634,
+            635,
+            636,
+            637,
+            382,
+            223
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 73,
+    "fields": {
+        "domain": 54,
+        "name": 728,
+        "icon": "",
+        "submenu": [
+            529,
+            315,
+            60,
+            66,
+            69,
+            94,
+            223,
+            98,
+            631,
+            616,
+            617,
+            618,
+            619,
+            620,
+            621,
+            622,
+            623,
+            624,
+            625,
+            242,
+            626,
+            627,
+            628,
+            629,
+            630
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 72,
+    "fields": {
+        "domain": 53,
+        "name": 703,
+        "icon": "",
+        "submenu": [
+            578,
+            292,
+            231,
+            40,
+            234
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 71,
+    "fields": {
+        "domain": 52,
+        "name": 702,
+        "icon": "",
+        "submenu": [
+            609,
+            322,
+            610,
+            611,
+            98,
+            612,
+            231,
+            613,
+            39,
+            614,
+            615,
+            590,
+            177,
+            568,
+            572
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 70,
+    "fields": {
+        "domain": 51,
+        "name": 691,
+        "icon": "",
+        "submenu": [
+            608,
+            98,
+            281,
+            606,
+            568,
+            235,
+            364,
+            601,
+            538,
+            599,
+            600,
+            569,
+            602,
+            603,
+            604,
+            605,
+            190,
+            607
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 69,
+    "fields": {
+        "domain": 50,
+        "name": 680,
+        "icon": "",
+        "submenu": [
+            323,
+            231,
+            234,
+            596,
+            597,
+            598,
+            569
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 68,
+    "fields": {
+        "domain": 49,
+        "name": 676,
+        "icon": "",
+        "submenu": [
+            234,
+            593,
+            594,
+            595,
+            220
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 67,
+    "fields": {
+        "domain": 48,
+        "name": 672,
+        "icon": "",
+        "submenu": [
+            450,
+            323,
+            98,
+            231,
+            591,
+            592,
+            339,
+            569,
+            92
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 66,
+    "fields": {
+        "domain": 47,
+        "name": 669,
+        "icon": "",
+        "submenu": [
+            152,
+            39,
+            42,
+            44,
+            177,
+            564,
+            566,
+            568,
+            571,
+            315,
+            572,
+            584,
+            585,
+            586,
+            587,
+            588,
+            589,
+            590,
+            79,
+            98,
+            234,
+            235
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 65,
+    "fields": {
+        "domain": 46,
+        "name": 661,
+        "icon": "",
+        "submenu": [
+            578,
+            579,
+            580,
+            581,
+            582,
+            231,
+            583,
+            210,
+            566,
+            538,
+            572
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 64,
+    "fields": {
+        "domain": 45,
+        "name": 654,
+        "icon": "",
+        "submenu": [
+            128,
+            576,
+            577,
+            231,
+            234,
+            78,
+            80,
+            571,
+            311,
+            569,
+            538,
+            315,
+            574,
+            575
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 63,
+    "fields": {
+        "domain": 44,
+        "name": 648,
+        "icon": "",
+        "submenu": [
+            322,
+            98,
+            231,
+            538,
+            566,
+            569,
+            570,
+            315,
+            572,
+            573,
+            571
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 62,
+    "fields": {
+        "domain": 43,
+        "name": 641,
+        "icon": "",
+        "submenu": [
+            98,
+            322,
+            101,
+            133,
+            231,
+            567,
+            204,
+            78,
+            79,
+            80,
+            563,
+            83,
+            564,
+            565,
+            566,
+            568,
+            315
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 61,
+    "fields": {
+        "domain": 42,
+        "name": 635,
+        "icon": "",
+        "submenu": [
+            227,
+            261,
+            231,
+            557,
+            558,
+            559,
+            560,
+            561,
+            562
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 60,
+    "fields": {
+        "domain": 41,
+        "name": 628,
+        "icon": "",
+        "submenu": [
+            131,
+            231,
+            555,
+            364,
+            556,
+            239
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 59,
+    "fields": {
+        "domain": 40,
+        "name": 625,
+        "icon": "",
+        "submenu": [
+            544,
+            545,
+            546,
+            547,
+            548,
+            549,
+            550,
+            551,
+            552,
+            553,
+            554,
+            542,
+            543
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 58,
+    "fields": {
+        "domain": 39,
+        "name": 611,
+        "icon": "",
+        "submenu": [
+            541,
+            231,
+            83,
+            535,
+            536,
+            537,
+            538,
+            539,
+            316,
+            540,
+            223
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 57,
+    "fields": {
+        "domain": 38,
+        "name": 604,
+        "icon": "",
+        "submenu": [
+            160,
+            231,
+            39,
+            79,
+            533,
+            534,
+            60,
+            157
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 56,
+    "fields": {
+        "domain": 37,
+        "name": 600,
+        "icon": "",
+        "submenu": [
+            131,
+            261,
+            133,
+            231,
+            78,
+            79,
+            529,
+            209,
+            530,
+            436,
+            531,
+            532
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 55,
+    "fields": {
+        "domain": 36,
+        "name": 595,
+        "icon": "",
+        "submenu": [
+            292,
+            231,
+            523,
+            524,
+            525,
+            526,
+            527,
+            528
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 54,
+    "fields": {
+        "domain": 36,
+        "name": 595,
+        "icon": "",
+        "submenu": []
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 53,
+    "fields": {
+        "domain": 34,
+        "name": 578,
+        "icon": "",
+        "submenu": [
+            512,
+            513,
+            514,
+            515,
+            516,
+            517,
+            518,
+            519,
+            520,
+            521,
+            522,
+            506,
+            507,
+            508,
+            509,
+            510,
+            511
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 52,
+    "fields": {
+        "domain": 33,
+        "name": 569,
+        "icon": "",
+        "submenu": [
+            500,
+            501,
+            502,
+            504,
+            505
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 51,
+    "fields": {
+        "domain": 32,
+        "name": 566,
+        "icon": "",
+        "submenu": [
+            487,
+            488,
+            489,
+            490,
+            491,
+            492,
+            493,
+            494,
+            495,
+            496,
+            497,
+            498,
+            499
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 50,
+    "fields": {
+        "domain": 31,
+        "name": 557,
+        "icon": "",
+        "submenu": [
+            483,
+            484,
+            485,
+            486
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 49,
+    "fields": {
+        "domain": 30,
+        "name": 556,
+        "icon": "",
+        "submenu": [
+            462,
+            463,
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470,
+            471,
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478,
+            479,
+            480,
+            481,
+            482
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 48,
+    "fields": {
+        "domain": 29,
+        "name": 548,
+        "icon": "",
+        "submenu": [
+            449,
+            450,
+            451,
+            452,
+            453,
+            454,
+            455,
+            456,
+            457,
+            458,
+            459,
+            460,
+            461
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 47,
+    "fields": {
+        "domain": 28,
+        "name": 543,
+        "icon": "",
+        "submenu": [
+            448,
+            430,
+            431,
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438,
+            439,
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446,
+            447
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 46,
+    "fields": {
+        "domain": 27,
+        "name": 529,
+        "icon": "",
+        "submenu": [
+            402,
+            403,
+            404,
+            405,
+            406,
+            407,
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414,
+            415,
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422,
+            423,
+            424,
+            425,
+            426,
+            427,
+            428,
+            429
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 45,
+    "fields": {
+        "domain": 26,
+        "name": 505,
+        "icon": "",
+        "submenu": [
+            386,
+            387,
+            388,
+            389,
+            390,
+            391,
+            392,
+            393,
+            394,
+            395,
+            396,
+            397,
+            398,
+            399,
+            400,
+            401
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 44,
+    "fields": {
+        "domain": 25,
+        "name": 498,
+        "icon": "",
+        "submenu": [
+            384,
+            385,
+            377,
+            378,
+            379,
+            380,
+            381,
+            382,
+            383
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 43,
+    "fields": {
+        "domain": 24,
+        "name": 490,
+        "icon": "",
+        "submenu": [
+            372,
+            373,
+            374,
+            375,
+            376
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 42,
+    "fields": {
+        "domain": 3,
+        "name": 149,
+        "icon": "",
+        "submenu": [
+            192,
+            193,
+            194,
+            195,
+            196,
+            197,
+            198,
+            199,
+            188,
+            189,
+            190,
+            191
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 41,
+    "fields": {
+        "domain": 9,
+        "name": 199,
+        "icon": "",
+        "submenu": [
+            261,
+            262,
+            263,
+            264,
+            265,
+            266,
+            267,
+            268,
+            269,
+            270,
+            271,
+            272,
+            273,
+            274,
+            275,
+            276,
+            277,
+            278,
+            279,
+            280,
+            39,
+            79,
+            98,
+            226,
+            236
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 40,
+    "fields": {
+        "domain": 18,
+        "name": 198,
+        "icon": "",
+        "submenu": [
+            98,
+            292,
+            234,
+            341,
+            342,
+            314,
+            316
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 39,
+    "fields": {
+        "domain": 23,
+        "name": 197,
+        "icon": "",
+        "submenu": [
+            234,
+            369,
+            242,
+            370,
+            371,
+            281
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 38,
+    "fields": {
+        "domain": 12,
+        "name": 196,
+        "icon": "",
+        "submenu": [
+            98,
+            231,
+            177,
+            313,
+            314
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 37,
+    "fields": {
+        "domain": 17,
+        "name": 195,
+        "icon": "",
+        "submenu": [
+            98,
+            323,
+            231,
+            234,
+            332,
+            333,
+            334,
+            335,
+            336,
+            209,
+            337,
+            338,
+            339,
+            340,
+            78,
+            92
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 36,
+    "fields": {
+        "domain": 8,
+        "name": 194,
+        "icon": "",
+        "submenu": [
+            256,
+            257,
+            258,
+            259,
+            260,
+            94,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 35,
+    "fields": {
+        "domain": 22,
+        "name": 193,
+        "icon": "",
+        "submenu": [
+            234
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 34,
+    "fields": {
+        "domain": 21,
+        "name": 192,
+        "icon": "",
+        "submenu": [
+            365,
+            366,
+            367,
+            368,
+            269,
+            91,
+            220
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 33,
+    "fields": {
+        "domain": 7,
+        "name": 191,
+        "icon": "",
+        "submenu": [
+            248,
+            98,
+            79,
+            240,
+            177,
+            210,
+            241,
+            242,
+            243,
+            244,
+            245,
+            246,
+            249,
+            247
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 32,
+    "fields": {
+        "domain": 10,
+        "name": 190,
+        "icon": "",
+        "submenu": [
+            281,
+            282,
+            283,
+            284,
+            285,
+            286,
+            287,
+            160,
+            161,
+            288,
+            289,
+            290,
+            291,
+            166,
+            292,
+            293,
+            294,
+            295,
+            296,
+            297,
+            298,
+            299,
+            300,
+            301,
+            302,
+            303,
+            304,
+            305,
+            66,
+            207,
+            210,
+            92,
+            98
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 31,
+    "fields": {
+        "domain": 16,
+        "name": 189,
+        "icon": "",
+        "submenu": [
+            98,
+            231,
+            329,
+            330,
+            331,
+            177,
+            245,
+            315
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 30,
+    "fields": {
+        "domain": 20,
+        "name": 188,
+        "icon": "",
+        "submenu": [
+            361,
+            234,
+            363,
+            364,
+            362,
+            210
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 29,
+    "fields": {
+        "domain": 6,
+        "name": 187,
+        "icon": "",
+        "submenu": [
+            98,
+            101,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            239,
+            177
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 28,
+    "fields": {
+        "domain": 15,
+        "name": 186,
+        "icon": "",
+        "submenu": [
+            322,
+            323,
+            324,
+            325,
+            326,
+            231,
+            328,
+            327,
+            98,
+            177,
+            319
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 27,
+    "fields": {
+        "domain": 19,
+        "name": 185,
+        "icon": "",
+        "submenu": [
+            318,
+            323,
+            79,
+            343,
+            344,
+            345,
+            346,
+            347,
+            348,
+            349,
+            221,
+            350,
+            351,
+            353,
+            354,
+            355,
+            356,
+            357,
+            358,
+            359,
+            360
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 26,
+    "fields": {
+        "domain": 5,
+        "name": 184,
+        "icon": "",
+        "submenu": [
+            38,
+            85,
+            213,
+            214,
+            215,
+            216,
+            217,
+            218,
+            219,
+            220,
+            221,
+            222,
+            94,
+            224,
+            225,
+            226,
+            227,
+            228,
+            229,
+            230,
+            231,
+            223
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 25,
+    "fields": {
+        "domain": 14,
+        "name": 183,
+        "icon": "",
+        "submenu": [
+            320,
+            321,
+            234,
+            220,
+            319
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 24,
+    "fields": {
+        "domain": 13,
+        "name": 182,
+        "icon": "",
+        "submenu": [
+            98,
+            131,
+            231,
+            315,
+            316,
+            317,
+            318
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 23,
+    "fields": {
+        "domain": 4,
+        "name": 181,
+        "icon": "",
+        "submenu": [
+            133,
+            200,
+            201,
+            202,
+            75,
+            203,
+            204,
+            205,
+            206,
+            207,
+            208,
+            209,
+            210,
+            211,
+            212,
+            94
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 22,
+    "fields": {
+        "domain": 3,
+        "name": 180,
+        "icon": "",
+        "submenu": [
+            185,
+            175,
+            80,
+            177,
+            178,
+            176,
+            179,
+            180,
+            181,
+            182,
+            184,
+            183,
+            186,
+            187
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 21,
+    "fields": {
+        "domain": 3,
+        "name": 179,
+        "icon": "",
+        "submenu": [
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            171,
+            172,
+            173,
+            174
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 20,
+    "fields": {
+        "domain": 3,
+        "name": 178,
+        "icon": "",
+        "submenu": [
+            152
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 19,
+    "fields": {
+        "domain": 3,
+        "name": 177,
+        "icon": "",
+        "submenu": [
+            96,
+            118,
+            151
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 18,
+    "fields": {
+        "domain": 3,
+        "name": 176,
+        "icon": "",
+        "submenu": [
+            97,
+            140,
+            141,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 17,
+    "fields": {
+        "domain": 3,
+        "name": 175,
+        "icon": "",
+        "submenu": [
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            138,
+            139,
+            113,
+            127
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 16,
+    "fields": {
+        "domain": 3,
+        "name": 174,
+        "icon": "",
+        "submenu": [
+            96,
+            100,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 15,
+    "fields": {
+        "domain": 3,
+        "name": 173,
+        "icon": "",
+        "submenu": [
+            112,
+            113,
+            114,
+            115
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 14,
+    "fields": {
+        "domain": 3,
+        "name": 172,
+        "icon": "",
+        "submenu": [
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 13,
+    "fields": {
+        "domain": 3,
+        "name": 171,
+        "icon": "",
+        "submenu": [
+            99,
+            100,
+            101,
+            102,
+            103,
+            40
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 12,
+    "fields": {
+        "domain": 2,
+        "name": 170,
+        "icon": "",
+        "submenu": [
+            51,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 11,
+    "fields": {
+        "domain": 1,
+        "name": 149,
+        "icon": "",
+        "submenu": [
+            64,
+            65,
+            66,
+            71,
+            74,
+            75,
+            76,
+            59,
+            60,
+            61,
+            62,
+            63
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 10,
+    "fields": {
+        "domain": 1,
+        "name": 140,
+        "icon": "",
+        "submenu": [
+            51,
+            52,
+            53,
+            54,
+            56,
+            57,
+            58
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 9,
+    "fields": {
+        "domain": 1,
+        "name": 137,
+        "icon": "",
+        "submenu": [
+            67,
+            68,
+            73,
+            49,
+            50
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 8,
+    "fields": {
+        "domain": 1,
+        "name": 132,
+        "icon": "",
+        "submenu": [
+            69,
+            72,
+            45,
+            46,
+            47,
+            48
+        ]
+    }
+},
+{
+    "model": "core.menu",
+    "pk": 7,
+    "fields": {
+        "domain": 1,
+        "name": 124,
+        "icon": "",
+        "submenu": [
+            70,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            77,
+            38
+        ]
+    }
+}
+]
