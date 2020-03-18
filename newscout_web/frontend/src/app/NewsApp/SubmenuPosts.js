@@ -4,11 +4,11 @@ import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer } from 'newscout';
+import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, VerticleCardAd } from 'newscout';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -44,7 +44,14 @@ class SubmenuPosts extends React.Component {
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
-			bookmark_ids: []
+			bookmark_ids: [],
+			cat_name: '',
+			ads_article: {
+				id: 0,
+				description: '',
+				source_url: '',
+				image: ''
+			}
 		};
 	}
 
@@ -92,6 +99,23 @@ class SubmenuPosts extends React.Component {
 		})
 	}
 
+	fetchAds = () => {
+		var url = SCHEDULES_URL+"?"+this.state.domain+"&category="+this.state.cat_name
+		getRequest(url, this.fetchAdsResponse)
+	}
+
+	fetchAdsResponse = (data) => {
+		var result = data.body
+		this.setState({
+			ads_article: {
+				id: result.id,
+				description: result.ad_text,
+				source_url: result.ad_url,
+				image: result.media,
+			}
+		})
+	}
+
 	getNext = () => {
 		this.setState({
 			loadingPagination: true,
@@ -104,6 +128,7 @@ class SubmenuPosts extends React.Component {
 		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.3) {
 			if (!this.state.loadingPagination && this.state.next){
 				this.getNext();
+				this.fetchAds()
 			}
 		}
 	}
@@ -145,7 +170,7 @@ class SubmenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
-		this.setState({isLoading: true})
+		this.setState({isLoading: true, cat_name: cat_name})
 		getRequest(url, this.newsData)
 	}
 
@@ -230,13 +255,14 @@ class SubmenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username } = this.state;
-		var result = newsPosts.map((item, index) => {
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article } = this.state;
+		
+		var items = newsPosts.map((item, index) => {
 			return (
-				<div className="col-lg-3 mb-4">
+				<div className="col-lg-3 col-md-4 mb-4">
 					{isLoading ?
 						<Skeleton height={525} />
-					:
+					: 
 						<VerticleCardItem
 							id={item.id}
 							image={item.src}
@@ -259,6 +285,23 @@ class SubmenuPosts extends React.Component {
 				</div>
 			)
 		})
+
+		var resultsRender = [];
+		for (var i = 0; i < items.length; i++) {
+			resultsRender.push(items[i]);
+			if ((i+1) % 25 === 0) {
+				resultsRender.push(
+					<div className="col-lg-3 col-md-4 mb-4">
+						<VerticleCardAd
+							id={ads_article.id}
+							image={ads_article.image}
+							description={ads_article.description}
+							source_url={ads_article.source_url}
+						/>
+					</div>
+				);
+			}
+		}
 
 		return(
 			<React.Fragment>
@@ -288,7 +331,9 @@ class SubmenuPosts extends React.Component {
 								</div>
 								<div className="row">
 									<div className="col-lg-12 p-5">
-										<div className="row">{result}</div>
+										<div className="row">
+											{resultsRender}
+										</div>
 										{
 											this.state.loadingPagination ?
 												<React.Fragment>
