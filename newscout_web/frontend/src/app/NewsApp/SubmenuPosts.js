@@ -349,6 +349,9 @@ class SubmenuPosts extends React.Component {
 						</div>
 					</div>
 				</div>
+
+				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
+
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)

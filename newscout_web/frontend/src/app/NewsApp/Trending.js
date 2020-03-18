@@ -158,6 +158,14 @@ class Trending extends React.Component {
 		})
 	}
 
+	getArticleId = (articleId) => {
+		if(cookies.get('full_name')){
+			this.fetchArticleBookmark(articleId)
+		} else {
+			this.toggle()
+		}
+	}
+
 	getBookmarksArticles = (data) => {
 		var article_array = []
 		var article_ids = data.body.results;
