@@ -259,7 +259,7 @@ class SubmenuPosts extends React.Component {
 		
 		var items = newsPosts.map((item, index) => {
 			return (
-				<div className="col-lg-3 col-md-4 mb-4">
+				<div className="col-lg-4 col-md-4 mb-4">
 					{isLoading ?
 						<Skeleton height={525} />
 					: 
@@ -291,7 +291,7 @@ class SubmenuPosts extends React.Component {
 			resultsRender.push(items[i]);
 			if ((i+1) % 25 === 0) {
 				resultsRender.push(
-					<div className="col-lg-3 col-md-4 mb-4">
+					<div className="col-lg-4 col-md-4 mb-4">
 						<VerticleCardAd
 							id={ads_article.id}
 							image={ads_article.image}
@@ -317,30 +317,32 @@ class SubmenuPosts extends React.Component {
 					handleLogout={this.handleLogout}
 				/>
 				
-				<div className="container-fluid pb-50">
+				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
-							<div className="pt-70">
-								<div className="row">
-									<div className="col-lg-12 mb-2">
-										<div className="section-title">
-											<h2 className="m-0 section-title">{SUBCATEGORY.replace("-", " ")}</h2>
+							<div className="container">
+								<div className="pt-50 pb-5">
+									<div className="row">
+										<div className="col-lg-12 mb-4">
+											<div className="section-title">
+												<h2 className="m-0 section-title">{SUBCATEGORY.replace("-", " ")}</h2>
+											</div>
 										</div>
 									</div>
 								</div>
 								<div className="row">
 									<div className="col-lg-12 p-5">
 										<div className="row">
+                      {
+                        this.state.loadingPagination ?
+                          <React.Fragment>
+                            <div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+                          </React.Fragment>
+                        : ""
+                      }
 											{resultsRender}
 										</div>
-										{
-											this.state.loadingPagination ?
-												<React.Fragment>
-													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-												</React.Fragment>
-											: ""
-										}
 									</div>
 								</div>
 							</div>

@@ -299,7 +299,7 @@ class ArticleDetail extends React.Component {
 					username={username}
 					handleLogout={this.handleLogout}
 				/>
-				<div className="container-fluid pb-50">
+				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
