@@ -8,7 +8,7 @@ import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, Vertic
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -24,19 +24,13 @@ var article_array = [];
 const URL = "/news/search/"
 const cookies = new Cookies();
 
-class SubmenuPosts extends React.Component {
+class Bookmark extends React.Component {
 	
 	constructor(props) {
 		super(props);
 		this.state = {
-			category: CATEGORY,
-			subcategory: SUBCATEGORY,
 			newsPosts: [],
 			menus: [],
-			loadingPagination: false,
-			page : 0,
-			next: null,
-			previous: null,
 			domain: "domain="+DOMAIN,
 			isLoading: false,
 			isSideOpen: true,
@@ -45,7 +39,6 @@ class SubmenuPosts extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			cat_name: '',
 			ads_article: {
 				id: 0,
 				description: '',
@@ -97,39 +90,9 @@ class SubmenuPosts extends React.Component {
 		this.setState({
 			bookmark_ids: article_array
 		})
-	}
-
-	fetchAds = () => {
-		var url = SCHEDULES_URL+"?"+this.state.domain+"&category="+this.state.cat_name
-		getRequest(url, this.fetchAdsResponse)
-	}
-
-	fetchAdsResponse = (data) => {
-		var result = data.body
-		this.setState({
-			ads_article: {
-				id: result.id,
-				description: result.ad_text,
-				source_url: result.ad_url,
-				image: result.media,
-			}
-		})
-	}
-
-	getNext = () => {
-		this.setState({
-			loadingPagination: true,
-			page : this.state.page + 1
-		})
-		getRequest(this.state.next, this.newsData);
-	}
-
-	handleScroll = () => {
-		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.3) {
-			if (!this.state.loadingPagination && this.state.next){
-				this.getNext();
-				this.fetchAds()
-			}
+		if(cookies.get('full_name')){
+			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
+			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
 	}
 
@@ -150,61 +113,6 @@ class SubmenuPosts extends React.Component {
 		})
 	}
 
-	getNewsData = (data) => {
-		data.body.results.map((item, index) => {
-			if(item.heading){
-				var heading_dict = {}
-				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = item.heading.name.replace(" ", "-").toLowerCase()
-				heading_dict['item_id'] = item.heading.category_id
-				if(heading_dict['itemurl'] === CATEGORY){
-					item.heading.submenu.map((sub_item, sub_index) => {
-						if(sub_item.name.replace(" ", "-").toLowerCase() === SUBCATEGORY){
-							this.getPosts(sub_item.name, sub_item.category_id)
-						}
-					})
-				}
-			}
-		})
-	}
-
-	getPosts = (cat_name, cat_id) => {
-		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
-		this.setState({isLoading: true, cat_name: cat_name})
-		getRequest(url, this.newsData)
-	}
-
-	newsData = (data) => {
-		var news_array = []
-		data.body.results.map((item, index) => {
-			if(item.cover_image){
-				var article_dict = {}
-				article_dict['id'] = item.id
-				article_dict['header'] = item.title
-				article_dict['altText'] = item.title
-				article_dict['caption'] = item.blurb
-				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
-				article_dict['category'] = item.category
-				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
-				news_array.push(article_dict)
-			}
-		})
-		var results = [
-			...this.state.newsPosts,
-			...news_array
-		]
-		this.setState({
-			newsPosts: results,
-			next: data.body.next,
-			previous: data.body.previous,
-			loadingPagination: false,
-			isLoading: false
-		})
-	}
-
 	isSideOpen = (data) => {
 		this.setState({
 			isSideOpen: data
@@ -212,16 +120,30 @@ class SubmenuPosts extends React.Component {
 	}
 
 	getBookmarksArticles = (data) => {
+		var news_array = []
 		var article_array = []
-		var article_ids = data.body.results;
-		for(var i = 0; i < article_ids.length; i++){
-			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
-				article_array.push(article_ids[i].article)
-				this.setState({
-					bookmark_ids: article_array
-				})
+		data.body.results.map((item, index) => {
+			if(item.article.cover_image){
+				var article_dict = {}
+				article_dict['id'] = item.article.id
+				article_dict['header'] = item.article.title
+				article_dict['altText'] = item.article.title
+				article_dict['caption'] = item.article.blurb
+				article_dict['source'] = item.article.source
+				article_dict['slug'] = "/news/article/"+item.article.slug
+				article_dict['category'] = item.article.category
+				article_dict['hash_tags'] = item.article.hash_tags
+				article_dict['published_on'] = moment(item.article.published_on).format('D MMMM YYYY')
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.article.cover_image)
+				news_array.push(article_dict)
+				article_array.push(item.article.id)
 			}
-		}
+		})
+		this.setState({
+			newsPosts: news_array,
+			bookmark_ids: article_array,
+			isLoading: false
+		})
 	}
 
 	handleLogout = () => {
@@ -237,27 +159,23 @@ class SubmenuPosts extends React.Component {
 			is_captcha: true,
 			bookmark_ids: []
 		})
+		window.location.href = "/"
     }
 
 	componentDidMount() {
-		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
 		if(cookies.get('full_name')){
 			this.setState({is_loggedin:true})
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		} else {
+			window.location.href = "/"
 		}
 	}
 
-	componentWillUnmount = () => {
-		window.removeEventListener('scroll', this.handleScroll)
-	}
-
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article } = this.state;
-		
-		var items = newsPosts.map((item, index) => {
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username } = this.state;
+		var results = newsPosts.map((item, index) => {
 			return (
 				<div className="col-lg-4 col-md-4 mb-4">
 					{isLoading ?
@@ -286,23 +204,6 @@ class SubmenuPosts extends React.Component {
 			)
 		})
 
-		var resultsRender = [];
-		for (var i = 0; i < items.length; i++) {
-			resultsRender.push(items[i]);
-			if ((i+1) % 25 === 0) {
-				resultsRender.push(
-					<div className="col-lg-4 col-md-4 mb-4">
-						<VerticleCardAd
-							id={ads_article.id}
-							image={ads_article.image}
-							description={ads_article.description}
-							source_url={ads_article.source_url}
-						/>
-					</div>
-				);
-			}
-		}
-
 		return(
 			<React.Fragment>
 				<Menu
@@ -326,7 +227,7 @@ class SubmenuPosts extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 mb-4">
 											<div className="section-title">
-												<h2 className="m-0 section-title">{SUBCATEGORY.replace("-", " ")}</h2>
+												<h2 className="m-0 section-title">Bookmark Articles </h2>
 											</div>
 										</div>
 									</div>
@@ -341,7 +242,7 @@ class SubmenuPosts extends React.Component {
 													</React.Fragment>
 											: ""
 											}
-											{resultsRender}
+											{results}
 										</div>
 									</div>
 								</div>
@@ -358,5 +259,5 @@ class SubmenuPosts extends React.Component {
 	}
 }
 
-const wrapper = document.getElementById("submenu-posts");
-wrapper ? ReactDOM.render(<SubmenuPosts />, wrapper) : null;
+const wrapper = document.getElementById("bookmark");
+wrapper ? ReactDOM.render(<Bookmark />, wrapper) : null;
