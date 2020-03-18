@@ -10,10 +10,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.views.generic.base import RedirectView
 
-from .serializers import  (AdvertisementSerializer, CampaignSerializer,
-                           AdGroupSerializer, AdSerializer,
-                           GetAdGroupSerializer, AdTypeSerializer,
-                           GetAdSerializer)
+from .serializers import (AdvertisementSerializer, CampaignSerializer,
+                          AdGroupSerializer, AdSerializer,
+                          GetAdGroupSerializer, AdTypeSerializer,
+                          GetAdSerializer)
 
 from api.v1.serializers import CategorySerializer
 from api.v1.views import create_response, PostpageNumberPagination
@@ -136,7 +136,8 @@ class CampaignViewSet(viewsets.ModelViewSet):
         this method is used to create new campaign object
         """
         post_data = request.data.copy()
-        post_data["domain"] = request.user.domain.id
+        if request.user.domain:
+            post_data["domain"] = request.user.domain.id
         serializer = CampaignSerializer(data=post_data)
         if serializer.is_valid():
             serializer.save()
@@ -193,7 +194,7 @@ class AdGroupViewSet(viewsets.ModelViewSet):
             campaign_filter = reduce(
                 operator.or_, [Q(campaign__name__icontains=s) for s in q_list])
             self.queryset = self.queryset.filter(
-                category_filter|campaign_filter).distinct()
+                category_filter | campaign_filter).distinct()
 
         page = self.paginate_queryset(self.queryset)
         if page is not None:
@@ -249,12 +250,12 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
     """
     this view is used to create,update,list and delete Advertisement's
     """
+    ordering = ('-id',)
     permission_classes = (AllowAny,)
     serializer_class = GetAdSerializer
+    queryset = Advertisement.objects.all()
     pagination_class = PostpageNumberPagination
     filter_backends = (filters.OrderingFilter,)
-    ordering = ('-id',)
-    queryset = Advertisement.objects.all()
 
     def get_queryset(self):
         """
@@ -283,7 +284,6 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
             if serializer.data:
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
-
         serializer = self.get_serializer(self.queryset, many=True)
         return Response(create_response(serializer.data))
 
@@ -308,20 +308,24 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
                 obj.media = file_obj
                 obj.save()
             return Response(create_response(serializer.data))
+        print(serializer.errors)
         return Response(create_error_response(serializer.errors), status=400)
 
     def update(self, request, pk=None):
         """
         this method is used to update existing adgroup
         """
-        file_obj = request.data['file']
-        obj = Advertisement.objects.get(id=pk)
-        serializer = AdSerializer(obj, data=request.data)
+        file = request.data['file']
+        advertisment = Advertisement.objects.get(id=pk)
+        serializer = AdSerializer(advertisment, data=request.data)
+        # import pdb
+        # pdb.set_trace()
+        print(request.data)
         if serializer.is_valid():
-            updated_obj = serializer.save()
-            if file_obj:
-                updated_obj.media = file_obj
-                updated_obj.save()
+            updated = serializer.save()
+            if file:
+                updated.media = file
+                updated.save()
             return Response(create_response(serializer.data))
         return Response(create_error_response(serializer.errors), status=400)
 

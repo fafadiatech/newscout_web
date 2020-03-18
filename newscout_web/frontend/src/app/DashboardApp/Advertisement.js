@@ -31,7 +31,7 @@ class Advertisement extends React.Component {
 			previous: null,
 			loading: false,
 			q: "",
-			page : 0,
+			page: 0,
 			isSideOpen: true,
 		};
 	}
@@ -42,12 +42,12 @@ class Advertisement extends React.Component {
 		let formIsValid = true;
 		let required_msg = "This fields is required";
 
-		if(!fields["ad_text"]){
+		if (!fields["ad_text"]) {
 			formIsValid = false;
 			errors["ad_text"] = required_msg;
 		}
 
-		if(!fields["ad_url"]){
+		if (!fields["ad_url"]) {
 			formIsValid = false;
 			errors["ad_url"] = required_msg;
 		} else if (!this.valid_url(fields["ad_url"])) {
@@ -55,7 +55,7 @@ class Advertisement extends React.Component {
 			errors["ad_url"] = "Not valid url";
 		}
 
-		this.setState({errors: errors});
+		this.setState({ errors: errors });
 		return formIsValid;
 	}
 
@@ -88,38 +88,38 @@ class Advertisement extends React.Component {
 
 	handleChange = (field, e) => {
 		let fields = this.state.fields;
-		if(field === "adgroup" || field === "ad_type"){
-			fields[field] = {value: e.value, label: e.label};
-		} else if(e.target.files) {
+		if (field === "adgroup" || field === "ad_type") {
+			fields[field] = { value: e.value, label: e.label };
+		} else if (e.target.files) {
 			fields[field] = e.target.files[0];
-		} else if(field === "is_active") {
+		} else if (field === "is_active") {
 			fields[field] = e.target.checked;
 		} else {
 			fields[field] = e.target.value;
 		}
-		if(this.handleValidation()){
-			this.setState({fields});
+		if (this.handleValidation()) {
+			this.setState({ fields });
 		}
 	}
 
 	advertisementSubmitResponse = (data, extra_data) => {
 		let rows = this.state.rows;
 		rows[data.body.id] = false;
-		if (extra_data.clean_results){
-			this.setState({formSuccess: true, results: [], loading: true, rows: rows, fields: {}});
+		if (extra_data.clean_results) {
+			this.setState({ formSuccess: true, results: [], loading: true, rows: rows, fields: {} });
 		} else {
-			this.setState({'formSuccess': true, rows: rows, fields: {}});
+			this.setState({ 'formSuccess': true, rows: rows, fields: {} });
 		}
 		setTimeout(() => {
-			this.setState({'modal': false, 'formSuccess': false});
+			this.setState({ 'modal': false, 'formSuccess': false });
 			this.getAdvertisements()
-        }, 3000);
+		}, 3000);
 	}
 
 	advertisementSubmit = (e) => {
 		e.preventDefault();
-
-		if(this.handleValidation()){
+		console.log(this.state.fields)
+		if (this.handleValidation()) {
 			const body = new FormData();
 			body.set('adgroup', this.state.fields.adgroup.value)
 			body.set('ad_type', this.state.fields.ad_type.value)
@@ -127,30 +127,30 @@ class Advertisement extends React.Component {
 			body.set('ad_url', this.state.fields.ad_url)
 			body.set('file', this.state.fields.media)
 			body.set('is_active', true)
-			var extra_data = {"clean_results": true};
+			var extra_data = { "clean_results": true };
 			postRequest(ADVERTISEMENT_URL, body, this.advertisementSubmitResponse, "POST", fileUploadHeaders, extra_data);
-		}else{
-			this.setState({'formSuccess': false});
+		} else {
+			this.setState({ 'formSuccess': false });
 		}
 	}
 
 	updateAdvertisementSubmit = (e) => {
 		e.preventDefault();
 
-		if(this.handleValidation()){
+		if (this.handleValidation()) {
 			const body = new FormData();
 			let id = e.target.getAttribute('data-index');
-			body.set('adgroup', this.state.fields.adgroup.value)
-			body.set('ad_type', this.state.fields.ad_type.value)
-			body.set('ad_text', this.state.fields.ad_text)
-			body.set('ad_url', this.state.fields.ad_url)
-			body.set('file', this.state.fields.media)
-			body.set('is_active', this.state.fields.is_active)
-			var extra_data = {"clean_results": true};
+			body.set('adgroup', this.state.fields.adgroup.value);
+			body.set('ad_type', this.state.fields.ad_type.value);
+			body.set('ad_text', this.state.fields.ad_text);
+			body.set('ad_url', this.state.fields.ad_url);
+			body.set('file', this.state.fields.media);
+			body.set('is_active', this.state.fields.is_active);
+			var extra_data = { "clean_results": true };
 			var url = ADVERTISEMENT_URL + id + "/";
 			putRequest(url, body, this.advertisementSubmitResponse, "PUT", fileUploadHeaders, extra_data);
-		}else{
-			this.setState({'formSuccess': false});
+		} else {
+			this.setState({ 'formSuccess': false });
 		}
 	}
 
@@ -168,21 +168,21 @@ class Advertisement extends React.Component {
 		let fields = {}
 		this.state.results.map((item, index) => {
 			if (item.id === parseInt(dataindex)) {
-				fields["adgroup"] = {value: item.adgroup.campaign.id, label: item.adgroup.campaign.name}
-				fields["ad_type"] = {value: item.ad_type.id, label: item.ad_type.type}
-				fields["ad_text"] = item.ad_text
-				fields["ad_url"] = item.ad_url
-				fields["is_active"] = item.is_active
+				fields["adgroup"] = { value: item.adgroup.id, label: item.adgroup.campaign.name };
+				fields["ad_type"] = { value: item.ad_type.id, label: item.ad_type.type };
+				fields["ad_text"] = item.ad_text;
+				fields["ad_url"] = item.ad_url;
+				fields["is_active"] = item.is_active;
 			}
 		})
-		this.setState({rows: rows, fields: fields});
+		this.setState({ rows: rows, fields: fields });
 	}
 
 	cancelRow = (e) => {
 		var dataindex = e.target.getAttribute('data-index');
 		let rows = this.state.rows;
 		rows[dataindex] = false
-		this.setState({rows: rows, fields: {}});
+		this.setState({ rows: rows, fields: {} });
 	}
 
 	deleteAdvertisementResponse = (data) => {
@@ -191,10 +191,10 @@ class Advertisement extends React.Component {
 
 	deleteRow = (e) => {
 		let dataindex = e.target.getAttribute('data-index');
-		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
+		let findrow = document.body.querySelector('[data-row="' + dataindex + '"]');
 		let url = ADVERTISEMENT_URL + dataindex + "/";
 		deleteRequest(url, this.deleteAdvertisementResponse, authHeaders)
-		setTimeout(function() {
+		setTimeout(function () {
 			findrow.style.transition = '0.8s';
 			findrow.style.opacity = '0';
 			document.getElementById("group-table").deleteRow(findrow.rowIndex);
@@ -205,7 +205,7 @@ class Advertisement extends React.Component {
 		let groups_array = []
 		let groupstype_array = []
 
-		if(data.body.groups){
+		if (data.body.groups) {
 			data.body.groups.map((item, index) => {
 				let group_dict = {}
 				group_dict['value'] = item.id
@@ -215,7 +215,7 @@ class Advertisement extends React.Component {
 			})
 		}
 
-		if(data.body.types){
+		if (data.body.types) {
 			data.body.types.map((item, index) => {
 				let types_dict = {}
 				types_dict['value'] = item.id
@@ -240,7 +240,7 @@ class Advertisement extends React.Component {
 	}
 
 	getAdvertisementData = (data) => {
-		if(!Array.isArray(data.body)){
+		if (!Array.isArray(data.body)) {
 			var results = [
 				...this.state.results,
 				...data.body.results
@@ -261,14 +261,14 @@ class Advertisement extends React.Component {
 	getNext = () => {
 		this.setState({
 			loading: true,
-			page : this.state.page + 1
+			page: this.state.page + 1
 		})
 		getRequest(this.state.next, this.getAdvertisementData, authHeaders);
 	}
 
 	handleScroll = () => {
 		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-			if (!this.state.loading && this.state.next){
+			if (!this.state.loading && this.state.next) {
 				this.getNext();
 			}
 		}
@@ -291,7 +291,7 @@ class Advertisement extends React.Component {
 		window.removeEventListener('scroll', this.handleScroll)
 	}
 
-	render(){
+	render() {
 		var { menus, isSideOpen } = this.state
 
 		let result_array = this.state.results
@@ -299,44 +299,47 @@ class Advertisement extends React.Component {
 		let state = this.state;
 
 		result_array.map((el, index) => {
-			if(state.fields.adgroup === undefined) {
-				var adgroup_value = {value: el.adgroup.campaign.id, label: el.adgroup.campaign.name}
+			if (state.fields.adgroup === undefined) {
+				var adgroup_value = { value: el.adgroup.id, label: el.adgroup.campaign.name }
+				console.log("there")
 			} else {
 				var adgroup_value = state.fields.adgroup;
+				console.log("here")
+				console.log(state.fields.adgroup)
 			}
-
-			if(state.fields.adgroup === undefined) {
-				var adtype_value = {value: el.ad_type.id, label: el.ad_type.type}
+			console.log(adgroup_value)
+			if (state.fields.adgroup === undefined) {
+				var adtype_value = { value: el.ad_type.id, label: el.ad_type.type }
 			} else {
 				var adtype_value = state.fields.ad_type;
 			}
 
-			if(state.fields.ad_text === undefined) {
+			if (state.fields.ad_text === undefined) {
 				var ad_text_value = el.ad_text;
 			} else {
 				var ad_text_value = state.fields.ad_text;
 			}
 
-			if(state.fields.ad_url === undefined) {
+			if (state.fields.ad_url === undefined) {
 				var ad_url_value = el.ad_url;
 			} else {
 				var ad_url_value = state.fields.ad_url;
 			}
 
-			if(state.fields.is_active === undefined) {
+			if (state.fields.is_active === undefined) {
 				var is_active_value = el.is_active;
 			} else {
 				var is_active_value = state.fields.is_active;
 			}
 			var data = <tr key={index} data-row={el.id}>
-				<th scope="row">{index+1}</th>
+				<th scope="row">{index + 1}</th>
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
 							<Select refs="adgroup" value={adgroup_value} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
 							<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{el.adgroup.campaign.name}</span>
 					}
 				</td>
@@ -346,7 +349,7 @@ class Advertisement extends React.Component {
 							<Select refs="ad_type" value={adtype_value} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptypes} />
 							<FormText color="danger">{this.state.errors["ad_type"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{el.ad_type.type}</span>
 					}
 				</td>
@@ -356,7 +359,7 @@ class Advertisement extends React.Component {
 							<input refs="ad_text" type="text" name="ad_text" className="form-control" placeholder="Advertisement Title" id="advertisementtext" onChange={(e) => this.handleChange("ad_text", e)} value={ad_text_value} />
 							<FormText color="danger">{this.state.errors["ad_text"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{el.ad_text}</span>
 					}
 				</td>
@@ -366,24 +369,24 @@ class Advertisement extends React.Component {
 							<input refs="ad_url" type="text" name="ad_url" className="form-control" placeholder="Advertisement Url" id="ad-url" onChange={(e) => this.handleChange("ad_url", e)} value={ad_url_value} />
 							<FormText color="danger">{this.state.errors["ad_url"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span><a href={el.ad_url} target="_blank">{el.ad_url}</a></span>
 					}
 				</td>
 				{this.state.rows[el.id] ?
 					<td><input refs="media" type="file" name="media" id="ad-media" onChange={(e) => this.handleChange("media", e)} />{el.media}</td>
-				:
+					:
 					<td className="text-primary">{el.media}</td>
 				}
 				{this.state.rows[el.id] ?
 					<td><input type="checkbox" checked={is_active_value} name="is_active" onChange={(e) => this.handleChange("is_active", e)} /></td>
-				:
+					:
 					<React.Fragment>
 						{el.is_active ?
 							<React.Fragment>
 								<td className="text-success">Active</td>
 							</React.Fragment>
-						:
+							:
 							<React.Fragment>
 								<td>-</td>
 							</React.Fragment>
@@ -398,7 +401,7 @@ class Advertisement extends React.Component {
 								</li>
 								<li className="list-inline-item btn btn-sm btn-danger" data-index={el.id} onClick={this.cancelRow}>Cancel</li>
 							</React.Fragment>
-						:
+							:
 							<React.Fragment>
 								<li className="list-inline-item btn btn-sm btn-warning" data-index={el.id} onClick={this.editRow}>Edit</li>
 								<li className="list-inline-item btn btn-sm btn-danger" data-index={el.id} onClick={this.deleteRow}>Delete</li>
@@ -410,7 +413,7 @@ class Advertisement extends React.Component {
 			results.push(data);
 		})
 
-		return(
+		return (
 			<React.Fragment>
 				<ToastContainer />
 				<div className="group">
@@ -427,25 +430,25 @@ class Advertisement extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
 											</Form>
 										</div>
 									</div>
 								</div>
-								<hr/>
+								<hr />
 								<div className="my-5">
 									<h5 className="text-info">Total {this.state.results.length} Advertisement</h5>
 									<Table striped id="group-table">
 										<thead>
 											<tr>
-												<th style={{width:"5%"}}>#</th>
-												<th style={{width:"10%"}}>Ad. Group</th>
-												<th style={{width:"10%"}}>Ad. Type</th>
-												<th style={{width:"20%"}}>Advertisement Title</th>
-												<th style={{width:"20%"}}>Advertisement Url</th>
-												<th style={{width:"15%"}}>Media</th>
-												<th style={{width:"10%"}}>Status</th>
-												<th style={{width:"10%"}}></th>
+												<th style={{ width: "5%" }}>#</th>
+												<th style={{ width: "10%" }}>Ad. Group</th>
+												<th style={{ width: "10%" }}>Ad. Type</th>
+												<th style={{ width: "20%" }}>Advertisement Title</th>
+												<th style={{ width: "20%" }}>Advertisement Url</th>
+												<th style={{ width: "15%" }}>Media</th>
+												<th style={{ width: "10%" }}>Status</th>
+												<th style={{ width: "10%" }}></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -454,10 +457,10 @@ class Advertisement extends React.Component {
 									</Table>
 									{
 										this.state.loading ?
-										<React.Fragment>
-											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
-										</React.Fragment>
-										: ""
+											<React.Fragment>
+												<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+											</React.Fragment>
+											: ""
 									}
 								</div>
 							</div>
@@ -496,11 +499,11 @@ class Advertisement extends React.Component {
 							</Form>
 						</ModalBody>
 						<ModalFooter>
-							<div className="clearfix" style={{width:"100%"}}>
+							<div className="clearfix" style={{ width: "100%" }}>
 								<div className="float-left">
 									{this.state.formSuccess ?
 										<h6 className="text-success m-0">Form submitted successfully.</h6>
-									: ""}
+										: ""}
 								</div>
 								<div className="float-right">
 									<Button color="success" onClick={this.advertisementSubmit} type="button">Submit</Button>&nbsp;&nbsp;
