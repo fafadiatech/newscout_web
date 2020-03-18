@@ -118,7 +118,6 @@ class Advertisement extends React.Component {
 
 	advertisementSubmit = (e) => {
 		e.preventDefault();
-		console.log(this.state.fields)
 		if (this.handleValidation()) {
 			const body = new FormData();
 			body.set('adgroup', this.state.fields.adgroup.value)
@@ -301,13 +300,9 @@ class Advertisement extends React.Component {
 		result_array.map((el, index) => {
 			if (state.fields.adgroup === undefined) {
 				var adgroup_value = { value: el.adgroup.id, label: el.adgroup.campaign.name }
-				console.log("there")
 			} else {
 				var adgroup_value = state.fields.adgroup;
-				console.log("here")
-				console.log(state.fields.adgroup)
 			}
-			console.log(adgroup_value)
 			if (state.fields.adgroup === undefined) {
 				var adtype_value = { value: el.ad_type.id, label: el.ad_type.type }
 			} else {
