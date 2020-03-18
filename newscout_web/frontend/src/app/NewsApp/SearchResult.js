@@ -295,7 +295,7 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return(
