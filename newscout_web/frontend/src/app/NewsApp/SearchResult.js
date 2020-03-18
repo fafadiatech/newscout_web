@@ -69,6 +69,14 @@ class SearchResult extends React.Component {
 		})
 	}
 
+	getArticleId = (articleId) => {
+		if(cookies.get('full_name')){
+			this.fetchArticleBookmark(articleId)
+		} else {
+			this.toggle()
+		}
+	}
+
 	fetchArticleBookmark = (articleId) => {
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
@@ -383,6 +391,8 @@ class SearchResult extends React.Component {
 						<Filter filters={filters} toggleFilter={this.toggleFilter} isFilterOpen={isFilterOpen} query={this.queryFilter} />
 					</div>
 				</div>
+
+				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
 
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
