@@ -27,7 +27,7 @@ SECRET_KEY = '_am!u5!_zzqh*tmls(jctl_3j186fuh5r7*p*t0*czpvu&i%+x'
 DEBUG = True
 
 # Enble sqlite database quick mode (by default disabled)
-QUICK_MODE = True
+QUICK_MODE = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -102,9 +102,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'newscout',
+            'NAME': 'newscout_web',
             'USER': 'postgres',
-            'PASSWORD': 'ftech#123',
+            'PASSWORD': 'root#123',
             'HOST': 'localhost',
             'PORT': '5432',
         }
