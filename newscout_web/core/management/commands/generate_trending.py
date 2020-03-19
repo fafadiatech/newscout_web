@@ -253,7 +253,7 @@ class Command(BaseCommand):
                     if n >= self.MAX_TRENDING:
                         break
             print(all_articles_in_trending)
-            log.write(all_articles_in_trending + "\n")
+            log.write(str(all_articles_in_trending) + "\n")
 
             print("Removing old trending objects")
             if old_objects:
