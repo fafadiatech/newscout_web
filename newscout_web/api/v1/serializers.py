@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
-                         ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
+                         ArticleLike, HashTag, ArticleMedia, Menu, SubMenu,
                          Devices, Notification, TrendingArticle, DraftMedia, Comment,
                          CategoryAssociation)
 from django.contrib.auth import authenticate
@@ -127,9 +127,9 @@ class BookmarkArticleSerializer(serializers.ModelSerializer):
         fields = ('id', 'article', 'status')
 
 
-class ArtilcleLikeSerializer(serializers.ModelSerializer):
+class ArticleLikeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ArtilcleLike
+        model = ArticleLike
         fields = ('id', 'article', 'user', 'is_like')
 
     def create(self, validated_data):
@@ -139,11 +139,11 @@ class ArtilcleLikeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Article does not exist")
         if not user:
             raise serializers.ValidationError("User not logged in")
-        article_like = ArtilcleLike.objects.filter(article=article_obj, user=user)
+        article_like = ArticleLike.objects.filter(article=article_obj, user=user)
         if not article_like:
-            like_obj = ArtilcleLike.objects.create(article=article_obj, user=user)
+            like_obj = ArticleLike.objects.create(article=article_obj, user=user)
             return like_obj
-        ArtilcleLike.objects.filter(article=article_obj, user=user).delete()
+        ArticleLike.objects.filter(article=article_obj, user=user).delete()
         return {"article": article_obj, "user": user}
 
 
