@@ -1,0 +1,64 @@
+body {
+	background: #1f2242;
+}
+
+nav.fixed-top.navbar.navbar-expand-md,
+.sidebar,
+.sidebar ul a.list-group-item,
+.footer-area {
+	background: #16182f !important;
+}
+
+nav.fixed-top.navbar.navbar-expand-md {
+	border-bottom: 1px solid rgb(50, 54, 99) !important;
+}
+
+.sidebar {
+	-webkit-box-shadow: 0px 8px 14.72px 1.28px rgb(229, 228, 230, 0.5) !important;
+    box-shadow: 0px 8px 14.72px 1.28px rgb(24, 33, 48) !important;
+    border-right: 1px solid rgb(50, 54, 99) !important;
+    border-top: 1px solid rgb(50, 54, 99) !important;
+}
+
+.sidebar-btn {
+    color: #b0b7c7 !important;
+}
+
+.search-box .form-control {
+    border: 1px solid rgba(255,255,255,0.1);
+    background-color: #1f2242;
+    color: #e7eeff;
+}
+
+.search-box .input-group-append span {
+	border: 1px solid rgba(255,255,255,0.1);
+    background-color: #1f2242;
+    color: #e7eeff;
+}
+
+.sidebar ul.list-group a.list-group-item,
+.navbar-expand-md .navbar-nav .nav-link,
+.footer-area p,
+.footer-area ul li a {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+.featurepost {
+	background: rgba(103, 105, 128, 0.3) !important;
+    box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+}
+
+.featurepost-content h3,
+.featurepost-content p {
+	color: #e7eeff !important;
+}
+
+.card-post {
+	background-color: #16182f !important;
+    box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+    border: 0px solid rgb(255,255,255,0.1) !important;
+}
+
+.card-post .card-body {
+    border: 1px solid rgb(50, 54, 99) !important;
+}

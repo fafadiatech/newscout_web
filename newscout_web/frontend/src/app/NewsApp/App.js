@@ -606,7 +606,7 @@ class App extends React.Component {
 									<div className="row">{regional_update}</div>
 								</div>
 
-								<div className="pt-50">
+								<div className="p-5045">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
