@@ -12,7 +12,7 @@ from core.models import (
     Menu,
     Devices,
     DailyDigest,
-    ArtilcleLike,
+    ArticleLike,
     Comment,
 )
 from rest_framework.authtoken.models import Token
@@ -57,7 +57,7 @@ class TestUpdateMultipleArticles(APITestCase):
         POST Data:
             CATEGORIES : ID (INT)
             ARTICLES : IDS (LIST)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200    
         """
@@ -105,7 +105,7 @@ class TestCreateNewCategory(APITestCase):
         """
         Method:
             POST
-        
+
         POST Data:
             CATEGORY NAME : NAME (STRING)
 
@@ -156,7 +156,7 @@ class TestGetLikedArticles(APITestCase):
 
     def setUp(self):
         self.article = Article.objects.last()
-        self.liked_article = ArtilcleLike.objects.create(
+        self.liked_article = ArticleLike.objects.create(
             article=self.article, user=user, is_like=1
         )
 
@@ -323,7 +323,7 @@ class TestGetArticleDetails(APITestCase):
 
         Query_String:
             ARTICLE: ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             ARTICLE_ID: ID (STRING)
@@ -505,7 +505,7 @@ class TestForgetPassword(APITestCase):
         """
         Method:
             POST
-        
+
         POST Data:
             EMAIL : WRONG ID (STRING)
 
@@ -702,10 +702,10 @@ class TestArticleSearch(APITestCase):
         """
         Method:
             GET
-        
+
         Query_String:
             DOMAIN: Domain ID (STRING)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             COUNT OF ARTICLES: COUNT (INT)
@@ -735,7 +735,7 @@ class TestGetMenus(APITestCase):
         """
         Method:
             GET
-        
+
         Query_String:
             DOMAIN: ID
 
@@ -826,7 +826,7 @@ class TestChangeArticleStatus(APITestCase):
         """
         Method:
             POST
-        
+
         POST DATA:
             ARTICALE : ID (INT)
             ACTIVATE : (BOOLEAN)
@@ -847,7 +847,7 @@ class TestChangeArticleStatus(APITestCase):
         """
         Method:
             POST
-        
+
         POST DATA:
             ACTIVATE : (BOOLEAN)
 
@@ -948,10 +948,10 @@ class TestDailyDigest(APITestCase):
         """
         Method:
             GET
-        
+
         Query_String:
             DEVICE_ID: ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             ARTICLE_ID: ID (INT)
@@ -986,10 +986,10 @@ class TestArticleRecommendation(APITestCase):
         """
         Method:
             GET
-        
+
         Query_String:
             ARTICLE_ID: ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             COUNT OF THE ARTICLES: COUNT (INT) 
@@ -1003,10 +1003,10 @@ class TestArticleRecommendation(APITestCase):
         """
         Method:
             GET
-        
+
         Query_String:
             ARTICLE_ID: INVALID ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             RESPONSE_MESSAGE : ERROR MSG (STRING)
@@ -1484,7 +1484,7 @@ class TestCreateAdGroup(APITestCase):
             CATEGORIES : IDS (LIST)
             CAMPAIGN : ID (INT)
             IS_ACTIVE: (BOOLEAN)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             ADGROUP_CATEGORY_ID: ID (INT)
@@ -1525,7 +1525,7 @@ class TestUpdateAdGroup(APITestCase):
             CATEGORIES : IDS (LIST)
             CAMPAIGN : ID (INT)
             IS_ACTIVE: (BOOLEAN)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             ADGROUP_CAMPAIGN_ID: ID (INT)
@@ -1583,7 +1583,7 @@ class TestGetComment(APITestCase):
         self.comment = Comment.objects.filter(article=self.article)
         for value in self.comment.values():
             self.comment_id.append(value["id"])
-        self.article_like_count = ArtilcleLike.objects.filter(
+        self.article_like_count = ArticleLike.objects.filter(
             article=self.article
         ).count()
 
@@ -1591,7 +1591,7 @@ class TestGetComment(APITestCase):
         """
         Method:
             GET
-        
+
         Query String:
             ARTICLE_ID: ID (INT)
 
@@ -1620,7 +1620,7 @@ class TestGetEmptyComment(APITestCase):
     def setUp(self):
         self.article = Article.objects.last()
         self.comment = Comment.objects.filter(article=self.article)
-        self.article_like_count = ArtilcleLike.objects.filter(
+        self.article_like_count = ArticleLike.objects.filter(
             article=self.article
         ).count()
 
@@ -1628,7 +1628,7 @@ class TestGetEmptyComment(APITestCase):
         """
         Method:
             GET
-        
+
         Query String:
             ARTICLE_ID: ID (INT)
 
@@ -1655,7 +1655,7 @@ class TestGetErrorComment(APITestCase):
         """
         Method:
             GET
-        
+
         Query String:
             NO ARTICLE_ID: ID (INT)
 
@@ -1674,7 +1674,7 @@ class TestGetErrorComment(APITestCase):
         """
         Method:
             GET
-        
+
         Query String:
             INVALID ARTICLE_ID: ID (INT)
 
@@ -1704,7 +1704,7 @@ class TestCreateComment(APITestCase):
         POST Data:
             ARTICLE_ID : ID (INT)
             COMMENT: (STRING)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             COMMENT: (STRING)
@@ -1738,7 +1738,7 @@ class TestErrorCreateComment(APITestCase):
         POST Data:
             ARTICLE_ID : ID (INT)
             NO COMMENT: (STRING)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             RESPONSE_MESSAGE : (STRING)
@@ -1770,7 +1770,7 @@ class TestCreateReply(APITestCase):
             ARTICLE_ID : ID (INT)
             COMMENT: (STRING)
             REPLY : ID (INT) (FOREIGN KEY)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             COMMENT: (STRING)
@@ -1779,7 +1779,7 @@ class TestCreateReply(APITestCase):
             REPLY : ID (INT) (FOREIGN KEY)
         """
         url = "/api/v1/comment/"
-        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply":self.comment.id}
+        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply": self.comment.id}
         res = client.post(url, data)
         self.assertEqual(res.data["body"]["result"]["comment"], data["comment"])
         self.assertEqual(
@@ -1808,13 +1808,13 @@ class TestErrorCreateReply(APITestCase):
             INAVLID ARTICLE_ID : ID (INT)
             COMMENT: (STRING)
             REPLY : ID (INT) (FOREIGN KEY)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             ERROR_RESPONSE_MESSAGE: (STRING)
         """
         url = "/api/v1/comment/"
-        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply":self.comment.id}
+        data = {"article_id": self.article.id, "comment": "New Test Comment", "reply": self.comment.id}
         res = client.post(url, data)
         self.assertEqual(res.data["errors"]["Msg"][0], "Replying on wrong article")
         self.assertEqual(res.status_code, 401)
@@ -1835,7 +1835,7 @@ class TestLikeArticle(APITestCase):
 
         POST Data:
             ARTICLE_ID : ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             RESPONSE_MESSAGE : (STRING)
@@ -1856,7 +1856,7 @@ class TestRemoveLikeArticle(APITestCase):
 
     def setUp(self):
         self.article = Article.objects.last()
-        ArtilcleLike.objects.create(article=self.article, user=user)
+        ArticleLike.objects.create(article=self.article, user=user)
 
     def test_remove_like_article(self):
         """
@@ -1865,7 +1865,7 @@ class TestRemoveLikeArticle(APITestCase):
 
         POST Data:
             ARTICLE_ID : ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             RESPONSE_MESSAGE : (STRING)
@@ -1891,7 +1891,7 @@ class TestErrorLikeArticle(APITestCase):
 
         POST Data:
             INVALID ARTICLE_ID : ID (INT)
-        
+
         Assert:
             RESPONSE_STATUS_CODE: 200
             RESPONSE_MESSAGE : (STRING)
