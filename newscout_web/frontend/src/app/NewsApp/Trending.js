@@ -4,15 +4,16 @@ import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, VerticleCardItem, SideBar, Footer } from 'newscout';
+import { CardItem, Menu, VerticleCardItem, SideBar, Footer, ToogleCard } from 'newscout';
 
 import Auth from './Auth';
 
 import './style.css';
 import 'newscout/assets/Menu.css';
+import 'newscout/assets/Sidebar.css';
 import 'newscout/assets/CardItem.css';
-import 'newscout/assets/ImageOverlay.css'
-import 'newscout/assets/Sidebar.css'
+import 'newscout/assets/ToogleCard.css'
+import 'newscout/assets/ImageOverlay.css';
 
 import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
@@ -115,31 +116,26 @@ class Trending extends React.Component {
 	}
 
 	getTrending = (data) => {
-		var trending_array = []
-		data.body.results.map((item, index) => {
-			item.articles.map((ele, ele_index) => {
-				if(ele.cover_image){
-					var article_dict = {}
-					article_dict['id'] = ele.id;
-					article_dict['header'] = ele.title;
-					article_dict['altText'] = ele.title;
-					article_dict['caption'] = ele.blurb;
-					article_dict['source'] = ele.source;
-					article_dict['slug'] = "/news/article/"+ele.slug
-					article_dict['category'] = ele.category
-					article_dict['hash_tags'] = ele.hash_tags
-					article_dict['published_on'] = moment(ele.published_on).format('D MMMM YYYY')
-					article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(ele.cover_image);
-					trending_array.push(article_dict)
-				}
-			})
+		var trending_data = []
+		var results = data.body.results.sort((a, b) => 
+			new Date(a.created_at) - new Date(b.created_at)
+		)
+		
+		results.map((item, index) => {
+			if(item.articles) {
+				var sorted_articles = item.articles.sort((a, b) =>
+					new Date(b.published_on) - new Date(a.published_on)
+				)
+				trending_data.push(sorted_articles)
+			}
 		})
-		var results = [
+		
+		var final_results = [
 			...this.state.trending,
-			...trending_array
+			...trending_data
 		]
 		this.setState({
-			trending: results,
+			trending: final_results,
 			next: data.body.next,
 			previous: data.body.previous,
 			loadingPagination: false,
@@ -213,33 +209,25 @@ class Trending extends React.Component {
 
 		var result = trending.map((item, index) => {
 			return (
-				<div className="col-lg-4 mb-4">
-					{isLoading ?
-						<React.Fragment>
-							<h3>Loading</h3>
-							<Skeleton height={525} />
-						</React.Fragment>
-					:
-						<VerticleCardItem
-							id={item.id}
-							image={item.src}
-							title={item.header}
-							description={item.caption}
-							uploaded_by={item.source}
-							source_url={item.slug}
-							slug_url={item.slug}
-							category={item.category}
-							hash_tags={item.hash_tags}
-							uploaded_on={item.published_on}
-							is_loggedin={is_loggedin}
-							toggle={this.toggle}
-							is_open={modal}
-							getArticleId={this.getArticleId}
-							bookmark_ids={bookmark_ids}
-							base_url={BASE_URL}
-						/>
-					}
-				</div>
+					<div className="col-lg-6 mb-4" key={index}>
+						{isLoading ?
+							<React.Fragment>
+								<h3>Loading</h3>
+								<Skeleton height={525} />
+							</React.Fragment>
+						:
+							<ToogleCard
+								items={item}
+								is_loggedin={is_loggedin}
+								toggle={this.toggle}
+								is_open={modal}
+								getArticleId={this.getArticleId}
+								bookmark_ids={bookmark_ids}
+								base_url={BASE_URL}
+								index={index}
+							/>
+						}
+					</div>
 			)
 		})
 
