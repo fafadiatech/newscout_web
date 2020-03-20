@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.http import Http404
 
 from core.models import (Category, Article, Source, BaseUserProfile,
-                         BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
+                         BookmarkArticle, ArticleLike, HashTag, Menu, Notification, Devices,
                          SocialAccount, Category, CategoryAssociation,
                          TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
 
@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 
 from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
-                          BookmarkArticleSerializer, ArtilcleLikeSerializer, HashTagSerializer,
+                          BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
                           ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
                           CommentListSerializer)
@@ -293,7 +293,7 @@ class ArticleDetailAPIView(APIView):
             if not user.is_anonymous:
                 book_mark_article = BookmarkArticle.objects.filter(
                     user=user, article=article).first()
-                like_article = ArtilcleLike.objects.filter(
+                like_article = ArticleLike.objects.filter(
                     user=user, article=article).first()
 
                 if book_mark_article:
@@ -318,11 +318,11 @@ class ArticleDetailAPIView(APIView):
             article = Article.objects.filter(id=article_id).first()
             if article:
                 if is_like and int(is_like) <= 2:
-                    article_like, created = ArtilcleLike.objects.get_or_create(
+                    article_like, created = ArticleLike.objects.get_or_create(
                         user=user, article=article)
                     article_like.is_like = is_like
                     article_like.save()
-                    serializer = ArtilcleLikeSerializer(article_like)
+                    serializer = ArticleLikeSerializer(article_like)
                     return Response(create_response({
                         "Msg": "Article like status changed", "article": serializer.data
                     }))
@@ -341,7 +341,7 @@ class ArticleBookMarkAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if request.data:
             article_id = request.data["article_id"]
-        else:    
+        else:
             article_id = self.request.POST.get("article_id", "")
         user = self.request.user
         if article_id:
@@ -503,7 +503,7 @@ class BookmarkArticleAPIView(APIView):
         return Response(create_response({"results": bookmark_list.data}))
 
 
-class ArtilcleLikeAPIView(APIView):
+class ArticleLikeAPIView(APIView):
     """
     This class is used to get user articles
     """
@@ -512,7 +512,7 @@ class ArtilcleLikeAPIView(APIView):
     def get(self, request):
         like_list = [0, 1]
         user = self.request.user
-        article_list = ArtilcleLikeSerializer(ArtilcleLike.objects.filter(user=user, is_like__in=like_list), many=True)
+        article_list = ArticleLikeSerializer(ArticleLike.objects.filter(user=user, is_like__in=like_list), many=True)
         return Response(create_response({"results": article_list.data}))
 
 
@@ -1337,7 +1337,7 @@ class CommentViewSet(viewsets.ViewSet):
         serializer = CommentSerializer(comment_list, many=True)
         return Response(
             create_response(
-                {"results": serializer.data, "total_article_likes": ArtilcleLike.objects.filter(
+                {"results": serializer.data, "total_article_likes": ArticleLike.objects.filter(
                     article=article_obj).count()}))
 
     def destroy(self, request, pk):
@@ -1357,7 +1357,7 @@ class LikeAPIView(APIView):
     def post(self, request):
         post_data = request.data.copy()
         post_data["user"] = request.user.id
-        serializer = ArtilcleLikeSerializer(data=post_data)
+        serializer = ArticleLikeSerializer(data=post_data)
         if serializer.is_valid():
             serializer.save()
             if serializer.data.get("id"):

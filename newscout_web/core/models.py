@@ -195,7 +195,7 @@ class RelatedArticle(NewsSiteBaseModel):
 # or a Personalized one based on ArticleRating
 
 
-class ArtilcleLike(NewsSiteBaseModel):
+class ArticleLike(NewsSiteBaseModel):
     user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     is_like = models.PositiveSmallIntegerField(default=2)
