@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout - Bookmark{% endblock title %}
+
+{% block content %}
+	<div id="bookmark"></div>
+{% endblock content %}
+
+{% block js %}
+	<script type="text/javascript">
+		var DOMAIN = '{{domain|safe}}'
+	</script>
+	<script src="{% static "/js/react/newsBookmark.js" %}"></script>
+{% endblock js %}

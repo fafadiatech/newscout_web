@@ -517,7 +517,7 @@ class App extends React.Component {
 					username={username}
 					handleLogout={this.handleLogout}
 				/>
-				<div className="container-fluid pb-50">
+				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
@@ -632,7 +632,7 @@ class App extends React.Component {
 									<div className="row">{economics}</div>
 								</div>
 
-								<div className="pt-50">
+								<div className="pt-50 pb-5">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
