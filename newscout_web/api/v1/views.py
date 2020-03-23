@@ -686,6 +686,8 @@ class ArticleSearchAPI(APIView):
         sr.aggs.bucket("source", "terms", field="source.keyword")
         sr.aggs.bucket("hash_tags", "terms", field="hash_tags.keyword", size=50)
 
+        # high light title and blurb containing query
+        sr.highlight("title", "blurb", fragment_size=500)
         # execute query
         response = sr.execute()
 
