@@ -587,10 +587,11 @@ class ArticleSearchAPI(APIView):
         if response.hits.hits:
             for result in response.hits.hits:
                 source = result["_source"]
-                if 'title' in result['highlight']:
-                    source['title'] = " ".join(result['highlight']['title'])
-                if 'blurb' in result['highlight']:
-                    source['blurb'] = " ".join(result['highlight']['blurb'])
+                if 'highlight' in result:
+                    if 'title' in result['highlight']:
+                        source['title'] = " ".join(result['highlight']['title'])
+                    if 'blurb' in result['highlight']:
+                        source['blurb'] = " ".join(result['highlight']['blurb'])
                 results.append(source)
 
             if response.aggregations.category.buckets:
