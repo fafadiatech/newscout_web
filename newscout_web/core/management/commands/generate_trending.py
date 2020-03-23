@@ -1,4 +1,5 @@
 import os
+import pytz
 import glob
 import string
 import datetime
@@ -17,7 +18,7 @@ class Command(BaseCommand):
 
     batch = []
     titles = {}
-    stopwords = [current.strip() for current in open(os.path.join(settings.BASE_DIR, "news_site", "management", "commands", "stopwords.txt")).readlines()]
+    stopwords = [current.strip() for current in open(os.path.join(settings.BASE_DIR, "core", "management", "commands", "stopwords.txt")).readlines()]
     epoch = 3
     MAX_TRENDING = 30
 
@@ -31,7 +32,7 @@ class Command(BaseCommand):
                     os.remove(f)
                 except:
                     continue
-        file_name = datetime.datetime.now().strftime("%d_%m_%Y_%I_%M") + ".log"
+        file_name = "trending_logs/" + datetime.datetime.now(pytz.timezone('Asia/Kolkata')).strftime("%d_%m_%Y_%I_%M") + ".log"
         return file_name
 
     def add_arguments(self, parser):
@@ -244,7 +245,7 @@ class Command(BaseCommand):
                                 article_sources.append(member.source.name)
 
                 print(article_sources)
-                log.write(article_sources + "\n")
+                log.write(str(article_sources) + "\n")
                 if trending.articles.count() <= 1:
                     trending.delete()
                 else:
@@ -252,7 +253,7 @@ class Command(BaseCommand):
                     if n >= self.MAX_TRENDING:
                         break
             print(all_articles_in_trending)
-            log.write(all_articles_in_trending + "\n")
+            log.write(str(all_articles_in_trending) + "\n")
 
             print("Removing old trending objects")
             if old_objects:

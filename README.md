@@ -34,38 +34,34 @@ News/Magazine Site powered by Django
 1. Clone django news site repository `git clone git@bitbucket.org:fafadiatech/django-ft-news-site.git`
 1. Create python 3 virtual environment `virtualenv -p /usr/bin/python3 /path/to/env/env_name`
 1. Activate your environment `source /path/to/env/env_name/bin/activate`
+1. Update packages `sudo apt-get update && sudo apt install build-essential`
+1. Install postgresql `sudo apt-get install postgresql-9.5 postgresql-client-9.5 postgresql-client-common postgresql-common postgresql-contrib`
 1. Install requirements `pip install -r requirements.txt`
 1. If you don't want to use postgresql database, you can enable **QUICK_MODE**
-```python 
+
+```python
 QUICK_MODE=True
 ```
+
 in settings.py file it will create sqlite database (You can skip following 3 steps). or You can continue with postgresql database installation.
-1. Install postgresql database `sudo apt-get install postgresql-9.5 postgresql-client-9.5 postgresql-client-common postgresql-common postgresql-contrib`
-1. Create postgresql database
+
+1. Run the management command to load sample database with fixture. Give appropriate username and password for postgres
     ```sh
-    psql -U postgres
-    create database newscout;
-    \q
+    python manage.py create_dummy_data
     ```
-1. Change database settings in `settings.py`
+1. Change database settings in `settings.py` with appropriate postgres password
     ```python
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'newscout',
+            'NAME': 'newscout_web',
             'USER': 'postgres',
-            'PASSWORD': 'postgres',
+            'PASSWORD': 'your_password',
             'HOST': 'localhost',
             'PORT': '5432',
         }
     }
     ```
-1. Create migrations and migrate database
-    ```sh
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
-1. Load initial database `./load_data.sh`
 1. Install Elastic Search
     ```sh
     wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -

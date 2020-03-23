@@ -13,7 +13,7 @@ url_router = DefaultRouter()
 url_router.register(r'campaigns', CampaignViewSet, basename='campaign')
 url_router.register(r'adgroups', AdGroupViewSet, basename='adgroup')
 url_router.register(
-    r'advertisements', AdvertisementViewSet, basename='advertisement')
+    r'advertisements',  AdvertisementViewSet, basename='advertisement')
 
 
 urlpatterns = [
