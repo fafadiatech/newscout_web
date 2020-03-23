@@ -586,7 +586,12 @@ class ArticleSearchAPI(APIView):
         filters = {}
         if response.hits.hits:
             for result in response.hits.hits:
-                results.append(result["_source"])
+                source = result["_source"]
+                if 'title' in result['highlight']:
+                    source['title'] = " ".join(result['highlight']['title'])
+                if 'blurb' in result['highlight']:
+                    source['blurb'] = " ".join(result['highlight']['blurb'])
+                results.append(source)
 
             if response.aggregations.category.buckets:
                 filters["category"] = sorted(
@@ -629,6 +634,9 @@ class ArticleSearchAPI(APIView):
             return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
 
         sr = Search(using=es, index="article")
+        
+        # highlight title and blurb containing query
+        sr = sr.highlight("title", "blurb", fragment_size=20000)
 
         # generate elastic search query
         must_query = {}
@@ -686,11 +694,8 @@ class ArticleSearchAPI(APIView):
         sr.aggs.bucket("source", "terms", field="source.keyword")
         sr.aggs.bucket("hash_tags", "terms", field="hash_tags.keyword", size=50)
 
-        # high light title and blurb containing query
-        sr.highlight("title", "blurb", fragment_size=500)
         # execute query
         response = sr.execute()
-
         results, filters = self.format_response(response)
         count = response["hits"]["total"]
         total_pages = math.ceil(count / size)
