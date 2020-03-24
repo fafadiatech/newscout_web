@@ -635,17 +635,17 @@ class ArticleSearchAPI(APIView):
             return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
 
         sr = Search(using=es, index="article")
-        
+
         # highlight title and blurb containing query
         sr = sr.highlight("title", "blurb", fragment_size=20000)
 
         # generate elastic search query
-        must_query = {}
+        must_query = [{"wildcard": { "cover_image": "*"}}]
         should_query = []
 
         if query:
             query = query.lower()
-            must_query = {"multi_match": {"query": query, "fields": ["title", "blurb"]}}
+            must_query.append({"multi_match": {"query": query, "fields": ["title", "blurb"]}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
