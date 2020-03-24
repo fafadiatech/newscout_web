@@ -92,14 +92,6 @@ class MenuPosts extends React.Component {
 	}
 
 	toggleSwitch = (data) => {
-		this.setTheme(data)
-	};
-
-	getTheme = () => {
-		this.setTheme(cookies.get('isChecked'))
-	}
-
-	setTheme = (data) => {
 		if(data === true){
 			if(document.getElementById("dark_style")){
 				document.getElementById("dark_style").disabled = false;
@@ -112,13 +104,36 @@ class MenuPosts extends React.Component {
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
 				head.appendChild(link);
-				this.setState({ isChecked: true })
 			}
+			this.setState({ isChecked: true })
+			cookies.set('isChecked', true, { path: '/' });
 		} else {
 			if(document.getElementById("dark_style")){
 				document.getElementById("dark_style").disabled = true;
 			}
 			this.setState({ isChecked: false })
+			cookies.remove('isChecked', { path: '/' });
+		}
+	};
+
+	getTheme = () => {
+		if(cookies.get('isChecked')){
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head  = document.getElementsByTagName('head')[0];
+				var link  = document.createElement('link');
+				link.id = 'dark_style';
+				link.rel  = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
 		}
 	}
 
