@@ -1,11 +1,14 @@
-body {
+body,
+.search-box .form-control,
+.search-box .input-group-append span {
 	background: #1f2242;
 }
 
 nav.fixed-top.navbar.navbar-expand-md,
 .sidebar,
 .sidebar ul a.list-group-item,
-.footer-area {
+.footer-area,
+.filter-container {
 	background: #16182f !important;
 }
 
@@ -24,23 +27,22 @@ nav.fixed-top.navbar.navbar-expand-md {
     color: #b0b7c7 !important;
 }
 
-.search-box .form-control {
-    border: 1px solid rgba(255,255,255,0.1);
-    background-color: #1f2242;
-    color: #e7eeff;
-}
-
+.search-box .form-control,
 .search-box .input-group-append span {
-	border: 1px solid rgba(255,255,255,0.1);
-    background-color: #1f2242;
-    color: #e7eeff;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .sidebar ul.list-group a.list-group-item,
 .navbar-expand-md .navbar-nav .nav-link,
 .footer-area p,
-.footer-area ul li a {
+.footer-area ul li a,
+.filter-container h6,
+.closefilter {
     color: rgba(255,255,255,0.8) !important;
+}
+
+hr {
+	border-top: 1px solid rgb(50, 54, 99) !important;
 }
 
 .featurepost {
@@ -49,16 +51,92 @@ nav.fixed-top.navbar.navbar-expand-md {
 }
 
 .featurepost-content h3,
-.featurepost-content p {
+.featurepost-content p,
+.article-detail .card-body .card-title h3,
+.sidebox .heading h3,
+.sidebox .media .media-heading,
+.comment h6,
+.card-post .card-body .card-title,
+.search-box .form-control,
+.search-box .input-group-append span,
+.toogle-card .card-header h3,
+.toogle-card .card-body ul li h4,
+.filter,
+.fltr-section > div {
 	color: #e7eeff !important;
 }
 
-.card-post {
+.card-post, .sidebox {
 	background-color: #16182f !important;
     box-shadow: 0 0 3px rgb(29, 27, 45) !important;
     border: 0px solid rgb(255,255,255,0.1) !important;
 }
 
-.card-post .card-body {
+.card-post .card-body,
+.sidebox,
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus,
+.view-all {
     border: 1px solid rgb(50, 54, 99) !important;
+}
+
+.article-breadcrumb .breadcrumb {
+	background-color: #16182f !important;
+	box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+	border: 0px solid rgb(255,255,255,0.1) !important;
+	color: #50649c !important;
+}
+
+.article-detail .card-body ul.hash-tags li,
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus {
+	background: #1f2242 !important;
+}
+
+.article-detail .card-body ul.hash-tags li,
+.article-detail .card-body ul.hash-tags li,
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus {
+	color: #50649c !important;
+}
+
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus,
+.article-detail .card-body .card-text.card-desc,
+.comment p,
+.card-post .card-body p.card-desc a {
+	color: #848ea2 !important;
+}
+
+.card-post .card-body p.card-text:not(.card-desc) a {
+    font-size: 15px;
+    color: #7f7f7f;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card.toogle-card {
+	background-color: #16182f !important;
+    box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+    border: 1px solid rgb(50, 54, 99) !important;
+}
+
+.filter-container {
+	border-left: 1px solid rgb(50, 54, 99) !important;	
+}
+
+.view-all {
+	box-shadow: none;
 }

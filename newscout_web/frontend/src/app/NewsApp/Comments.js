@@ -93,13 +93,21 @@ class Comments extends React.Component {
 							<FormGroup>
 								<div className="clearfix">
 									<div className="float-left" hidden={is_captcha}>
-										<img src={captchaImage} alt={captchaImage} style={{padding:10}}/>
-										<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()} style={{padding:10}}>
-											<FontAwesomeIcon icon={faRedo} />
-										</button>
-										<input type="text" onChange={(e) => this.handleChange("captcha", e)} placeholder="Enter Captcha" value={this.state.captcha}  style={{padding:10}}></input>
+										<div className="form-inline">
+											<div className="form-group">
+												<img src={captchaImage} alt={captchaImage} />
+											</div>
+											<div className="form-group">
+												<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>
+													<FontAwesomeIcon icon={faRedo} />
+												</button>
+											</div>
+											<div className="form-group">
+												<input type="text" onChange={(e) => this.handleChange("captcha", e)} placeholder="Enter Captcha" value={this.state.captcha} className="form-control captcha-caption"></input>
+											</div>
+										</div>
 									</div>
-									<div className="float-left ml-2" style={{padding:10}}>
+									<div className="float-left ml-2">
 										<React.Fragment>
 											{successComment ?
 												<Alert color="success" className="success-comment">Comment submitted successfully.</Alert>
@@ -119,8 +127,10 @@ class Comments extends React.Component {
 											}
 										</React.Fragment>
 									</div>
-									<div className="float-right" style={{padding:10}}>
-										<button className="btn btn-danger" disabled={(this.state.comment && this.state.captcha) === "" ? true : false}>Submit</button>
+									<div className="float-right">
+										<div className="form-group">
+											<button className="btn btn-danger" disabled={(this.state.comment && this.state.captcha) === "" ? true : false}>Submit</button>
+										</div>
 									</div>
 								</div>
 							</FormGroup>
