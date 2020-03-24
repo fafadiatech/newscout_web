@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
@@ -70,35 +69,28 @@ class SubmenuPosts extends React.Component {
 	}
 
 	toggleSwitch = (data) => {
-		if(data === true){
-			var head  = document.getElementsByTagName('head')[0];
-			var link  = document.createElement('link');
-			link.id = 'dark_style'
-			link.rel  = 'stylesheet';
-			link.type = 'text/css';
-			link.href = '/static/css/dark-style.css';
-			link.media = 'all';
-			head.appendChild(link);
-			cookies.set('isChecked', true, { path: '/' });
-		} else {
-			if(document.getElementById("dark_style")){
-				document.getElementById("dark_style").disabled = true;
-			}
-			cookies.remove('isChecked', { path: '/' });
-		}
+		this.setTheme(data)
 	};
 
 	getTheme = () => {
-		if(cookies.get('isChecked')){
-			var head  = document.getElementsByTagName('head')[0];
-			var link  = document.createElement('link');
-			link.id = 'dark_style'
-			link.rel  = 'stylesheet';
-			link.type = 'text/css';
-			link.href = '/static/css/dark-style.css';
-			link.media = 'all';
-			head.appendChild(link);
-			this.setState({ isChecked: true })
+		this.setTheme(cookies.get('isChecked'))
+	}
+
+	setTheme = (data) => {
+		if(data === true){
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head  = document.getElementsByTagName('head')[0];
+				var link  = document.createElement('link');
+				link.id = 'dark_style'
+				link.rel  = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+				this.setState({ isChecked: true })
+			}
 		} else {
 			if(document.getElementById("dark_style")){
 				document.getElementById("dark_style").disabled = true;
@@ -351,7 +343,6 @@ class SubmenuPosts extends React.Component {
 		return(
 			<React.Fragment>
 				<Menu
-					logo={logo}
 					navitems={menus}
 					url={URL}
 					isSlider={true}
@@ -366,7 +357,7 @@ class SubmenuPosts extends React.Component {
 				
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} class={isSideOpen} />
+						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
 						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">

@@ -4,6 +4,14 @@ body,
 	background: #1f2242;
 }
 
+.navbar-brand {
+  background-image: url('/static/images/logo/logo-sm-white.png') !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 135px;
+  height: 50px;
+}
+
 nav.fixed-top.navbar.navbar-expand-md,
 .sidebar,
 .sidebar ul a.list-group-item,
