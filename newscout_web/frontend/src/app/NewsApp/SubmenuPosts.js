@@ -51,7 +51,8 @@ class SubmenuPosts extends React.Component {
 				description: '',
 				source_url: '',
 				image: ''
-			}
+			},
+			isChecked: false
 		};
 	}
 
@@ -66,6 +67,44 @@ class SubmenuPosts extends React.Component {
 		this.setState({
 			modal: !data,
 		})
+	}
+
+	toggleSwitch = (data) => {
+		if(data === true){
+			var head  = document.getElementsByTagName('head')[0];
+			var link  = document.createElement('link');
+			link.id = 'dark_style'
+			link.rel  = 'stylesheet';
+			link.type = 'text/css';
+			link.href = '/static/css/dark-style.css';
+			link.media = 'all';
+			head.appendChild(link);
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
+			cookies.remove('isChecked', { path: '/' });
+		}
+	};
+
+	getTheme = () => {
+		if(cookies.get('isChecked')){
+			var head  = document.getElementsByTagName('head')[0];
+			var link  = document.createElement('link');
+			link.id = 'dark_style'
+			link.rel  = 'stylesheet';
+			link.type = 'text/css';
+			link.href = '/static/css/dark-style.css';
+			link.media = 'all';
+			head.appendChild(link);
+			this.setState({ isChecked: true })
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+		}
 	}
 
 	getArticleId = (articleId) => {
@@ -248,6 +287,12 @@ class SubmenuPosts extends React.Component {
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
+		if(cookies.get('isChecked')){
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		this.getTheme()
 	}
 
 	componentWillUnmount = () => {
@@ -255,7 +300,7 @@ class SubmenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article, isChecked } = this.state;
 		
 		var items = newsPosts.map((item, index) => {
 			return (
@@ -315,6 +360,8 @@ class SubmenuPosts extends React.Component {
 					is_loggedin={is_loggedin}
 					username={username}
 					handleLogout={this.handleLogout}
+					toggleSwitch={this.toggleSwitch}
+					isChecked={isChecked}
 				/>
 				
 				<div className="container-fluid">

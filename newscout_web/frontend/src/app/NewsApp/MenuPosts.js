@@ -74,7 +74,8 @@ class MenuPosts extends React.Component {
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
-			bookmark_ids: []
+			bookmark_ids: [],
+			isChecked: false
 		};
 	}
 
@@ -89,6 +90,44 @@ class MenuPosts extends React.Component {
 		this.setState({
 			modal: !data,
 		})
+	}
+
+	toggleSwitch = (data) => {
+		if(data === true){
+			var head  = document.getElementsByTagName('head')[0];
+			var link  = document.createElement('link');
+			link.id = 'dark_style'
+			link.rel  = 'stylesheet';
+			link.type = 'text/css';
+			link.href = '/static/css/dark-style.css';
+			link.media = 'all';
+			head.appendChild(link);
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
+			cookies.remove('isChecked', { path: '/' });
+		}
+	};
+
+	getTheme = () => {
+		if(cookies.get('isChecked')){
+			var head  = document.getElementsByTagName('head')[0];
+			var link  = document.createElement('link');
+			link.id = 'dark_style'
+			link.rel  = 'stylesheet';
+			link.type = 'text/css';
+			link.href = '/static/css/dark-style.css';
+			link.media = 'all';
+			head.appendChild(link);
+			this.setState({ isChecked: true })
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+		}
 	}
 
 	getMenu = (data) => {
@@ -188,10 +227,17 @@ class MenuPosts extends React.Component {
 		if(cookies.get('full_name')){
 			this.setState({is_loggedin:true})
 		}
+		if(cookies.get('isChecked')){
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		this.getTheme()
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked } = this.state;
+		
 		var result = newsPosts.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
@@ -249,6 +295,8 @@ class MenuPosts extends React.Component {
 					is_loggedin={is_loggedin}
 					username={username}
 					handleLogout={this.handleLogout}
+					toggleSwitch={this.toggleSwitch}
+					isChecked={isChecked}
 				/>
 				<div className="container-fluid">
 					<div className="row">

@@ -80,7 +80,8 @@ class App extends React.Component {
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
-			bookmark_ids: []
+			bookmark_ids: [],
+			isChecked: false
 		}
 	}
 
@@ -95,6 +96,44 @@ class App extends React.Component {
 		this.setState({
 			modal: !data,
 		})
+	}
+
+	toggleSwitch = (data) => {
+		if(data === true){
+			var head  = document.getElementsByTagName('head')[0];
+			var link  = document.createElement('link');
+			link.id = 'dark_style'
+			link.rel  = 'stylesheet';
+			link.type = 'text/css';
+			link.href = '/static/css/dark-style.css';
+			link.media = 'all';
+			head.appendChild(link);
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
+			cookies.remove('isChecked', { path: '/' });
+		}
+	};
+
+	getTheme = () => {
+		if(cookies.get('isChecked')){
+			var head  = document.getElementsByTagName('head')[0];
+			var link  = document.createElement('link');
+			link.id = 'dark_style'
+			link.rel  = 'stylesheet';
+			link.type = 'text/css';
+			link.href = '/static/css/dark-style.css';
+			link.media = 'all';
+			head.appendChild(link);
+			this.setState({ isChecked: true })
+		} else {
+			if(document.getElementById("dark_style")){
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+		}
 	}
 
 	fetchArticleBookmark = (articleId) => {
@@ -238,7 +277,7 @@ class App extends React.Component {
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x342/left/top/"+decodeURIComponent(item.cover_image)
 				if(regionalupdateposts_array.length < 4){
 					regionalupdateposts_array.push(article_dict)
 				}
@@ -288,7 +327,7 @@ class App extends React.Component {
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x342/left/top/"+decodeURIComponent(item.cover_image)
 				if(economicposts_array.length < 4){
 					economicposts_array.push(article_dict)
 				}
@@ -365,10 +404,16 @@ class App extends React.Component {
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
 			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
 		}
+		if(cookies.get('isChecked')){
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		this.getTheme()
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state
 		
 		var sector_update = sector_update.map((item, index) => {
 			return(
@@ -516,6 +561,8 @@ class App extends React.Component {
 					is_loggedin={is_loggedin}
 					username={username}
 					handleLogout={this.handleLogout}
+					toggleSwitch={this.toggleSwitch}
+					isChecked={isChecked}
 				/>
 				<div className="container-fluid">
 					<div className="row">
@@ -606,7 +653,7 @@ class App extends React.Component {
 									<div className="row">{regional_update}</div>
 								</div>
 
-								<div className="pt-50">
+								<div className="p-5045">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
