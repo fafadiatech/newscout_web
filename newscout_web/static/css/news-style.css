@@ -9,7 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f6f6f6;
-  padding: 76px 0px;
+  padding: 66px 0px 0px 0px;
   color: #3b5265;
 }
 
@@ -35,12 +35,12 @@ nav.navbar {
   box-shadow: 0 0 5px rgba(0,0,0,.05);
 }
 
-nav .navbar-brand {
-  height: 60px;
-}
-
-nav .navbar-brand img {
-  height: 100%;
+.navbar-brand {
+  background-image: url('/static/images/logo/logo-sm.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 135px;
+  height: 50px;
 }
 
 .menu-item {
