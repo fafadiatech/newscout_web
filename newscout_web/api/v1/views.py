@@ -680,7 +680,7 @@ class ArticleSearchAPI(APIView):
 
         if source:
             source = [s.lower() for s in source]
-            sr = sr.filter("terms", source=source)
+            sr = sr.filter("terms", source__keyword=source)
 
         sr = sr.sort({"article_score": {"order": sort}})
         sr = sr.sort({"published_on": {"order": sort}})
