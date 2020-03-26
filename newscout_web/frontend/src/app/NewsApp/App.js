@@ -284,7 +284,7 @@ class App extends React.Component {
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x342/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x490/center/"+decodeURIComponent(item.cover_image)
 				if(regionalupdateposts_array.length < 4){
 					regionalupdateposts_array.push(article_dict)
 				}
@@ -334,7 +334,7 @@ class App extends React.Component {
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x342/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x490/center/"+decodeURIComponent(item.cover_image)
 				if(economicposts_array.length < 4){
 					economicposts_array.push(article_dict)
 				}
