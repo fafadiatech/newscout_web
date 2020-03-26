@@ -261,25 +261,25 @@ class Trending extends React.Component {
 
 		var result = trending.map((item, index) => {
 			return (
-					<div className="col-lg-6 mb-4" key={index}>
-						{isLoading ?
-							<React.Fragment>
-								<h3>Loading</h3>
-								<Skeleton height={525} />
-							</React.Fragment>
-						:
-							<ToogleCard
-								items={item}
-								is_loggedin={is_loggedin}
-								toggle={this.toggle}
-								is_open={modal}
-								getArticleId={this.getArticleId}
-								bookmark_ids={bookmark_ids}
-								base_url={BASE_URL}
-								index={index}
-							/>
-						}
-					</div>
+				<div className="col-lg-6 mb-4" key={index}>
+					{isLoading ?
+						<React.Fragment>
+							<h3>Loading</h3>
+							<Skeleton height={525} />
+						</React.Fragment>
+					:
+						<ToogleCard
+							items={item}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
+							index={index}
+						/>
+					}
+				</div>
 			)
 		})
 
@@ -310,15 +310,17 @@ class Trending extends React.Component {
 											</div>
 										</div>
 									</div>
-									<div className="row">
-										{
-											this.state.loadingPagination ?
-												<React.Fragment>
-													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-												</React.Fragment>
-											: ""
-										}
-										{result}
+									<div className="accordion" id="accordionExample">
+										<div className="row">
+											{
+												this.state.loadingPagination ?
+													<React.Fragment>
+														<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+													</React.Fragment>
+												: ""
+											}
+											{result}
+										</div>
 									</div>
 								</div>
 							</div>
