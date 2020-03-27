@@ -1,6 +1,6 @@
 html {
-    position: relative;
-    min-height: 100%;
+  position: relative;
+  min-height: 100%;
 }
 
 body {
@@ -9,7 +9,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f6f6f6;
-  padding: 66px 0px 0px 0px;
+  padding: 66px 0px 66px 0px;
   color: #3b5265;
 }
 
@@ -225,7 +225,7 @@ nav.navbar {
 }
 
 .slick-arrow.slick-hidden {
-   display: none;
+ display: none;
 }
 
 @charset 'UTF-8';
@@ -316,7 +316,7 @@ nav.navbar {
 }
 
 .slick-next {
-    right: -45px;
+  right: -45px;
 }
 
 [dir='rtl'] .slick-next {
@@ -327,19 +327,19 @@ nav.navbar {
 .slick-next:before {
   content: '→';
 }
-[dir='rtl'] .slick-next:before
-{
-    content: '←';
+
+[dir='rtl'] .slick-next:before {
+  content: '←';
 }
 
 @media (max-width: 380px) {
 
   .slick-prev {
-      left: -7px;
+    left: -7px;
   }
 
   .slick-next {
-      right: -7px;
+    right: -7px;
   }
   
   [dir='rtl'] .slick-prev {
@@ -348,8 +348,8 @@ nav.navbar {
   } 
   
   [dir='rtl'] .slick-next {
-      right: auto;
-      left: -7px;
+    right: auto;
+    left: -7px;
   }
 
   .search {
@@ -359,6 +359,10 @@ nav.navbar {
   /*.filter {
     margin-right: 5px;
   }*/
+
+  body {
+    padding: 66px 0px 115px 0px;
+  }
 }
 
 @media only screen and (min-width: 381px) and (max-width: 767px) {
@@ -431,41 +435,35 @@ nav.navbar {
 }
 
 .slick-dots li button:hover,
-.slick-dots li button:focus
-{
-    outline: none;
+.slick-dots li button:focus {
+  outline: none;
 }
+
 .slick-dots li button:hover:before,
-.slick-dots li button:focus:before
-{
-    opacity: 1;
+.slick-dots li button:focus:before {
+  opacity: 1;
 }
-.slick-dots li button:before
-{
-    font-family: 'slick';
-    font-size: 6px;
-    line-height: 20px;
 
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: 20px;
-    height: 20px;
-
-    content: '•';
-    text-align: center;
-
-    opacity: .25;
-    color: black;
-
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.slick-dots li button:before {
+  font-family: 'slick';
+  font-size: 6px;
+  line-height: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  content: '•';
+  text-align: center;
+  opacity: .25;
+  color: black;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.slick-dots li.slick-active button:before
-{
-    opacity: .75;
-    color: black;
+
+.slick-dots li.slick-active button:before {
+  opacity: .75;
+  color: black;
 }
 
 #menu li.active a,

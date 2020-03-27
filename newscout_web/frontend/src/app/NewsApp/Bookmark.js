@@ -209,7 +209,7 @@ class Bookmark extends React.Component {
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} />
-						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
 									<div className="row">
