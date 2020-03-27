@@ -39,12 +39,6 @@ class Bookmark extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			ads_article: {
-				id: 0,
-				description: '',
-				source_url: '',
-				image: ''
-			}
 		};
 	}
 
@@ -78,17 +72,11 @@ class Bookmark extends React.Component {
 
 	articleBookmarkResponse = (data) => {
 		var bookmark_obj = data.body.bookmark_article
-		var index = article_array.indexOf(bookmark_obj.article);
-		
-		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
-			article_array.push(bookmark_obj.article)
-		}
-		
-		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
-			article_array.splice(index, 1);
-		}
+		var index = this.state.newsPosts.indexOf(bookmark_obj.article);
+		this.state.newsPosts.splice(index, 1);
 		this.setState({
-			bookmark_ids: article_array
+			newsPosts: this.state.newsPosts,
+			isLoading: true
 		})
 		if(cookies.get('full_name')){
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
