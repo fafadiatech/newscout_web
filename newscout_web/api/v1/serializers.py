@@ -121,6 +121,7 @@ class BaseUserProfileSerializer(serializers.ModelSerializer):
 
 class BookmarkArticleSerializer(serializers.ModelSerializer):
     status = serializers.IntegerField(default=1)
+    article = ArticleSerializer()
 
     class Meta:
         model = BookmarkArticle
