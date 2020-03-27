@@ -363,9 +363,13 @@ nav.navbar {
 
 @media only screen and (min-width: 381px) and (max-width: 767px) {
 
-  .slick-prev, .slick-next {
+  .slick-prev {
     left: -7px;
   }
+
+  .slick-next {
+    right: -7px;
+  } 
   
   [dir='rtl'] .slick-prev {
     right: -7px;
