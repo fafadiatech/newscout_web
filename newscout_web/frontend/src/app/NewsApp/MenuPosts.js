@@ -114,7 +114,7 @@ class MenuPosts extends React.Component {
 			this.setState({ isChecked: false })
 			cookies.remove('isChecked', { path: '/' });
 		}
-	};
+	}
 
 	getTheme = () => {
 		if(cookies.get('isChecked')){
@@ -207,10 +207,14 @@ class MenuPosts extends React.Component {
 		})
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	handleLogout = () => {
@@ -238,6 +242,11 @@ class MenuPosts extends React.Component {
 			this.setState({ isChecked: true })
 		} else {
 			this.setState({ isChecked: false })
+		}
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
 		}
 		this.getTheme()
 	}
@@ -296,7 +305,8 @@ class MenuPosts extends React.Component {
 					navitems={menus}
 					url={URL}
 					isSlider={true}
-					isSideOpen={this.isSideOpen}
+					isSideBarToogle={this.isSideBarToogle}
+					isSideOpen={isSideOpen}
 					toggle={this.toggle}
 					is_loggedin={is_loggedin}
 					username={username}

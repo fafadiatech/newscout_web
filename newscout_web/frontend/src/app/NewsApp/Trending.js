@@ -194,10 +194,14 @@ class Trending extends React.Component {
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	getArticleId = (articleId) => {
@@ -249,6 +253,11 @@ class Trending extends React.Component {
 		} else {
 			this.setState({ isChecked: false })
 		}
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 		this.getTheme()
 	}
 
@@ -289,7 +298,8 @@ class Trending extends React.Component {
 					navitems={menus}
 					url={URL}
 					isSlider={true}
-					isSideOpen={this.isSideOpen}
+					isSideBarToogle={this.isSideBarToogle}
+					isSideOpen={isSideOpen}
 					toggle={this.toggle}
 					is_loggedin={is_loggedin}
 					username={username}

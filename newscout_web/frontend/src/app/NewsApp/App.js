@@ -60,6 +60,42 @@ const settings = {
     ]
 };
 
+const settingsTrending = {
+	dots: false,
+	infinite: true,
+	speed: 500,
+	autoplay: true,
+	slidesToShow: 1,
+	slidesToScroll: 1,
+	initialSlide: 0,
+	responsive: [
+		{
+			breakpoint: 1024,
+			settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				infinite: true,
+				dots: false
+			}
+        },
+        {
+			breakpoint: 600,
+			settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				initialSlide: 1
+			}
+        },
+        {
+			breakpoint: 480,
+				settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1
+			}
+        }
+    ]
+};
+
 class App extends React.Component {
 
 	constructor(props) {
@@ -120,7 +156,7 @@ class App extends React.Component {
 			this.setState({ isChecked: false })
 			cookies.remove('isChecked', { path: '/' });
 		}
-	};
+	}
 
 	getTheme = () => {
 		if(cookies.get('isChecked')){
@@ -187,7 +223,7 @@ class App extends React.Component {
 	getTrending = (data) => {
 		var trending_array = []
 		data.body.results.map((item, index) => {
-			if(index+1 <= 5){
+			if(index+1 <= 4){
 				var articles = item.articles;
 				if(articles.length <= 2){
 					for (var ele = 0; ele < articles.length; ele++) {
@@ -370,10 +406,14 @@ class App extends React.Component {
 		})
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	getBookmarksArticles = (data) => {
@@ -416,6 +456,11 @@ class App extends React.Component {
 		} else {
 			this.setState({ isChecked: false })
 		}
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 		this.getTheme()
 	}
 
@@ -448,6 +493,27 @@ class App extends React.Component {
 						/>
 					}
 				</div>
+			)
+		})
+
+		var trendingSlider = trending.map((item, index) => {
+			return(	
+				<ImageOverlay
+					id={item.id} 
+					image={item.src}
+					title={item.header}
+					description={item.caption}
+					uploaded_by={item.source}
+					source_url={item.slug}
+					slug_url={item.slug}
+					category={item.category}
+					is_loggedin={is_loggedin}
+					toggle={this.toggle}
+					is_open={modal}
+					getArticleId={this.getArticleId}
+					bookmark_ids={bookmark_ids}
+					base_url={BASE_URL}
+				/>
 			)
 		})
 
@@ -562,7 +628,8 @@ class App extends React.Component {
 					navitems={menus}
 					url={URL}
 					isSlider={true}
-					isSideOpen={this.isSideOpen}
+					isSideBarToogle={this.isSideBarToogle}
+					isSideOpen={isSideOpen}
 					toggle={this.toggle}
 					is_loggedin={is_loggedin}
 					username={username}
@@ -577,34 +644,12 @@ class App extends React.Component {
 							<div className="container">
 								<div className="pt-50">
 									<div className="row">
-										<div className="col-lg-7 col-12 mb-4">
-											<React.Fragment>
-												{isLoading ?
-													<Skeleton height={500} />
-												:
-													<React.Fragment>
-														{trending.length > 0 ?
-															<ImageOverlay
-																id={trending[0].id} 
-																image={trending[0].src}
-																title={trending[0].header}
-																description={trending[0].caption}
-																uploaded_by={trending[0].source}
-																source_url={trending[0].slug}
-																slug_url={trending[0].slug}
-																category={trending[0].category}
-																is_loggedin={is_loggedin}
-																toggle={this.toggle}
-																is_open={modal}
-																getArticleId={this.getArticleId}
-																bookmark_ids={bookmark_ids}
-																base_url={BASE_URL}
-															/>
-														: ''
-														}
-													</React.Fragment>
-												}
-											</React.Fragment>
+										<div className="col-lg-7 col-12 mb-4 trending-slider">
+											{isLoading ?
+												<Skeleton height={500} />
+											:
+												<Slider {...settingsTrending}>{trendingSlider}</Slider>
+											}
 										</div>
 										<div className="col-lg-5 col-12 mb-4">
 											<React.Fragment>
@@ -614,13 +659,13 @@ class App extends React.Component {
 													<React.Fragment>
 														{trending.length > 0 ?
 															<ContentOverlay
-																id={trending[1].id} 
-																title={trending[1].header}
-																description={trending[1].caption}
-																uploaded_by={trending[1].source}
-																source_url={trending[1].slug}
-																slug_url={trending[1].slug}
-																category={trending[1].category}
+																id={trending[5].id} 
+																title={trending[5].header}
+																description={trending[5].caption}
+																uploaded_by={trending[5].source}
+																source_url={trending[5].slug}
+																slug_url={trending[5].slug}
+																category={trending[5].category}
 																is_loggedin={is_loggedin}
 																toggle={this.toggle}
 																is_open={modal}
@@ -662,7 +707,7 @@ class App extends React.Component {
 								<div className="p-5045">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
-											<div className="section-title">
+											<div className="section-title slider-header">
 												<h2 className="m-0 section-title">Finance</h2>
 											</div>
 										</div>
