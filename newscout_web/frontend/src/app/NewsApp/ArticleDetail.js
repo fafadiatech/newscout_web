@@ -84,7 +84,7 @@ class ArticleDetail extends React.Component {
 			this.setState({ isChecked: false })
 			cookies.remove('isChecked', { path: '/' });
 		}
-	};
+	}
 
 	getTheme = () => {
 		if(cookies.get('isChecked')){
@@ -290,10 +290,14 @@ class ArticleDetail extends React.Component {
 		}
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	getBookmarksArticles = (data) => {
@@ -310,6 +314,9 @@ class ArticleDetail extends React.Component {
 	}
 
 	componentDidMount() {
+		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
+		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
+		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment);
 		if(cookies.get('full_name')){
 			this.fetchCaptcha();
 			this.setState({is_loggedin:true, is_captcha:false})
@@ -321,10 +328,12 @@ class ArticleDetail extends React.Component {
 		} else {
 			this.setState({ isChecked: false })
 		}
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 		this.getTheme()
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
-		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment);
 	}
 
 	render() {
@@ -344,7 +353,8 @@ class ArticleDetail extends React.Component {
 					navitems={menus}
 					url={URL}
 					isSlider={true}
-					isSideOpen={this.isSideOpen}
+					isSideBarToogle={this.isSideBarToogle}
+					isSideOpen={isSideOpen}
 					toggle={this.toggle}
 					is_loggedin={is_loggedin}
 					username={username}
