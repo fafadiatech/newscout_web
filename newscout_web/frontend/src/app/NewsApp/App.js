@@ -225,25 +225,24 @@ class App extends React.Component {
 		data.body.results.map((item, index) => {
 			if(index+1 <= 4){
 				var articles = item.articles;
-				if(articles.length <= 2){
-					for (var ele = 0; ele < articles.length; ele++) {
-						if(articles[ele].cover_image){
-							var article_dict = {}
-							article_dict['id'] = articles[ele].id
-							article_dict['header'] = articles[ele].title
-							article_dict['altText'] = articles[ele].title
-							article_dict['caption'] = articles[ele].blurb
-							article_dict['source'] = articles[ele].source
-							article_dict['category'] = articles[ele].category
-							article_dict['slug'] = "/news/article/"+articles[ele].slug
-							article_dict['source_url'] = articles[ele].source_url
-							article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
-							trending_array.push(article_dict)
-						}
+				for (var ele = 0; ele < articles.length; ele++) {
+					if(articles[ele].cover_image){
+						var article_dict = {}
+						article_dict['id'] = articles[ele].id
+						article_dict['header'] = articles[ele].title
+						article_dict['altText'] = articles[ele].title
+						article_dict['caption'] = articles[ele].blurb
+						article_dict['source'] = articles[ele].source
+						article_dict['category'] = articles[ele].category
+						article_dict['slug'] = "/news/article/"+articles[ele].slug
+						article_dict['source_url'] = articles[ele].source_url
+						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
+						trending_array.push(article_dict)
 					}
 				}
 			}
 		})
+		console.log(trending_array)
 		this.setState({
 			trending: trending_array,
 			isLoading: false
@@ -466,7 +465,7 @@ class App extends React.Component {
 
 	render() {
 		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state
-		
+		console.log(trending)
 		var sector_update = sector_update.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
