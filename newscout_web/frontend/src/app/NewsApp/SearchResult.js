@@ -28,24 +28,21 @@ const URL = "/news/search/"
 const cookies = new Cookies();
 
 class SearchResult extends React.Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
 			menus: [],
 			searchResult: [],
 			isFilterOpen: false,
-			categories: [],
-			sources: [],
-			hashtags: [],
 			filters: [],
 			final_query: "",
 			loadingPagination: false,
-			page : 0,
+			page: 0,
 			next: null,
 			previous: null,
 			isSideOpen: true,
-			domain: "domain="+DOMAIN,
+			domain: "domain=" + DOMAIN,
 			isLoading: false,
 			modal: false,
 			is_loggedin: false,
@@ -70,14 +67,14 @@ class SearchResult extends React.Component {
 	}
 
 	toggleSwitch = (data) => {
-		if(data === true){
-			if(document.getElementById("dark_style")){
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style'
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
@@ -86,7 +83,7 @@ class SearchResult extends React.Component {
 			this.setState({ isChecked: true })
 			cookies.set('isChecked', true, { path: '/' });
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 			this.setState({ isChecked: false })
@@ -95,28 +92,28 @@ class SearchResult extends React.Component {
 	}
 
 	getTheme = () => {
-		if(cookies.get('isChecked')){
-			if(document.getElementById("dark_style")){
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style';
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
 				head.appendChild(link);
 			}
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 		}
 	}
 
 	getArticleId = (articleId) => {
-		if(cookies.get('full_name')){
+		if (cookies.get('full_name')) {
 			this.fetchArticleBookmark(articleId)
 		} else {
 			this.toggle()
@@ -124,20 +121,20 @@ class SearchResult extends React.Component {
 	}
 
 	fetchArticleBookmark = (articleId) => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
-		var body = JSON.stringify({article_id: articleId})
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		var url = ARTICLE_BOOKMARK + "?" + this.state.domain;
+		var body = JSON.stringify({ article_id: articleId })
 		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
 	}
 
 	articleBookmarkResponse = (data) => {
 		var bookmark_obj = data.body.bookmark_article
 		var index = article_array.indexOf(bookmark_obj.article);
-		
+
 		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
 		}
-		
+
 		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
 			article_array.splice(index, 1);
 		}
@@ -150,14 +147,14 @@ class SearchResult extends React.Component {
 		this.setState({
 			isLoading: true,
 			loadingPagination: true,
-			page : this.state.page + 1
+			page: this.state.page + 1
 		})
 		getRequest(this.state.next, this.getSearchResult, false, true);
 	}
 
 	handleScroll = () => {
 		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.6) {
-			if (!this.state.loadingPagination && this.state.next){
+			if (!this.state.loadingPagination && this.state.next) {
 				this.getNext();
 			}
 		}
@@ -166,10 +163,10 @@ class SearchResult extends React.Component {
 	getMenu = (data) => {
 		var menus_array = []
 		data.body.results.map((item, index) => {
-			if(item.heading){
+			if (item.heading) {
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name;
-				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase();
+				heading_dict['itemurl'] = "news/" + item.heading.name.replace(" ", "-").toLowerCase();
 				heading_dict['item_id'] = item.heading.category_id;
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
@@ -192,69 +189,69 @@ class SearchResult extends React.Component {
 		var source_filters = data.body.filters.source;
 		var hashtags_filters = data.body.filters.hash_tags;
 		var cat_filters = data.body.filters.category;
-		if(cat_filters) {
+		if (cat_filters && cat_array.length == 0) {
 			var cat_array = [];
 			cat_filters.map((item, index) => {
-				if(item.key !== ""){
+				if (item.key !== "") {
 					var category_dict = {}
 					category_dict['label'] = item.key
 					category_dict['value'] = item.key
 					cat_array.push(category_dict)
 				}
 			})
-			filters.push({"catitems":"Category" ,"subitem": cat_array})
+			filters.push({ "catitems": "Category", "subitem": cat_array })
 			this.setState({
 				filters: filters
 			})
 		}
-		if(source_filters) {
+		if (source_filters && source_array.length === 0) {
 			var source_array = [];
 			source_filters.map((item, index) => {
-				if(item.key !== ""){
+				if (item.key !== "") {
 					var source_dict = {}
 					source_dict['label'] = item.key
 					source_dict['value'] = item.key
 					source_array.push(source_dict)
 				}
 			})
-			filters.push({"catitems":"Source" ,"subitem": source_array})
+			filters.push({ "catitems": "Source", "subitem": source_array })
 			this.setState({
 				filters: filters
 			})
-		} 
-		if(hashtags_filters) {
+		}
+		if (hashtags_filters && hashtags_array.length === 0) {
 			var hashtags_array = [];
 			hashtags_filters.map((item, index) => {
-				if(item.key !== ""){
+				if (item.key !== "") {
 					var hashtags_dict = {}
 					hashtags_dict['label'] = item.key
 					hashtags_dict['value'] = item.key
 					hashtags_array.push(hashtags_dict)
 				}
 			})
-			filters.push({"catitems":"Hash Tags" ,"subitem": hashtags_array})
+			filters.push({ "catitems": "Hash Tags", "subitem": hashtags_array })
 			this.setState({
 				filters: filters
 			})
 		}
-		
+
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/" + decodeURIComponent(item.cover_image)
 				searchresult_array.push(article_dict)
 			}
 		})
-		if(extra_data){
+		if (extra_data) {
 			var results = [
 				...this.state.searchResult,
 				...searchresult_array
@@ -274,7 +271,7 @@ class SearchResult extends React.Component {
 	}
 
 	queryFilter = (data, checked) => {
-		if(checked == true){
+		if (checked == true) {
 			query_array.push(data);
 		} else {
 			query_array.splice(query_array.indexOf(data), 1);
@@ -286,17 +283,17 @@ class SearchResult extends React.Component {
 		})
 
 		if (history.pushState) {
-			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY+"&"+final_query, this.getSearchResult);
-			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname +"?q="+QUERY;
-			if(final_query){
-		    	newurl = newurl+"&"+final_query;
+			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
+			if (final_query) {
+				newurl = newurl + "&" + final_query;
 			}
-		    window.history.pushState({},'',newurl);
+			window.history.pushState({}, '', newurl);
 		}
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -308,8 +305,8 @@ class SearchResult extends React.Component {
 	getBookmarksArticles = (data) => {
 		var article_array = []
 		var article_ids = data.body.results;
-		for(var i = 0; i < article_ids.length; i++){
-			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+		for (var i = 0; i < article_ids.length; i++) {
+			if (this.state.bookmark_ids.indexOf(article_ids[i].article) === -1) {
 				article_array.push(article_ids[i].article)
 				this.setState({
 					bookmark_ids: article_array
@@ -319,39 +316,39 @@ class SearchResult extends React.Component {
 	}
 
 	handleLogout = () => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
-    }
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+	}
 
-    authLogoutResponse = (data) => {
-    	cookies.remove('token', { path: '/' })
-    	cookies.remove('full_name', { path: '/' })
-        this.setState({
+	authLogoutResponse = (data) => {
+		cookies.remove('token', { path: '/' })
+		cookies.remove('full_name', { path: '/' })
+		this.setState({
 			is_loggedin: false,
 			is_captcha: true,
 			bookmark_ids: []
 		})
-    }
+	}
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		if(this.state.final_query){
-			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY+"&"+this.state.final_query, this.getSearchResult);
+		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
+		if (this.state.final_query) {
+			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + this.state.final_query, this.getSearchResult);
 		} else {
-			getRequest(ARTICLE_POSTS+"?"+this.state.domain+"&q="+QUERY, this.getSearchResult);
+			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY, this.getSearchResult);
 		}
-		if(cookies.get('full_name')){
-			this.setState({is_loggedin:true})
-			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		if (cookies.get('full_name')) {
+			this.setState({ is_loggedin: true })
+			var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+			getRequest(ALL_ARTICLE_BOOKMARK + "?" + this.state.domain, this.getBookmarksArticles, headers);
 		}
-		if(cookies.get('isChecked')){
+		if (cookies.get('isChecked')) {
 			this.setState({ isChecked: true })
 		} else {
 			this.setState({ isChecked: false })
 		}
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
@@ -367,11 +364,11 @@ class SearchResult extends React.Component {
 		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked } = this.state;
 
 		var result = searchResult.map((item, index) => {
-			return(
+			return (
 				<div className="col-lg-4 mb-5">
 					{isLoading ?
 						<Skeleton height={525} />
-					:
+						:
 						<VerticleCardItem
 							id={item.id}
 							image={item.src}
@@ -395,12 +392,12 @@ class SearchResult extends React.Component {
 			)
 		})
 
-		if(isFilterOpen === true){
+		if (isFilterOpen === true) {
 			document.getElementsByTagName("body")[0].style = "overflow:hidden !important";
 		} else {
 			document.getElementsByTagName("body")[0].style = "overflow:auto";
 		}
-		return(
+		return (
 			<React.Fragment>
 				<Menu
 					navitems={menus}
@@ -437,14 +434,14 @@ class SearchResult extends React.Component {
 											</div>
 										</div>
 									</div>
-									
+
 									<div className="row">
 										{
 											this.state.loadingPagination ?
 												<React.Fragment>
 													<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
 												</React.Fragment>
-											: ""
+												: ""
 										}
 										{result}
 									</div>
