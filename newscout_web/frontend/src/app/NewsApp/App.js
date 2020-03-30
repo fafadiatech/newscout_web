@@ -223,26 +223,23 @@ class App extends React.Component {
 	getTrending = (data) => {
 		var trending_array = []
 		data.body.results.map((item, index) => {
-			if(index+1 <= 4){
-				var articles = item.articles;
-				for (var ele = 0; ele < articles.length; ele++) {
-					if(articles[ele].cover_image){
-						var article_dict = {}
-						article_dict['id'] = articles[ele].id
-						article_dict['header'] = articles[ele].title
-						article_dict['altText'] = articles[ele].title
-						article_dict['caption'] = articles[ele].blurb
-						article_dict['source'] = articles[ele].source
-						article_dict['category'] = articles[ele].category
-						article_dict['slug'] = "/news/article/"+articles[ele].slug
-						article_dict['source_url'] = articles[ele].source_url
-						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
-						trending_array.push(article_dict)
-					}
+			if(index <= 5){
+				var articles = item.articles[0];
+				if(articles.cover_image){
+					var article_dict = {}
+					article_dict['id'] = articles.id
+					article_dict['header'] = articles.title
+					article_dict['altText'] = articles.title
+					article_dict['caption'] = articles.blurb
+					article_dict['source'] = articles.source
+					article_dict['category'] = articles.category
+					article_dict['slug'] = "/news/article/"+articles.slug
+					article_dict['source_url'] = articles.source_url
+					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles.cover_image)
+					trending_array.push(article_dict)
 				}
 			}
 		})
-		console.log(trending_array)
 		this.setState({
 			trending: trending_array,
 			isLoading: false
@@ -465,7 +462,7 @@ class App extends React.Component {
 
 	render() {
 		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state
-		console.log(trending)
+		
 		var sector_update = sector_update.map((item, index) => {
 			return(
 				<div className="col-lg-4 mb-4">
@@ -496,24 +493,26 @@ class App extends React.Component {
 		})
 
 		var trendingSlider = trending.map((item, index) => {
-			return(	
-				<ImageOverlay
-					id={item.id} 
-					image={item.src}
-					title={item.header}
-					description={item.caption}
-					uploaded_by={item.source}
-					source_url={item.slug}
-					slug_url={item.slug}
-					category={item.category}
-					is_loggedin={is_loggedin}
-					toggle={this.toggle}
-					is_open={modal}
-					getArticleId={this.getArticleId}
-					bookmark_ids={bookmark_ids}
-					base_url={BASE_URL}
-				/>
-			)
+			if(index !== 5){
+				return(
+					<ImageOverlay
+						id={item.id} 
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.slug}
+						slug_url={item.slug}
+						category={item.category}
+						is_loggedin={is_loggedin}
+						toggle={this.toggle}
+						is_open={modal}
+						getArticleId={this.getArticleId}
+						bookmark_ids={bookmark_ids}
+						base_url={BASE_URL}
+					/>
+				)
+			}
 		})
 
 		var regional_update = regional_update.map((item, index) => {
