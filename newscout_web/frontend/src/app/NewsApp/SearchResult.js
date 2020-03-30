@@ -49,7 +49,10 @@ class SearchResult extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			cat_array: [],
+			source_array: [],
+			hashtags_array: [],
 		};
 	}
 
@@ -189,47 +192,44 @@ class SearchResult extends React.Component {
 		var source_filters = data.body.filters.source;
 		var hashtags_filters = data.body.filters.hash_tags;
 		var cat_filters = data.body.filters.category;
-		if (cat_filters && cat_array.length == 0) {
-			var cat_array = [];
+		if (cat_filters && this.state.cat_array.length === 0) {
 			cat_filters.map((item, index) => {
 				if (item.key !== "") {
 					var category_dict = {}
 					category_dict['label'] = item.key
 					category_dict['value'] = item.key
-					cat_array.push(category_dict)
+					this.state.cat_array.push(category_dict)
 				}
 			})
-			filters.push({ "catitems": "Category", "subitem": cat_array })
+			filters.push({ "catitems": "Category", "subitem": this.state.cat_array })
 			this.setState({
 				filters: filters
 			})
 		}
-		if (source_filters && source_array.length === 0) {
-			var source_array = [];
+		if (source_filters && this.state.source_array.length === 0) {
 			source_filters.map((item, index) => {
 				if (item.key !== "") {
 					var source_dict = {}
 					source_dict['label'] = item.key
 					source_dict['value'] = item.key
-					source_array.push(source_dict)
+					this.state.source_array.push(source_dict)
 				}
 			})
-			filters.push({ "catitems": "Source", "subitem": source_array })
+			filters.push({ "catitems": "Source", "subitem": this.state.source_array })
 			this.setState({
 				filters: filters
 			})
 		}
-		if (hashtags_filters && hashtags_array.length === 0) {
-			var hashtags_array = [];
+		if (hashtags_filters && this.state.hashtags_array.length === 0) {
 			hashtags_filters.map((item, index) => {
 				if (item.key !== "") {
 					var hashtags_dict = {}
 					hashtags_dict['label'] = item.key
 					hashtags_dict['value'] = item.key
-					hashtags_array.push(hashtags_dict)
+					this.state.hashtags_array.push(hashtags_dict)
 				}
 			})
-			filters.push({ "catitems": "Hash Tags", "subitem": hashtags_array })
+			filters.push({ "catitems": "Hash Tags", "subitem": this.state.hashtags_array })
 			this.setState({
 				filters: filters
 			})
