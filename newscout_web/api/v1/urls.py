@@ -8,7 +8,8 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
                     CategoryBulkUpdate, GetDailyDigestView,
                     ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet,
-                    LikeAPIView, CaptchaCommentApiView)
+                    LikeAPIView, CaptchaCommentApiView,
+                    AutoCompleteAPIView)
 from django.conf.urls import url, include
 
 from rest_framework.routers import DefaultRouter
@@ -75,7 +76,9 @@ urlpatterns = [
         name='article-create-update'),
     url(r'^article/status/$', ChangeArticleStatusView.as_view(),
         name='article-status'),
+    url(r'^suggest/$', AutoCompleteAPIView.as_view(),
+        name="suggest"),
     url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
     url(r'article-like/$', LikeAPIView.as_view(), name='article-like'),
-    url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha')
+    url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha'),
 ]

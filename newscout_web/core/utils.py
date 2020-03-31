@@ -55,13 +55,16 @@ def create_mapping_for_index(index, mapping):
 
 def ingest_to_elastic(docs, index, item_type, item_id):
     actions = []
+
     for i, item in enumerate(docs):
         action = {
             "_index": index,
-            "_type": item_type,
             "_id": md5(str(item[item_id]).encode()).hexdigest(),
             "_source": item
         }
+        if item_type:
+            action["_type"] = item_type
+
         actions.append(action)
     helpers.bulk(es, actions, chunk_size=100, request_timeout=20)
 
