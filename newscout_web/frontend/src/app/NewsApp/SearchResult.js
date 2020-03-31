@@ -419,6 +419,21 @@ class SearchResult extends React.Component {
 							<div className="container">
 								<div className="pt-50">
 									<div className="row">
+										<div className="col-lg-12">
+											<div className="row">
+												<div className="col-lg-12">
+													<ul className="list-inline related-queries">
+														<li className="list-inline-item"><strong>Related Queries:</strong></li>
+														<li className="list-inline-item"><a href="http://newscout.in/news/search/?q=Ambani">Ambani</a></li>
+														<li className="list-inline-item"><a href="http://newscout.in/news/search/?q=Money">Money</a></li>
+														<li className="list-inline-item"><a href="http://newscout.in/news/search/?q=PM">PM</a></li>
+														<li className="list-inline-item"><a href="http://newscout.in/news/search/?q=Corona">Corona</a></li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="row">
 										<div className="col-lg-12 mb-4">
 											<div className="clerfix">
 												<div className="float-right">
