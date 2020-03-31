@@ -532,8 +532,13 @@ nav.navbar {
 
 .authform label,
 .authtitle {
-  font-size: 14px;
   font-weight: 600;
+}
+
+.authform label,
+.authtitle,
+.related-queries li a {
+  font-size: 14px;
   cursor: pointer;
 }
 
