@@ -88,7 +88,7 @@ class SignUpAPIView(APIView):
     def post(self, request, *args, **kwargs):
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
-            user = user_serializer.save()
+            user_serializer.save()
             return Response(create_response(
                 {"Msg": "sign up successfully",
 
@@ -1392,3 +1392,41 @@ class CaptchaCommentApiView(APIView):
             to_json_response['new_captch_key'] = CaptchaStore.generate_key()
             to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
             return Response(create_response({"result": json.dumps(to_json_response)}))
+
+
+class AutoCompleteAPIView(generics.GenericAPIView):
+    permission_classes = (AllowAny,)
+
+    def format_response(self, response):
+        results = []
+        if response['hits']['hits']:
+            for result in response['hits']['hits']:
+                results.append(result["_source"])
+        return results
+
+    def get(self, request):
+        result_list = []
+        query = request.GET.get("q", "")
+        if query:
+            results = es.search(
+                index="auto_suggestions",
+                body={
+                    "suggest": {
+                        "results": {
+                            "text": query,
+                            "completion": {"field": "name_suggest"},
+                        }
+                    }
+                },
+            )
+            results = results['suggest']['results'][0]['options']
+            if results:
+                for result in results:
+                    result_list.append(
+                        {
+                            "value": result["_source"]["name_suggest"],
+                            "key": result["_source"]["desc"],
+                        }
+                    )
+                return Response(create_response({"result": result_list}))
+        return Response(create_response({"result": []}))
