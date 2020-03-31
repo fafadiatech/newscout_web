@@ -81,7 +81,7 @@ class IngestSuggestions(BaseCommand):
                 ingest_to_elastic(self.batch, index, index, 'id')
                 self.batch = []
                 print("Ingesting Batch...!!!")
-        for cat in Category.objects.all(name__isnull=False).iterator():
+        for cat in Category.objects.filter(name__isnull=False).iterator():
             as_dict = {}
             as_dict["desc"] = cat.name
             as_dict["name_suggest"] = cat.name
