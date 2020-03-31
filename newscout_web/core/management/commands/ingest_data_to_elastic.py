@@ -61,7 +61,7 @@ class IngestSuggestions(BaseCommand):
         print("Ingesting Data from Database\n")
         index = 'auto_suggestions'
         create_index(index, auto_suggestion_mapping)
-        for domain in Domain.objects.all().iterator():
+        for domain in Domain.objects.filter(domain_name__isnull=False).iterator():
             as_dict = {}
             as_dict["desc"] = domain.domain_name
             as_dict["name_suggest"] = domain.domain_name
@@ -71,7 +71,7 @@ class IngestSuggestions(BaseCommand):
                 ingest_to_elastic(self.batch, index, index, 'id')
                 self.batch = []
                 print("Ingesting Batch...!!!")
-        for source in Source.objects.all().iterator():
+        for source in Source.objects.filter(source__isnull=False).iterator():
             as_dict = {}
             as_dict["desc"] = source.name
             as_dict["name_suggest"] = source.name
@@ -81,7 +81,7 @@ class IngestSuggestions(BaseCommand):
                 ingest_to_elastic(self.batch, index, index, 'id')
                 self.batch = []
                 print("Ingesting Batch...!!!")
-        for cat in Category.objects.all().iterator():
+        for cat in Category.objects.all(name__isnull=False).iterator():
             as_dict = {}
             as_dict["desc"] = cat.name
             as_dict["name_suggest"] = cat.name
