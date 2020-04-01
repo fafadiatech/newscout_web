@@ -62,35 +62,38 @@ class IngestSuggestions(BaseCommand):
         index = 'auto_suggestions'
         create_index(index, auto_suggestion_mapping)
         for domain in Domain.objects.filter(domain_name__isnull=False).iterator():
-            as_dict = {}
-            as_dict["desc"] = domain.domain_name
-            as_dict["name_suggest"] = domain.domain_name
-            as_dict["id"] = md5(str(domain.domain_name).encode("utf-8")).hexdigest()
-            self.batch.append(as_dict)
-            if len(self.batch) == 999:
-                ingest_to_elastic(self.batch, index, index, 'id')
-                self.batch = []
-                print("Ingesting Batch...!!!")
+            if domain.domain_name:
+                as_dict = {}
+                as_dict["desc"] = domain.domain_name
+                as_dict["name_suggest"] = domain.domain_name
+                as_dict["id"] = md5(str(domain.domain_name).encode("utf-8")).hexdigest()
+                self.batch.append(as_dict)
+                if len(self.batch) == 999:
+                    ingest_to_elastic(self.batch, index, index, 'id')
+                    self.batch = []
+                    print("Ingesting Batch...!!!")
         for source in Source.objects.filter(name__isnull=False).iterator():
-            as_dict = {}
-            as_dict["desc"] = source.name
-            as_dict["name_suggest"] = source.name
-            as_dict["id"] = md5(str(source.name).encode("utf-8")).hexdigest()
-            self.batch.append(as_dict)
-            if len(self.batch) == 999:
-                ingest_to_elastic(self.batch, index, index, 'id')
-                self.batch = []
-                print("Ingesting Batch...!!!")
+            if source.name:
+                as_dict = {}
+                as_dict["desc"] = source.name
+                as_dict["name_suggest"] = source.name
+                as_dict["id"] = md5(str(source.name).encode("utf-8")).hexdigest()
+                self.batch.append(as_dict)
+                if len(self.batch) == 999:
+                    ingest_to_elastic(self.batch, index, index, 'id')
+                    self.batch = []
+                    print("Ingesting Batch...!!!")
         for cat in Category.objects.filter(name__isnull=False).iterator():
-            as_dict = {}
-            as_dict["desc"] = cat.name
-            as_dict["name_suggest"] = cat.name
-            as_dict["id"] = md5(str(cat.name).encode("utf-8")).hexdigest()
-            self.batch.append(as_dict)
-            if len(self.batch) == 999:
-                ingest_to_elastic(self.batch, index, index, 'id')
-                self.batch = []
-                print("Ingesting Batch...!!!")
+            if cat.name:
+                as_dict = {}
+                as_dict["desc"] = cat.name
+                as_dict["name_suggest"] = cat.name
+                as_dict["id"] = md5(str(cat.name).encode("utf-8")).hexdigest()
+                self.batch.append(as_dict)
+                if len(self.batch) == 999:
+                    ingest_to_elastic(self.batch, index, index, 'id')
+                    self.batch = []
+                    print("Ingesting Batch...!!!")
         ingest_to_elastic(self.batch, index, index, 'id')
         print("Ingesting Final Batch...!!!")
 
