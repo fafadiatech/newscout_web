@@ -73,7 +73,6 @@ class App extends React.Component {
 			ArticlesPerSessionAvgCount: 0,
 			InteractionsPerSessionAvgCount: 0,
 			isSideOpen: true,
-			isChecked: false
 		};
 	}
 
@@ -278,11 +277,6 @@ class App extends React.Component {
 		this.GetInteractionsPerAuthorData()
 		this.GetArticlesPerSessionData()
 		this.GetInteractionsPerSessionData()
-		if(cookies.get('isChecked')){
-			this.setState({ isChecked: true })
-		} else {
-			this.setState({ isChecked: false })
-		}
 		if(cookies.get('isSideOpen')){
 			this.setState({ isSideOpen: true })
 		} else {
@@ -303,7 +297,7 @@ class App extends React.Component {
 					domain="dashboard" />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} isChecked={isChecked} domain="dashboard" />
+						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="row pt-50">
 								<div className="col-md-4">
