@@ -1,6 +1,7 @@
 import React from 'react';
 import Datetime from 'react-datetime';
 import logo from '../NewsApp/logo.png';
+import Cookies from 'universal-cookie';
 import { getRequest, authHeaders } from '../../utils/Utils';
 import { Menu, SideBar, Footer } from 'newscout';
 import { Button, FormGroup, Label, Input } from 'reactstrap';
@@ -25,6 +26,8 @@ import config_data from '../NewsApp/config.json';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
+
+const cookies = new Cookies();
 
 class App extends React.Component {
 	constructor(props) {
@@ -70,6 +73,7 @@ class App extends React.Component {
 			ArticlesPerSessionAvgCount: 0,
 			InteractionsPerSessionAvgCount: 0,
 			isSideOpen: true,
+			isChecked: false
 		};
 	}
 
@@ -255,10 +259,14 @@ class App extends React.Component {
 		this.setState(state)
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	componentDidMount(){
@@ -270,16 +278,32 @@ class App extends React.Component {
 		this.GetInteractionsPerAuthorData()
 		this.GetArticlesPerSessionData()
 		this.GetInteractionsPerSessionData()
+		if(cookies.get('isChecked')){
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 	}
 
 	render(){
 		var { menus, isSideOpen } = this.state
 		return(
 			<div className="App">
-				<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
+				<Menu
+					logo={logo}
+					navitems={config_data.dashboardmenu}
+					isSlider={true}
+					isSideBarToogle={this.isSideBarToogle}
+					isSideOpen={isSideOpen}
+					domain="dashboard" />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} isChecked={isChecked} domain="dashboard" />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="row pt-50">
 								<div className="col-md-4">

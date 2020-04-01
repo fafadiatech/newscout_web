@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
+import Cookies from 'universal-cookie';
 import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
@@ -14,6 +15,8 @@ import config_data from '../NewsApp/config.json';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
+
+const cookies = new Cookies();
 
 class Advertisement extends React.Component {
 	constructor(props) {
@@ -33,6 +36,7 @@ class Advertisement extends React.Component {
 			q: "",
 			page: 0,
 			isSideOpen: true,
+			isChecked: false
 		};
 	}
 
@@ -273,10 +277,14 @@ class Advertisement extends React.Component {
 		}
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	componentDidMount() {
@@ -284,6 +292,11 @@ class Advertisement extends React.Component {
 		this.getAdvertisements()
 		var group_type_url = GROUP_GROUPTYPE_URL;
 		getRequest(group_type_url, this.getGroupAndGroupType, authHeaders)
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 	}
 
 	componentWillUnmount = () => {
@@ -412,7 +425,13 @@ class Advertisement extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="group">
-					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
+					<Menu
+						logo={logo}
+						navitems={config_data.dashboardmenu}
+						isSlider={true}
+						isSideBarToogle={this.isSideBarToogle}
+						isSideOpen={isSideOpen}
+						domain="dashboard" />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

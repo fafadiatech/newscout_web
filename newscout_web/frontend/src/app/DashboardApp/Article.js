@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import ReactDOM from 'react-dom';
+import Cookies from 'universal-cookie';
 import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
@@ -17,6 +18,8 @@ import config_data from '../NewsApp/config.json';
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
 
+const cookies = new Cookies();
+
 class Article extends React.Component {
 	constructor(props) {
 		super(props);
@@ -29,6 +32,7 @@ class Article extends React.Component {
 			q: "",
 			articleUpdateId: "",
 			isSideOpen: true,
+			isChecked: false
 		};
 	}
 
@@ -129,15 +133,24 @@ class Article extends React.Component {
         }, 3000);
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
-		this.getArticles()
+		this.getArticles();
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 	}
 
 	componentWillUnmount = () => {
@@ -197,7 +210,14 @@ class Article extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
-					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
+					<Menu
+						logo={logo}
+						navitems={config_data.dashboardmenu}
+						isSlider={true}
+						isSideBarToogle={this.isSideBarToogle}
+						isSideOpen={isSideOpen}
+						domain="dashboard"
+						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

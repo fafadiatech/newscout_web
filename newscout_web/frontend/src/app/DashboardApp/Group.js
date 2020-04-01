@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
+import Cookies from 'universal-cookie';
 import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
@@ -14,6 +15,8 @@ import config_data from '../NewsApp/config.json';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
+
+const cookies = new Cookies();
 
 class Group extends React.Component {
 	constructor(props) {
@@ -301,10 +304,14 @@ class Group extends React.Component {
 		}
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if(data === true){
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	componentDidMount() {
@@ -312,6 +319,11 @@ class Group extends React.Component {
 		this.getGroups()
 		var campaign_category_url = CATEGORIES_CAMPAIGN_URL;
 		getRequest(campaign_category_url, this.getCampaignCategories, authHeaders);
+		if(cookies.get('isSideOpen')){
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
 	}
 
 	componentWillUnmount = () => {
@@ -377,7 +389,13 @@ class Group extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="group">
-					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
+					<Menu
+						logo={logo}
+						navitems={config_data.dashboardmenu}
+						isSlider={true}
+						isSideBarToogle={this.isSideBarToogle}
+						isSideOpen={isSideOpen}
+						domain="dashboard" />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import Select from 'react-select';
 import Datetime from 'react-datetime';
 import logo from '../NewsApp/logo.png';
+import Cookies from 'universal-cookie';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
@@ -20,6 +21,8 @@ import config_data from '../NewsApp/config.json';
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
+
+const cookies = new Cookies();
 
 class ArticleForm extends React.Component {
 	constructor(props) {
@@ -47,6 +50,7 @@ class ArticleForm extends React.Component {
             cover_image_name: "",
             cover_image_id: "",
             isSideOpen: true,
+            isChecked: false
 		};
     }
 
@@ -245,10 +249,14 @@ class ArticleForm extends React.Component {
         }
     }
 
-    isSideOpen = (data) => {
-        this.setState({
-            isSideOpen: data
-        })
+    isSideBarToogle = (data) => {
+        if(data === true){
+            this.setState({ isSideOpen: true })
+            cookies.set('isSideOpen', true, { path: '/' });
+        } else {
+            this.setState({ isSideOpen: false })
+            cookies.remove('isSideOpen', { path: '/' });
+        }
     }
 
     componentDidMount() {
@@ -257,6 +265,11 @@ class ArticleForm extends React.Component {
         }
         this.getSources()
         this.getCategories()
+        if(cookies.get('isSideOpen')){
+            this.setState({ isSideOpen: true })
+        } else {
+            this.setState({ isSideOpen: false })
+        }
     }
 
 	render(){
@@ -273,7 +286,13 @@ class ArticleForm extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
-					<Menu logo={logo} navitems={config_data.dashboardmenu} isSlider={true} isSideOpen={this.isSideOpen} domain="dashboard" />
+					<Menu
+                        logo={logo}
+                        navitems={config_data.dashboardmenu}
+                        isSlider={true}
+                        isSideBarToogle={this.isSideBarToogle}
+                        isSideOpen={isSideOpen}
+                        domain="dashboard" />
                     <div className="container-fluid">
                         <div className="row">
                             <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
