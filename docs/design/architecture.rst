@@ -78,3 +78,19 @@ Following are some of the key models for NewScout
 2. AdGroup: `AdGroup` is collection of `Advertisement`
 3. AdType: This is used to distinguish between Text and Image
 4. Advertisement: This is actual unit that gets displayed/served
+
+Key Management Commands
+```````````````````````
+
+Most of the management commands reside in `core` application. Their location is 
+`core/management/commands`, following is brief of all management commands
+
+1. `ingest_data_to_elastic.py`: Used to update ES indexes
+1. `ingest_data.py`: Used to ingest metrics to `Prometheus` {monitoring tool} 
+1. `generate_trending.py`: Used to create cluster of news based on content
+1. `create_dummy_data.py`: Used to create demo data
+1. `generate_recommendations.py`: Logic for generating recommendations
+1. `generate_daily_digest.py`: Used to generate personalized results for users
+1. `update_missing_images.py`: Used to load default image based on category
+1. `remove_duplicate_articles.py`: Used to de-duplicate data
+1. `generate_daily_analytics.py`: Used to update analytics based on events tracker
