@@ -10,6 +10,8 @@ Analytics is one of the key features, in NewScout following Analytics are availa
 2. `Engagement`: How users interact with content is captured into this group of analytics
 3. `Monetization`: Advertising and Money related analytics fall into this category
 
+.. image:: images/analytics/01-dashboard-overview.png
+
 Event Tracking
 ``````````````
 
@@ -73,6 +75,16 @@ Engagement
     2. [TS] Social Media Performance
     3. [BAR] Platforms {Web, iOS and Android}
 2. [TABLE] Top Landing vs Exits Pages
+
+.. image:: images/analytics/02-articles-open.png
+
+.. image:: images/analytics/03-articles-by-platform.png
+
+.. image:: images/analytics/04-articles-per-category.png
+
+.. image:: images/analytics/05-interactions-per-category.png
+
+.. image:: images/analytics/06-avg-interactions-per-session.png
 
 Monetization
 `````````````
