@@ -4,7 +4,11 @@
 
 Django Power Web + Mobile App for News & Magazine Publishers
 
-## Feature Supported
+## Features
+
+<p align="center">
+    <img src="./docs/_static/images/pitch/1.png" / >  
+</p>
 
 1. Web Application
    1. Mobile Responsive
