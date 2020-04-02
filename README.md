@@ -1,5 +1,3 @@
-# NewScout
-
 <p align="center">
     <img src="./docs/_static/images/logo.png" width="297" height="110"/ >  
 </p>
