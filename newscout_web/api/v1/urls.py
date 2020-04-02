@@ -1,20 +1,31 @@
-from django.conf.urls import url
-
-from rest_framework.urlpatterns import format_suffix_patterns
-
 from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     LoginAPIView, LogoutAPIView, SourceListAPIView,
                     ArticleDetailAPIView, ArticleBookMarkAPIView,
                     ArticleRecommendationsAPIView, ForgotPasswordAPIView,
                     ChangePasswordAPIView, UserHashTagAPIView, BookmarkArticleAPIView,
-                    ArtilcleLikeAPIView, HashTagAPIView, ArticleSearchAPI, MenuAPIView,
+                    ArticleLikeAPIView, HashTagAPIView, ArticleSearchAPI, MenuAPIView,
                     DevicesAPIView, NotificationAPIView, SocialLoginView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
-                    CategoryBulkUpdate, GetAds, GetDailyDigestView, CampaignView,
-                    CampaignDeleteView, AdGroupView, AdGroupDeleteView, AdvertisementView,
-                    AdvertisementDeleteView, CampaignCategoriesListView, GroupTypeListView)
+                    CategoryBulkUpdate, GetDailyDigestView,
+                    ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet,
+                    LikeAPIView, CaptchaCommentApiView,
+                    AutoCompleteAPIView)
+from django.conf.urls import url, include
+
+from rest_framework.routers import DefaultRouter
+
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title="Newscout API Documentation")
+
+
+url_router = DefaultRouter()
+url_router.register(r'article/draft-image', DraftMediaUploadViewSet, basename='draft-media')
+url_router.register(r'comment', CommentViewSet, basename='comment')
 
 urlpatterns = [
+    url('', include(url_router.urls)),
+    url(r'^documentation/', schema_view),
     url(r'^trending/$', TrendingArticleAPIView.as_view(),
         name="trending"),
     url(r'^categories/bulk/$', CategoryBulkUpdate.as_view(),
@@ -23,7 +34,7 @@ urlpatterns = [
         name="category-list"),
     url(r'^articles/$', ArticleListAPIView.as_view(),
         name="articles-list"),
-    url(r'^articles/like-news-list/$', ArtilcleLikeAPIView.as_view(),
+    url(r'^articles/like-news-list/$', ArticleLikeAPIView.as_view(),
         name="users-articles-list"),
     url(r'^bookmark-articles/bookmark-news-list/$', BookmarkArticleAPIView.as_view(),
         name="user-bookmarks"),
@@ -36,7 +47,7 @@ urlpatterns = [
         name="vote-article"),
     url(r'^articles/bookmark/$', ArticleBookMarkAPIView.as_view(),
         name="bookmark-article"),
-    url(r'^articles/(?P<article_id>[-\d]+)/$', ArticleDetailAPIView.as_view(),
+    url(r'^articles/(?P<slug>[\w-]+)/$', ArticleDetailAPIView.as_view(),
         name="articles-list"),
     url(r'^articles/(?P<article_id>[-\d]+)/recommendations/$',
         ArticleRecommendationsAPIView.as_view(),
@@ -63,16 +74,11 @@ urlpatterns = [
         name='social-login'),
     url(r'^article/create-update/$', ArticleCreateUpdateView.as_view(),
         name='article-create-update'),
-    url(r'^get-ads/$', GetAds.as_view(),
-        name='get-ads'),
+    url(r'^article/status/$', ChangeArticleStatusView.as_view(),
+        name='article-status'),
+    url(r'^suggest/$', AutoCompleteAPIView.as_view(),
+        name="suggest"),
     url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
-    url(r'campaign-categories/$', CampaignCategoriesListView.as_view(), name='campign-categories-view'),
-    url(r'campaign/$', CampaignView.as_view(), name='campign-view'),
-    url(r'campaign/(?P<cid>[-\d]+)/$', CampaignDeleteView.as_view(), name='campign-view-delete'),
-    url(r'group-type/$', GroupTypeListView.as_view(), name='group-type-view'),
-    url(r'adgroup/$', AdGroupView.as_view(), name='adgroup-view'),
-    url(r'adgroup/(?P<cid>[-\d]+)/$', AdGroupDeleteView.as_view(), name='adgroup-view-delete'),
-    url(r'advertisement/$', AdvertisementView.as_view(), name='advertisement-view'),
-    url(r'advertisement/(?P<cid>[-\d]+)/$', AdvertisementDeleteView.as_view(), name='advertisement-view-delete')
+    url(r'article-like/$', LikeAPIView.as_view(), name='article-like'),
+    url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha'),
 ]
-urlpatterns = format_suffix_patterns(urlpatterns)

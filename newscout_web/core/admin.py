@@ -6,8 +6,8 @@ from django.contrib import admin
 from .models import (Category, BaseUserProfile,
                      Source, HashTag, Article, ArticleMedia,
                      ArticleRating, RelatedArticle, BookmarkArticle, CategoryAssociation,
-                    ScoutFrontier, ScoutedItem, TrendingArticle, Menu, SubMenu,
-                    CategoryDefaultImage, Domain, Campaign, AdGroup, AdType, Advertisement)
+                     ScoutFrontier, ScoutedItem, TrendingArticle, Menu, SubMenu,
+                     CategoryDefaultImage, Domain, Comment, ArticleLike)
 
 from core.utils import ingest_to_elastic, delete_from_elastic
 from api.v1.serializers import ArticleSerializer
@@ -26,10 +26,8 @@ admin.site.register(CategoryAssociation)
 admin.site.register(Menu)
 admin.site.register(CategoryDefaultImage)
 admin.site.register(Domain)
-admin.site.register(Campaign)
-admin.site.register(AdGroup)
-admin.site.register(AdType)
-admin.site.register(Advertisement)
+admin.site.register(Comment)
+admin.site.register(ArticleLike)
 
 
 class ArticleEditedByFilter(admin.SimpleListFilter):
@@ -49,7 +47,7 @@ class CategoryLookup(LookupChannel):
     model = Category
 
     def get_query(self, q, request):
-          return self.model.objects.filter(name__icontains=q).order_by('name')
+        return self.model.objects.filter(name__icontains=q).order_by('name')
 
 
 class ArticleAdmin(admin.ModelAdmin):
@@ -64,7 +62,7 @@ class ArticleAdmin(admin.ModelAdmin):
 
     def get_title(self, obj):
         return mark_safe("<a href='{0}' target='_blank'>{1}</a>".format(obj.source_url, obj.title))
-    get_title.admin_order_field  = 'title'
+    get_title.admin_order_field = 'title'
     get_title.short_description = 'Title'
 
     def get_tags(self, tags):
@@ -100,23 +98,30 @@ class ArticleAdmin(admin.ModelAdmin):
             json_data["hash_tags"] = tag_list
         ingest_to_elastic([json_data], "article", "article", "id")
 
-admin.site.register(Article,ArticleAdmin)
+
+admin.site.register(Article, ArticleAdmin)
 
 
 class BookmarkAdmin(admin.ModelAdmin):
-    list_display = ('id','user', 'article')
+    list_display = ('id', 'user', 'article')
+
+
 admin.site.register(BookmarkArticle, BookmarkAdmin)
 
 admin.site.register(ScoutFrontier)
 admin.site.register(ScoutedItem)
 admin.site.register(TrendingArticle)
 
+
 class BaseUserProfileAdmin(admin.ModelAdmin):
     exclude = ("passion",)
 
+
 admin.site.register(BaseUserProfile, BaseUserProfileAdmin)
+
 
 class SubMenuAdmin(admin.ModelAdmin):
     exclude = ('hash_tags',)
+
 
 admin.site.register(SubMenu, SubMenuAdmin)

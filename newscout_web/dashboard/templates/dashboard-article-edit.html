@@ -1,0 +1,16 @@
+{% extends 'dashboard-base.html' %}
+{% load static %}
+
+{% block title %}NewScout: Article Edit{% endblock title %}
+
+{% block content %}
+	<div id="root"></div>
+{% endblock content %}
+
+{% block js %}
+	<script type="text/javascript">
+        var ACTIVE_PAGE = '{{active_page|safe}}'
+        var ARTICLE_SLUG = '{{article_slug|safe}}'
+	</script>
+	<script src="{% static "js/react/dashboardArticleForm.js" %}"></script>
+{% endblock js %}

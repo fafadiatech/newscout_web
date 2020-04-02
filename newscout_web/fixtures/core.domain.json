@@ -1,1 +1,596 @@
-[{"model": "core.domain", "pk": 1, "fields": {"created_at": "2019-09-09T11:11:22.114Z", "modified_at": "2019-09-09T11:11:22.114Z", "domain_name": "NewsCout", "domain_id": "newscout"}}]
+[
+{
+    "model": "core.domain",
+    "pk": 54,
+    "fields": {
+        "created_at": "2020-01-04T21:23:29.501Z",
+        "modified_at": "2020-01-04T21:23:29.501Z",
+        "domain_name": "Economic and Political Weekly",
+        "domain_id": "epw",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 53,
+    "fields": {
+        "created_at": "2020-01-04T21:20:05.196Z",
+        "modified_at": "2020-01-04T21:20:05.196Z",
+        "domain_name": "Solar Quarter",
+        "domain_id": "solarquarter",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 52,
+    "fields": {
+        "created_at": "2020-01-04T20:46:08.306Z",
+        "modified_at": "2020-01-04T20:46:08.306Z",
+        "domain_name": "Licensing Corner",
+        "domain_id": "licensingcorner",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 51,
+    "fields": {
+        "created_at": "2020-01-04T20:21:06.551Z",
+        "modified_at": "2020-01-04T20:21:06.551Z",
+        "domain_name": "The Teenager Today",
+        "domain_id": "theteenagertoday",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 50,
+    "fields": {
+        "created_at": "2020-01-04T19:58:30.097Z",
+        "modified_at": "2020-01-04T19:58:30.097Z",
+        "domain_name": "Retail Jewellers India",
+        "domain_id": "rjindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 49,
+    "fields": {
+        "created_at": "2020-01-04T19:56:40.076Z",
+        "modified_at": "2020-01-04T19:56:40.076Z",
+        "domain_name": "Diabetes Health",
+        "domain_id": "diabeteshealth",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 48,
+    "fields": {
+        "created_at": "2020-01-04T19:08:04.017Z",
+        "modified_at": "2020-01-04T19:08:04.017Z",
+        "domain_name": "EPR Magazine",
+        "domain_id": "eprmag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 47,
+    "fields": {
+        "created_at": "2020-01-03T17:49:42.926Z",
+        "modified_at": "2020-01-03T17:49:42.926Z",
+        "domain_name": "Crains Detroit",
+        "domain_id": "crainsdetroit",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 46,
+    "fields": {
+        "created_at": "2020-01-03T15:22:42.633Z",
+        "modified_at": "2020-01-03T15:22:42.633Z",
+        "domain_name": "Charlotte Magazine",
+        "domain_id": "charlottemag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 45,
+    "fields": {
+        "created_at": "2020-01-03T14:59:46.330Z",
+        "modified_at": "2020-01-03T14:59:46.330Z",
+        "domain_name": "I 4 Business",
+        "domain_id": "i4business",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 44,
+    "fields": {
+        "created_at": "2020-01-03T14:54:34.337Z",
+        "modified_at": "2020-01-03T14:54:34.337Z",
+        "domain_name": "Tampa Bay Business and Wealth",
+        "domain_id": "tbbw",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 43,
+    "fields": {
+        "created_at": "2020-01-03T14:24:00.757Z",
+        "modified_at": "2020-01-03T14:24:00.757Z",
+        "domain_name": "Hawaii Business",
+        "domain_id": "hawaiibusiness",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 42,
+    "fields": {
+        "created_at": "2020-01-03T14:14:32.321Z",
+        "modified_at": "2020-01-03T14:14:32.321Z",
+        "domain_name": "Cuisine Oir Magazine",
+        "domain_id": "cuisinemag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 41,
+    "fields": {
+        "created_at": "2020-01-03T14:11:53.154Z",
+        "modified_at": "2020-01-03T14:11:53.154Z",
+        "domain_name": "Community Magazine",
+        "domain_id": "communitymag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 40,
+    "fields": {
+        "created_at": "2020-01-03T14:11:33.737Z",
+        "modified_at": "2020-01-03T14:11:33.737Z",
+        "domain_name": "Indian Business Journal",
+        "domain_id": "ibj",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 39,
+    "fields": {
+        "created_at": "2020-01-03T13:39:51.050Z",
+        "modified_at": "2020-01-03T13:39:51.050Z",
+        "domain_name": "Pets Plus Mag",
+        "domain_id": "petsplusmag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 38,
+    "fields": {
+        "created_at": "2020-01-03T13:16:44.713Z",
+        "modified_at": "2020-01-03T13:16:44.713Z",
+        "domain_name": "Gigabit Magazine",
+        "domain_id": "gigabitmag",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 37,
+    "fields": {
+        "created_at": "2020-01-03T06:42:10.984Z",
+        "modified_at": "2020-01-03T06:42:10.984Z",
+        "domain_name": "QSR Magazine",
+        "domain_id": "qsrmagazine",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 36,
+    "fields": {
+        "created_at": "2020-01-02T10:23:52.035Z",
+        "modified_at": "2020-01-02T10:23:52.035Z",
+        "domain_name": "Tube Filter",
+        "domain_id": "tubefilter",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 35,
+    "fields": {
+        "created_at": "2020-01-02T07:54:00.580Z",
+        "modified_at": "2020-01-02T07:54:00.580Z",
+        "domain_name": "Best Supply Chain Practices",
+        "domain_id": "bestsupplychainpractices",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 34,
+    "fields": {
+        "created_at": "2019-09-30T04:47:27.455Z",
+        "modified_at": "2019-09-30T04:47:27.455Z",
+        "domain_name": "Construction World",
+        "domain_id": "constructionworld",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 33,
+    "fields": {
+        "created_at": "2019-09-24T04:34:20.793Z",
+        "modified_at": "2019-09-24T04:34:20.793Z",
+        "domain_name": "Print Week",
+        "domain_id": "printweek",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 32,
+    "fields": {
+        "created_at": "2019-09-23T07:31:57.671Z",
+        "modified_at": "2019-09-23T07:31:57.671Z",
+        "domain_name": "Business Goa",
+        "domain_id": "businessgoa",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 31,
+    "fields": {
+        "created_at": "2019-09-20T11:00:20.131Z",
+        "modified_at": "2019-09-20T11:00:20.131Z",
+        "domain_name": "Maritime Gateway",
+        "domain_id": "maritimegateway",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 30,
+    "fields": {
+        "created_at": "2019-09-20T07:26:08.544Z",
+        "modified_at": "2019-09-20T07:26:08.544Z",
+        "domain_name": "Tyre Asia",
+        "domain_id": "tyreasia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 29,
+    "fields": {
+        "created_at": "2019-09-19T11:19:38.887Z",
+        "modified_at": "2019-09-19T11:19:38.887Z",
+        "domain_name": "Rubber Asia",
+        "domain_id": "rubberasia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 28,
+    "fields": {
+        "created_at": "2019-09-19T06:45:56.799Z",
+        "modified_at": "2019-09-19T06:45:56.799Z",
+        "domain_name": "Motor India Online",
+        "domain_id": "motorindiaonline",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 27,
+    "fields": {
+        "created_at": "2019-09-19T06:18:16.472Z",
+        "modified_at": "2019-09-19T06:18:16.472Z",
+        "domain_name": "SME Channels",
+        "domain_id": "smechannels",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 26,
+    "fields": {
+        "created_at": "2019-09-18T13:00:51.115Z",
+        "modified_at": "2019-09-18T13:00:51.115Z",
+        "domain_name": "Startup 360",
+        "domain_id": "startup360",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 25,
+    "fields": {
+        "created_at": "2019-09-18T12:21:28.982Z",
+        "modified_at": "2019-09-18T12:21:28.982Z",
+        "domain_name": "Banking Frontiers",
+        "domain_id": "bankingfrontiers",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 24,
+    "fields": {
+        "created_at": "2019-09-14T07:02:54.872Z",
+        "modified_at": "2019-09-14T07:17:34.695Z",
+        "domain_name": "Auto CarPro",
+        "domain_id": "autocarpro",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 23,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.375Z",
+        "modified_at": "2019-09-09T11:27:13.375Z",
+        "domain_name": "What HiFi",
+        "domain_id": "hifi",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 22,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.288Z",
+        "modified_at": "2019-09-09T11:27:13.288Z",
+        "domain_name": "Diamond World",
+        "domain_id": "diamond",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 21,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.202Z",
+        "modified_at": "2019-09-09T11:27:13.202Z",
+        "domain_name": "Transreporter",
+        "domain_id": "transreporter",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 20,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.117Z",
+        "modified_at": "2019-09-09T11:27:13.117Z",
+        "domain_name": "Bio Spectrum India",
+        "domain_id": "biosindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 19,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.033Z",
+        "modified_at": "2019-09-09T11:27:13.033Z",
+        "domain_name": "Food And Hospitality",
+        "domain_id": "foodandhospitality",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 18,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.947Z",
+        "modified_at": "2019-09-09T11:27:12.947Z",
+        "domain_name": "The Machinist",
+        "domain_id": "machine",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 17,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.862Z",
+        "modified_at": "2019-09-09T11:27:12.862Z",
+        "domain_name": "Auto Components India",
+        "domain_id": "acindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 16,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.777Z",
+        "modified_at": "2019-09-09T11:27:12.777Z",
+        "domain_name": "Construction Work Online",
+        "domain_id": "cwonline",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 15,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.691Z",
+        "modified_at": "2019-09-09T11:27:12.691Z",
+        "domain_name": "Marwar India",
+        "domain_id": "marwarindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 14,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.606Z",
+        "modified_at": "2019-09-09T11:27:12.606Z",
+        "domain_name": "Legal Era Online",
+        "domain_id": "legaleraonline",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 13,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.522Z",
+        "modified_at": "2019-09-09T11:27:12.522Z",
+        "domain_name": "Hotelier India",
+        "domain_id": "hotelierindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 12,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.437Z",
+        "modified_at": "2019-09-09T11:27:12.437Z",
+        "domain_name": "Manufacturing Today",
+        "domain_id": "mitoday",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 11,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.352Z",
+        "modified_at": "2019-09-09T11:27:12.352Z",
+        "domain_name": "The Smart Manager",
+        "domain_id": "thesmartmanager",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 10,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.268Z",
+        "modified_at": "2019-09-09T11:27:12.268Z",
+        "domain_name": "Data Quest India",
+        "domain_id": "dqindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 9,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.182Z",
+        "modified_at": "2019-09-09T11:27:12.182Z",
+        "domain_name": "India Retailing",
+        "domain_id": "indiaretail",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 8,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.096Z",
+        "modified_at": "2019-09-09T11:27:12.096Z",
+        "domain_name": "Steel 360",
+        "domain_id": "steel360",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 7,
+    "fields": {
+        "created_at": "2019-09-09T11:27:12.010Z",
+        "modified_at": "2019-09-09T11:27:12.010Z",
+        "domain_name": "Fortune India",
+        "domain_id": "fortuneindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 6,
+    "fields": {
+        "created_at": "2019-09-09T11:27:11.877Z",
+        "modified_at": "2019-09-09T11:27:11.877Z",
+        "domain_name": "Analytics India Magazine",
+        "domain_id": "aim",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 5,
+    "fields": {
+        "created_at": "2019-09-09T11:27:11.790Z",
+        "modified_at": "2019-09-09T11:27:11.790Z",
+        "domain_name": "Indian Economy and Market",
+        "domain_id": "ieam",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 4,
+    "fields": {
+        "created_at": "2019-09-09T11:27:11.700Z",
+        "modified_at": "2019-09-09T11:27:11.700Z",
+        "domain_name": "Business World",
+        "domain_id": "businessworld",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 3,
+    "fields": {
+        "created_at": "2019-07-31T10:32:45.059Z",
+        "modified_at": "2019-09-09T11:27:11.582Z",
+        "domain_name": "CFO-USA",
+        "domain_id": "cfousa",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 2,
+    "fields": {
+        "created_at": "2019-09-09T11:27:13.458Z",
+        "modified_at": "2019-09-09T11:27:13.458Z",
+        "domain_name": "CFO-India",
+        "domain_id": "cfoindia",
+        "default_image": "static/images/domain/default.png"
+    }
+},
+{
+    "model": "core.domain",
+    "pk": 1,
+    "fields": {
+        "created_at": "2019-09-09T11:11:22.114Z",
+        "modified_at": "2019-09-09T11:11:22.114Z",
+        "domain_name": "NewsCout",
+        "domain_id": "newscout",
+        "default_image": "static/images/domain/default.png"
+    }
+}
+]

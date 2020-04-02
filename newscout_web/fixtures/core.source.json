@@ -1,1 +1,1028 @@
-[{"model": "core.source", "pk": 7, "fields": {"name": "theguardian.com", "url": null, "active": false}}, {"model": "core.source", "pk": 4, "fields": {"name": "fastcompany.com", "url": null, "active": false}}, {"model": "core.source", "pk": 16, "fields": {"name": "washingtontimes.com", "url": null, "active": false}}, {"model": "core.source", "pk": 50, "fields": {"name": "financialexpress.com", "url": null, "active": false}}, {"model": "core.source", "pk": 47, "fields": {"name": "business-standard.com", "url": null, "active": false}}, {"model": "core.source", "pk": 60, "fields": {"name": "straitstimes.com", "url": null, "active": false}}, {"model": "core.source", "pk": 54, "fields": {"name": "newindianexpress.com", "url": null, "active": false}}, {"model": "core.source", "pk": 49, "fields": {"name": "livemint.com", "url": null, "active": false}}, {"model": "core.source", "pk": 24, "fields": {"name": "foxnews.com", "url": null, "active": false}}, {"model": "core.source", "pk": 59, "fields": {"name": "businesstimes.com.sg", "url": null, "active": false}}, {"model": "core.source", "pk": 52, "fields": {"name": "thehindubusinessline.com", "url": null, "active": false}}, {"model": "core.source", "pk": 5, "fields": {"name": "nytimes.com", "url": null, "active": false}}, {"model": "core.source", "pk": 8, "fields": {"name": "bbc.com", "url": null, "active": false}}, {"model": "core.source", "pk": 55, "fields": {"name": "washingtonpost.com", "url": null, "active": false}}, {"model": "core.source", "pk": 48, "fields": {"name": "economictimes.indiatimes.com", "url": null, "active": false}}, {"model": "core.source", "pk": 32, "fields": {"name": "nypost.com", "url": null, "active": false}}, {"model": "core.source", "pk": 3, "fields": {"name": "techcrunch.com", "url": null, "active": false}}, {"model": "core.source", "pk": 43, "fields": {"name": "zerohedge.com", "url": "https://www.zerohedge.com", "active": false}}, {"model": "core.source", "pk": 41, "fields": {"name": "huffingtonpost.in", "url": null, "active": false}}, {"model": "core.source", "pk": 51, "fields": {"name": "huffpost.com", "url": null, "active": false}}, {"model": "core.source", "pk": 6, "fields": {"name": "theregister.co.uk", "url": null, "active": false}}, {"model": "core.source", "pk": 56, "fields": {"name": "moneycontrol.com", "url": null, "active": false}}, {"model": "core.source", "pk": 10, "fields": {"name": "chicagotribune.com", "url": null, "active": false}}, {"model": "core.source", "pk": 12, "fields": {"name": "npr.org", "url": null, "active": false}}, {"model": "core.source", "pk": 28, "fields": {"name": "cbsnews.com", "url": null, "active": false}}, {"model": "core.source", "pk": 23, "fields": {"name": "breitbart.com", "url": null, "active": false}}, {"model": "core.source", "pk": 15, "fields": {"name": "observer.com", "url": null, "active": false}}, {"model": "core.source", "pk": 13, "fields": {"name": "usatoday.com", "url": null, "active": false}}, {"model": "core.source", "pk": 31, "fields": {"name": "us.cnn.com", "url": null, "active": false}}, {"model": "core.source", "pk": 20, "fields": {"name": "newsweek.com", "url": null, "active": false}}, {"model": "core.source", "pk": 17, "fields": {"name": "seattletimes.com", "url": null, "active": false}}, {"model": "core.source", "pk": 18, "fields": {"name": "politico.com", "url": null, "active": false}}, {"model": "core.source", "pk": 33, "fields": {"name": "nbcnews.com", "url": null, "active": false}}, {"model": "core.source", "pk": 11, "fields": {"name": "nydailynews.com", "url": null, "active": false}}, {"model": "core.source", "pk": 35, "fields": {"name": "boston.com", "url": null, "active": false}}, {"model": "core.source", "pk": 25, "fields": {"name": "latimes.com", "url": null, "active": false}}, {"model": "core.source", "pk": 21, "fields": {"name": "reuters.com", "url": null, "active": false}}, {"model": "core.source", "pk": 27, "fields": {"name": "mercurynews.com", "url": null, "active": false}}, {"model": "core.source", "pk": 29, "fields": {"name": "abcnews.go.com", "url": null, "active": false}}, {"model": "core.source", "pk": 53, "fields": {"name": "japantimes.co.jp", "url": null, "active": false}}, {"model": "core.source", "pk": 14, "fields": {"name": "stltoday.com", "url": null, "active": false}}, {"model": "core.source", "pk": 38, "fields": {"name": "tampa.cbslocal.com", "url": null, "active": false}}, {"model": "core.source", "pk": 19, "fields": {"name": "sanfrancisco.cbslocal.com", "url": null, "active": false}}, {"model": "core.source", "pk": 37, "fields": {"name": "losangeles.cbslocal.com", "url": null, "active": false}}, {"model": "core.source", "pk": 30, "fields": {"name": "dfw.cbslocal.com", "url": null, "active": false}}, {"model": "core.source", "pk": 26, "fields": {"name": "denverpost.com", "url": null, "active": false}}, {"model": "core.source", "pk": 1, "fields": {"name": "theverge.com", "url": null, "active": false}}, {"model": "core.source", "pk": 61, "fields": {"name": "industryweek.com", "url": null, "active": false}}, {"model": "core.source", "pk": 62, "fields": {"name": "manufacturingglobal.com", "url": null, "active": false}}, {"model": "core.source", "pk": 58, "fields": {"name": "coindesk.com", "url": null, "active": false}}, {"model": "core.source", "pk": 57, "fields": {"name": "cointelegraph.com", "url": null, "active": false}}]
+[
+{
+    "model": "core.source",
+    "pk": 114,
+    "fields": {
+        "name": "epw.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 113,
+    "fields": {
+        "name": "solarquarter.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 112,
+    "fields": {
+        "name": "licensingcorner.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 111,
+    "fields": {
+        "name": "theteenagertoday.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 110,
+    "fields": {
+        "name": "retailjewellerindia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 109,
+    "fields": {
+        "name": "diabeteshealth.co.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 108,
+    "fields": {
+        "name": "eprmagazine.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 107,
+    "fields": {
+        "name": "crainsdetroit.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 106,
+    "fields": {
+        "name": "charlottemagazine.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 105,
+    "fields": {
+        "name": "i4biz.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 104,
+    "fields": {
+        "name": "tbbwmag.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 103,
+    "fields": {
+        "name": "hawaiibusiness.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 102,
+    "fields": {
+        "name": "cuisinenoirmag.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 101,
+    "fields": {
+        "name": "communityrecmag.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 100,
+    "fields": {
+        "name": "indiabusinessjournalonline.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 99,
+    "fields": {
+        "name": "petsplusmag.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 98,
+    "fields": {
+        "name": "gigabitmagazine.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 97,
+    "fields": {
+        "name": "qsrmagazine.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 96,
+    "fields": {
+        "name": "tubefilter.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 95,
+    "fields": {
+        "name": "bestsupplychainpractices.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 94,
+    "fields": {
+        "name": "constructionworld.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 93,
+    "fields": {
+        "name": "printweek.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 92,
+    "fields": {
+        "name": "businessgoa.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 91,
+    "fields": {
+        "name": "maritimegateway.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 90,
+    "fields": {
+        "name": "tyre-asia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 89,
+    "fields": {
+        "name": "rubberasia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 88,
+    "fields": {
+        "name": "motorindiaonline.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 87,
+    "fields": {
+        "name": "smechannels.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 86,
+    "fields": {
+        "name": "startup360.news",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 85,
+    "fields": {
+        "name": "bankingfrontiers.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 84,
+    "fields": {
+        "name": "autocarpro.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 83,
+    "fields": {
+        "name": "whathifi.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 82,
+    "fields": {
+        "name": "diamondworld.net",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 81,
+    "fields": {
+        "name": "transreporter.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 80,
+    "fields": {
+        "name": "biospectrumindia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 79,
+    "fields": {
+        "name": "foodhospitality.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 78,
+    "fields": {
+        "name": "themachinist.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 77,
+    "fields": {
+        "name": "autocomponentsindia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 76,
+    "fields": {
+        "name": "constructionweekonline.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 75,
+    "fields": {
+        "name": "marwar.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 74,
+    "fields": {
+        "name": "legaleraonline.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 73,
+    "fields": {
+        "name": "hotelier.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 72,
+    "fields": {
+        "name": "manufacturingtodayindia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 71,
+    "fields": {
+        "name": "thesmartmanager.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 70,
+    "fields": {
+        "name": "dqindia.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 69,
+    "fields": {
+        "name": "indiaretailing.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 68,
+    "fields": {
+        "name": "steel-360.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 67,
+    "fields": {
+        "name": "analyticsindiamag.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 66,
+    "fields": {
+        "name": "indianeconomyandmarket.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 65,
+    "fields": {
+        "name": "businessworld.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 64,
+    "fields": {
+        "name": "cfo.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 63,
+    "fields": {
+        "name": "cfo-india.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 62,
+    "fields": {
+        "name": "manufacturingglobal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 61,
+    "fields": {
+        "name": "industryweek.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 60,
+    "fields": {
+        "name": "straitstimes.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 59,
+    "fields": {
+        "name": "businesstimes.com.sg",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 58,
+    "fields": {
+        "name": "coindesk.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 57,
+    "fields": {
+        "name": "cointelegraph.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 56,
+    "fields": {
+        "name": "moneycontrol.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 55,
+    "fields": {
+        "name": "washingtonpost.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 54,
+    "fields": {
+        "name": "newindianexpress.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 53,
+    "fields": {
+        "name": "japantimes.co.jp",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 52,
+    "fields": {
+        "name": "thehindubusinessline.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 51,
+    "fields": {
+        "name": "huffpost.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 50,
+    "fields": {
+        "name": "financialexpress.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 49,
+    "fields": {
+        "name": "livemint.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 48,
+    "fields": {
+        "name": "economictimes.indiatimes.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 47,
+    "fields": {
+        "name": "business-standard.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 46,
+    "fields": {
+        "name": "",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 45,
+    "fields": {
+        "name": "thenation.com",
+        "url": "https://www.thenation.com",
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 44,
+    "fields": {
+        "name": "scmp.com",
+        "url": "https://www.scmp.com",
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 43,
+    "fields": {
+        "name": "zerohedge.com",
+        "url": "https://www.zerohedge.com",
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 42,
+    "fields": {
+        "name": "torontolife.com",
+        "url": "https://torontolife.com",
+        "active": true
+    }
+},
+{
+    "model": "core.source",
+    "pk": 41,
+    "fields": {
+        "name": "huffingtonpost.in",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 40,
+    "fields": {
+        "name": "newsmax.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 39,
+    "fields": {
+        "name": "washington.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 38,
+    "fields": {
+        "name": "tampa.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 37,
+    "fields": {
+        "name": "losangeles.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 36,
+    "fields": {
+        "name": "miamiherald.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 35,
+    "fields": {
+        "name": "boston.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 34,
+    "fields": {
+        "name": "boston.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 33,
+    "fields": {
+        "name": "nbcnews.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 32,
+    "fields": {
+        "name": "nypost.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 31,
+    "fields": {
+        "name": "us.cnn.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 30,
+    "fields": {
+        "name": "dfw.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 29,
+    "fields": {
+        "name": "abcnews.go.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 28,
+    "fields": {
+        "name": "cbsnews.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 27,
+    "fields": {
+        "name": "mercurynews.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 26,
+    "fields": {
+        "name": "denverpost.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 25,
+    "fields": {
+        "name": "latimes.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 24,
+    "fields": {
+        "name": "foxnews.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 23,
+    "fields": {
+        "name": "breitbart.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 22,
+    "fields": {
+        "name": "newyork.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 21,
+    "fields": {
+        "name": "reuters.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 20,
+    "fields": {
+        "name": "newsweek.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 19,
+    "fields": {
+        "name": "sanfrancisco.cbslocal.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 18,
+    "fields": {
+        "name": "politico.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 17,
+    "fields": {
+        "name": "seattletimes.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 16,
+    "fields": {
+        "name": "washingtontimes.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 15,
+    "fields": {
+        "name": "observer.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 14,
+    "fields": {
+        "name": "stltoday.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 13,
+    "fields": {
+        "name": "usatoday.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 12,
+    "fields": {
+        "name": "npr.org",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 11,
+    "fields": {
+        "name": "nydailynews.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 10,
+    "fields": {
+        "name": "chicagotribune.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 9,
+    "fields": {
+        "name": "bloomberg.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 8,
+    "fields": {
+        "name": "bbc.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 7,
+    "fields": {
+        "name": "theguardian.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 6,
+    "fields": {
+        "name": "theregister.co.uk",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 5,
+    "fields": {
+        "name": "nytimes.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 4,
+    "fields": {
+        "name": "fastcompany.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 3,
+    "fields": {
+        "name": "techcrunch.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 2,
+    "fields": {
+        "name": "edition.cnn.com",
+        "url": null,
+        "active": false
+    }
+},
+{
+    "model": "core.source",
+    "pk": 1,
+    "fields": {
+        "name": "theverge.com",
+        "url": null,
+        "active": false
+    }
+}
+]

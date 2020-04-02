@@ -7,6 +7,7 @@ from django.db import models
 from django.core.validators import URLValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class NewsSiteBaseModel(models.Model):
@@ -22,6 +23,9 @@ class NewsSiteBaseModel(models.Model):
 class Domain(NewsSiteBaseModel):
     domain_name = models.CharField(max_length=255, blank=True, null=True)
     domain_id = models.CharField(max_length=255, blank=True, null=True)
+    default_image = models.ImageField(
+        upload_to="static/images/domain/",
+        default="static/images/domain/default.png")
 
     class Meta:
         verbose_name_plural = "Domain"
@@ -101,6 +105,9 @@ class HashTag(models.Model):
 
 class BaseUserProfile(AbstractUser):
     passion = models.ManyToManyField(HashTag, blank=True)
+    is_editor = models.BooleanField(default=False)
+    domain = models.ForeignKey(
+        Domain, blank=True, null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "%s > %s" % (self.email, self.passion.all())
@@ -140,9 +147,19 @@ class Article(NewsSiteBaseModel):
     edited_on = models.DateTimeField(auto_now=True)
     indexed_on = models.DateTimeField(default=timezone.now)
     spam = models.BooleanField(default=False)
+    article_format = models.CharField(max_length=100, blank=True, null=True)
+    author = models.ForeignKey(
+        BaseUserProfile, blank=True, null=True, on_delete=models.CASCADE, related_name="author")
+    slug = models.SlugField(max_length=250, allow_unicode=True, blank=True, null=True)
 
     def __unicode__(self):
-        return '{} - {} - {} - {} -{}\n'.format(self.id,self.title, self.published_on, self.source, self.hash_tags)
+        return '{} - {} - {} - {} -{}\n'.format(self.id, self.title, self.published_on, self.source, self.hash_tags)
+
+    def save(self, *args, **kwargs):
+        super(Article, self).save(*args, **kwargs)
+        if not self.slug:
+            self.slug = "{0}-{1}".format(slugify(self.title), self.pk)
+            self.save()
 
 
 class ArticleMedia(NewsSiteBaseModel):
@@ -178,7 +195,7 @@ class RelatedArticle(NewsSiteBaseModel):
 # or a Personalized one based on ArticleRating
 
 
-class ArtilcleLike(NewsSiteBaseModel):
+class ArticleLike(NewsSiteBaseModel):
     user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     is_like = models.PositiveSmallIntegerField(default=2)
@@ -198,6 +215,7 @@ class BookmarkArticle(NewsSiteBaseModel):
 class SubMenu(models.Model):
     name = models.ForeignKey(Category, on_delete=models.CASCADE)
     hash_tags = models.ManyToManyField(HashTag)
+    icon = models.ImageField(upload_to="static/icons/", blank=True, null=True)
 
     def __unicode__(self):
         return self.name.name
@@ -211,6 +229,7 @@ class Menu(models.Model):
         Domain, blank=True, null=True, on_delete=models.CASCADE)
     name = models.ForeignKey(Category, on_delete=models.CASCADE)
     submenu = models.ManyToManyField(SubMenu)
+    icon = models.ImageField(upload_to="static/icons/", blank=True, null=True)
 
     def __unicode__(self):
         return self.name.name
@@ -232,11 +251,12 @@ class Devices(models.Model):
 class Notification(models.Model):
     breaking_news = models.BooleanField(default=False)
     daily_edition = models.BooleanField(default=False)
-    personalized  = models.BooleanField(default=False)
+    personalized = models.BooleanField(default=False)
     device = models.ForeignKey(Devices, on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return "breaking_news={}, daily_edition={}, personalized={}".format(self.breaking_news, self.daily_edition, self.personalized)
+        return "breaking_news={}, daily_edition={}, personalized={}".format(
+            self.breaking_news, self.daily_edition, self.personalized)
 
 
 class SocialAccount(models.Model):
@@ -257,6 +277,7 @@ class SocialAccount(models.Model):
 
 class Feed:
     pass
+
 
 class ScoutFrontier(models.Model):
     """
@@ -302,66 +323,32 @@ class TrendingArticle(NewsSiteBaseModel):
         return self.articles.first().title
 
 
-class Campaign(NewsSiteBaseModel):
-    """
-    this model is used to store advertisement campaign
-    """
-    name = models.CharField(max_length=160)
-    is_active = models.BooleanField(default=True)
-    daily_budget = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=8)
-    max_bid = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=8)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-
-    def save(self, *args, **kwargs):
-        if not self.is_active:
-            groups = AdGroup.objects.filter(campaign=self)
-            groups.update(is_active=False)
-        super(Campaign, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-
-class AdGroup(NewsSiteBaseModel):
-    category = models.ManyToManyField(Category)
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
-    is_active = models.BooleanField(default=True)
-
-    def save(self, *args, **kwargs):
-        if not self.is_active:
-            ads = Advertisement.objects.filter(addgroup=self)
-            ads.update(is_active=False)
-        super(AdGroup, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.campaign.name
-
-
-class AdType(NewsSiteBaseModel):
-    type = models.CharField(max_length=100)
-
-    def __unicode__(self):
-        return self.type
-
-class Advertisement(NewsSiteBaseModel):
-    adgroup = models.ForeignKey(AdGroup, on_delete=models.CASCADE)
-    ad_type = models.ForeignKey(AdType, on_delete=models.CASCADE)
-    ad_text = models.CharField(max_length=160)
-    ad_url = models.URLField()
-    media = models.ImageField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    impsn_limit = models.IntegerField(default=0)
-    delivered = models.IntegerField(default=0)
-    click_count = models.IntegerField(default=0)
-
-    def __unicode__(self):
-        return "{0} - {1} - {2}".format(self.addgroup.campaign.name, self.ad_type.type, self.is_active)
-
-
 class DailyDigest(NewsSiteBaseModel):
-    device = models.ForeignKey(Devices, on_delete=models.CASCADE)
+    device = models.ForeignKey(Devices, blank=True, null=True, on_delete=models.CASCADE)
+    domain = models.ForeignKey(Domain, blank=True, null=True, on_delete=models.CASCADE)
     articles = models.ManyToManyField(Article)
 
     def __unicode__(self):
         return self.device
+
+
+class DraftMedia(NewsSiteBaseModel):
+    """
+    this model is used to store draft article images
+    """
+    image = models.ImageField(upload_to="static/images/article-media/")
+
+    def __unicode__(self):
+        return self.image
+
+
+class Comment(NewsSiteBaseModel):
+    article = models.ForeignKey(
+        Article, on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=250)
+    reply = models.ForeignKey("Comment", null=True, blank=True, on_delete=models.CASCADE, related_name="replies")
+
+    def __str__(self):
+        return self.comment

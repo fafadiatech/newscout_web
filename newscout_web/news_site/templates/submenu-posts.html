@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NewScout - {{category}} - {{sub_category}}{% endblock title %}
+
+{% block content %}
+	<div id="submenu-posts"></div>
+{% endblock content %}
+
+{% block js %}
+	<script type="text/javascript">
+		var CATEGORY = '{{category|safe}}'
+		var SUBCATEGORY = '{{sub_category|safe}}'
+		var DOMAIN = '{{domain|safe}}'
+	</script>
+	<script src="{% static "js/react/newsSubmenuPosts.js" %}"></script>
+{% endblock js %}

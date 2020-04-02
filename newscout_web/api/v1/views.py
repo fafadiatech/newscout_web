@@ -3,10 +3,9 @@ from __future__ import unicode_literals
 from django.http import Http404
 
 from core.models import (Category, Article, Source, BaseUserProfile,
-                              BookmarkArticle, ArtilcleLike, HashTag, Menu, Notification, Devices,
-                              SocialAccount, Category, CategoryAssociation,
-                              TrendingArticle, Domain, Advertisement, DailyDigest,
-                              Campaign, AdGroup, AdType)
+                         BookmarkArticle, ArticleLike, HashTag, Menu, Notification, Devices,
+                         SocialAccount, Category, CategoryAssociation,
+                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
 
 from rest_framework.authtoken.models import Token
 
@@ -14,24 +13,21 @@ from rest_framework.views import APIView
 
 from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
-                          BookmarkArticleSerializer, ArtilcleLikeSerializer, HashTagSerializer,
+                          BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
-                          ArticleCreateUpdateSerializer, AdvertisementSerializer,
-                          CampaignSerializer, AdGroupSerializer, AdSerializer,
-                          AdCreateSerializer, GetAdGroupSerializer, AdTypeSerializer, GetAdSerializer)
+                          ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
+                          CommentListSerializer)
 
 from rest_framework.response import Response
-from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
 from newscout_web.constants import SOCIAL_AUTH_PROVIDERS
 from django.db.models import Q
 from rest_framework.exceptions import APIException
 from collections import OrderedDict
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.pagination import CursorPagination
 from rest_framework.generics import ListAPIView
-from django.views.generic.base import RedirectView
 from rest_framework.parsers import JSONParser
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
@@ -46,11 +42,17 @@ from rest_framework.utils.urls import replace_query_param
 from google.auth.transport import requests as grequests
 from google.oauth2 import id_token
 import facebook
-from .exception_handler import (create_error_response,TokenIDMissing, ProviderMissing,
-                                SocialAuthTokenException, CampaignNotFoundException,
-                                AdGroupNotFoundException, AdvertisementNotFoundException)
-import random
+from .exception_handler import (create_error_response, TokenIDMissing, ProviderMissing,
+                                SocialAuthTokenException)
 import logging
+import operator
+from functools import reduce
+import tweepy
+import json
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
+
+
 log = logging.getLogger(__name__)
 
 
@@ -86,7 +88,7 @@ class SignUpAPIView(APIView):
     def post(self, request, *args, **kwargs):
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
-            user = user_serializer.save()
+            user_serializer.save()
             return Response(create_response(
                 {"Msg": "sign up successfully",
 
@@ -117,22 +119,25 @@ class LoginAPIView(generics.GenericAPIView):
             return Response(res_data, status=403)
 
         user = BaseUserProfile.objects.filter(email=request.data["email"]).first()
-        device_name = request.data["device_name"]
-        device_id = request.data["device_id"]
-        device = Devices.objects.filter(user=user.id)
-        if device:
-            device.update(device_name=device_name, device_id=device_id)
-        else:
-            device, created = Devices.objects.get_or_create(device_name=device_name, device_id=device_id)
-            Devices.objects.filter(pk=device.pk).update(user=user)
-        notification = NotificationSerializer(Notification.objects.get_or_create(device=device), many=True)
+        device_name = request.data.get("device_name")
+        device_id = request.data.get("device_id")
+        if device_id and device_name:
+            device, _ = Devices.objects.get_or_create(user=user,
+                                                      device_name=device_name,
+                                                      device_id=device_id)
+            notification_obj, _ = Notification.objects.get_or_create(device=device)
+            notification = NotificationSerializer(notification_obj)
+
         user_serializer = BaseUserProfileSerializer(user)
         token, _ = Token.objects.get_or_create(user=user)
+
         data = user_serializer.data
         data["token"] = token.key
-        data["breaking_news"] = notification.data[0]['breaking_news']
-        data["daily_edition"] = notification.data[0]['daily_edition']
-        data["personalized"] = notification.data[0]['personalized']
+        if device_id and device_name:
+            data["breaking_news"] = notification.data['breaking_news']
+            data["daily_edition"] = notification.data['daily_edition']
+            data["personalized"] = notification.data['personalized']
+
         response_data = create_response({"user": data})
         return Response(response_data)
 
@@ -159,12 +164,12 @@ class UserHashTagAPIView(APIView):
         if user_tags:
             user.passion.clear()
             user.passion.add(*user_tags)
-            return Response(create_response({"Msg" : "Successfully saved tags"}))
-        return Response(create_error_response({"Msg" : "Invalid tags"}), status=400)
+            return Response(create_response({"Msg": "Successfully saved tags"}))
+        return Response(create_error_response({"Msg": "Invalid tags"}), status=400)
 
 
 class CategoryListAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None, *args, **kwargs):
         """
@@ -177,27 +182,31 @@ class CategoryListAPIView(APIView):
         """
         Save new category to database
         """
-        serializer = CategorySerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        if request.user.is_authenticated:
+            serializer = CategorySerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
 
     def put(self, request, format=None):
         """
         update category in database
         """
-        _id = request.data.get("id")
-        obj = Category.objects.get(id=_id)
-        serializer = CategorySerializer(obj, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        if request.user.is_authenticated:
+            _id = request.data.get("id")
+            category = Category.objects.get(id=_id)
+            serializer = CategorySerializer(category, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response(serializer.data))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
 
 
 class SourceListAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request, format=None, *args, **kwargs):
         """
@@ -230,11 +239,16 @@ class ArticleListAPIView(ListAPIView):
     ordering = ('-published_on',)
 
     def get_queryset(self):
-        q = self.request.GET.get("q","")
-        tag = self.request.GET.getlist("tag","")
-        category = self.request.GET.getlist("category","")
-        source = self.request.GET.getlist("source","")
+        q = self.request.GET.get("q", "")
+        tag = self.request.GET.getlist("tag", "")
+        category = self.request.GET.getlist("category", "")
+        source = self.request.GET.getlist("source", "")
         queryset = Article.objects.all()
+
+        if self.request.user.domain:
+            queryset = queryset.filter(domain=self.request.user.domain)
+        else:
+            queryset = Article.objects.none()
 
         if source:
             queryset = queryset.filter(source__name__in=source)
@@ -246,9 +260,12 @@ class ArticleListAPIView(ListAPIView):
             queryset = queryset.filter(hash_tags__name__in=tag)
 
         if q:
-            queryset = queryset.filter(Q(title__icontains=q) | Q(full_text__icontains=q))
+            q_list = q.split(" ")
+            condition_1 = reduce(operator.or_, [Q(title__icontains=s) for s in q_list])
+            condition_2 = reduce(operator.or_, [Q(full_text__icontains=s) for s in q_list])
+            queryset = queryset.filter(condition_1 | condition_2)
 
-        return queryset.distinct()
+        return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -260,41 +277,37 @@ class ArticleListAPIView(ListAPIView):
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
             else:
-                return Response(create_error_response({"Msg" : "News Doesn't Exist"}), status=400)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(create_response(serializer.data))
+                return Response(create_error_response({"Msg": "News Doesn't Exist"}), status=400)
 
 
 class ArticleDetailAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, format=None, *args, **kwargs):
-        article_id = self.kwargs.get("article_id", "")
+        slug = self.kwargs.get("slug", "")
 
         user = self.request.user
-        if article_id:
-            article = Article.objects.filter(id=article_id).first()
-            if article:
-                response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
-                if not user.is_anonymous:
-                    book_mark_article = BookmarkArticle.objects.filter(
-                        user=user, article=article).first()
-                    like_article = ArtilcleLike.objects.filter(
-                        user=user, article=article).first()
+        article = Article.objects.filter(slug=slug).first()
+        if article:
+            response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
+            if not user.is_anonymous:
+                book_mark_article = BookmarkArticle.objects.filter(
+                    user=user, article=article).first()
+                like_article = ArticleLike.objects.filter(
+                    user=user, article=article).first()
 
-                    if book_mark_article:
-                        response_data["isBookMark"] = True
-                    else:
-                        response_data["isBookMark"] = False
+                if book_mark_article:
+                    response_data["isBookMark"] = True
+                else:
+                    response_data["isBookMark"] = False
 
-                    if like_article:
-                        response_data["isLike"] = like_article.is_like
-                    else:
-                        response_data["isLike"] = 2
+                if like_article:
+                    response_data["isLike"] = like_article.is_like
+                else:
+                    response_data["isLike"] = 2
 
-                return Response(create_response({
-                    "article": response_data}))
+            return Response(create_response({
+                "article": response_data}))
         raise NoarticleFound
 
     def post(self, request, *args, **kwargs):
@@ -305,20 +318,20 @@ class ArticleDetailAPIView(APIView):
             article = Article.objects.filter(id=article_id).first()
             if article:
                 if is_like and int(is_like) <= 2:
-                    article_like, created = ArtilcleLike.objects.get_or_create(
+                    article_like, created = ArticleLike.objects.get_or_create(
                         user=user, article=article)
                     article_like.is_like = is_like
                     article_like.save()
-                    article_obj = ArtilcleLikeSerializer(article_like)
+                    serializer = ArticleLikeSerializer(article_like)
                     return Response(create_response({
-                        "Msg": "Article like status changed", "article": article_obj.data
+                        "Msg": "Article like status changed", "article": serializer.data
                     }))
                 else:
                     return Response(create_error_response({
                         "Msg": "Invalid Input"
                     }))
             else:
-                return Response(create_error_response({ "Msg": "News doesn't exist"}), status=400)
+                return Response(create_error_response({"Msg": "News doesn't exist"}), status=400)
         raise Http404
 
 
@@ -326,7 +339,10 @@ class ArticleBookMarkAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        article_id = self.request.POST.get("article_id", "")
+        if request.data:
+            article_id = request.data["article_id"]
+        else:
+            article_id = self.request.POST.get("article_id", "")
         user = self.request.user
         if article_id:
             article = Article.objects.filter(id=article_id).first()
@@ -364,10 +380,11 @@ class ArticleRecommendationsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         article_id = self.kwargs.get("article_id", "")
         if article_id:
-            results = es.search(index='recommendation',body={"query":{"match": {"id": int(article_id)}}})
+            results = es.search(index='recommendation', body={"query": {"match": {"id": int(article_id)}}})
             if results['hits']['hits']:
                 recommendation = results['hits']['hits'][0]['_source']['recommendation']
-                search_results = es.search(index='article',body={"query":{"terms": {"id": recommendation}},"size": 25})
+                search_results = es.search(index='article', body={
+                                           "query": {"terms": {"id": recommendation}}, "size": 25})
                 return Response(create_response({
                     "results": self.format_response(search_results)
                 }))
@@ -409,13 +426,13 @@ class ForgotPasswordAPIView(APIView):
             </html>"""
 
         msg = EmailMultiAlternatives(
-            email_subject, '', settings.EMAIL_HOST_USER, [email])
+            email_subject, '', settings.EMAIL_FROM, [email])
         ebody = email_body
         msg.attach_alternative(ebody, "text/html")
         msg.send(fail_silently=False)
 
     def post(self, request, *args, **kwargs):
-        email = self.request.POST.get("email", "")
+        email = request.data["email"]
         if email:
             user = BaseUserProfile.objects.filter(email=email)
             if user:
@@ -462,7 +479,7 @@ class ChangePasswordAPIView(APIView):
                 user.set_password(password)
                 user.save()
                 return Response(create_response({
-                    "Msg": "Password chnaged successfully"
+                    "Msg": "Password changed successfully"
                 }))
             else:
                 return Response(create_error_response({
@@ -486,16 +503,16 @@ class BookmarkArticleAPIView(APIView):
         return Response(create_response({"results": bookmark_list.data}))
 
 
-class ArtilcleLikeAPIView(APIView):
+class ArticleLikeAPIView(APIView):
     """
     This class is used to get user articles
     """
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        like_list = [0,1]
+        like_list = [0, 1]
         user = self.request.user
-        article_list = ArtilcleLikeSerializer(ArtilcleLike.objects.filter(user=user, is_like__in=like_list), many=True)
+        article_list = ArticleLikeSerializer(ArticleLike.objects.filter(user=user, is_like__in=like_list), many=True)
         return Response(create_response({"results": article_list.data}))
 
 
@@ -504,8 +521,8 @@ class HashTagAPIView(ListAPIView):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        weekly = self.request.GET.get("weekly","")
-        monthly = self.request.GET.get("monthly","")
+        weekly = self.request.GET.get("weekly", "")
+        monthly = self.request.GET.get("monthly", "")
         end = datetime.utcnow()
         pst = pytz.timezone('Asia/Kolkata')
         end = pst.localize(end)
@@ -517,7 +534,8 @@ class HashTagAPIView(ListAPIView):
         if weekly:
             weekly = int(weekly)
             start = end - timedelta(days=7*weekly)
-            hash_tags = articles.filter(published_on__range=(start,end)).values('hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = articles.filter(published_on__range=(start, end)).values(
+                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
                 hashtag['name'] = hashtag.pop('hash_tags__name')
             queryset = hash_tags
@@ -525,14 +543,16 @@ class HashTagAPIView(ListAPIView):
         if monthly:
             monthly = int(monthly)
             start = end - timedelta(days=30*monthly)
-            hash_tags = articles.filter(published_on__range=(start,end)).values('hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]  
+            hash_tags = articles.filter(published_on__range=(start, end)).values(
+                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
                 hashtag['name'] = hashtag.pop('hash_tags__name')
             queryset = hash_tags
 
         if not weekly and not monthly:
             start = end - timedelta(days=1)
-            hash_tags = articles.filter(published_on__range=(start,end)).values('hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = articles.filter(published_on__range=(start, end)).values(
+                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
                 hashtag['name'] = hashtag.pop('hash_tags__name')
             queryset = hash_tags
@@ -549,7 +569,7 @@ class HashTagAPIView(ListAPIView):
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
             else:
-                return Response(create_error_response({"Msg" : "No trending tags"}), status=400)
+                return Response(create_error_response({"Msg": "No trending tags"}), status=400)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(create_response(serializer.data))
@@ -566,16 +586,28 @@ class ArticleSearchAPI(APIView):
         filters = {}
         if response.hits.hits:
             for result in response.hits.hits:
-                results.append(result["_source"])
+                source = result["_source"]
+                if 'highlight' in result:
+                    if 'title' in result['highlight']:
+                        source['title'] = " ".join(result['highlight']['title'])
+                    if 'blurb' in result['highlight']:
+                        source['blurb'] = " ".join(result['highlight']['blurb'])
+                results.append(source)
 
             if response.aggregations.category.buckets:
-                filters["category"] = response.aggregations.category.buckets._l_
+                filters["category"] = sorted(
+                    response.aggregations.category.buckets._l_,
+                    key=operator.itemgetter("key"))
 
             if response.aggregations.source.buckets:
-                filters["source"] = response.aggregations.source.buckets._l_
+                filters["source"] = sorted(
+                    response.aggregations.source.buckets._l_,
+                    key=operator.itemgetter("key"))
 
             if response.aggregations.hash_tags.buckets:
-                filters["hash_tags"] = response.aggregations.hash_tags.buckets._l_
+                filters["hash_tags"] = sorted(
+                    response.aggregations.hash_tags.buckets._l_,
+                    key=operator.itemgetter("key"))
         return results, filters
 
     def get(self, request):
@@ -604,18 +636,21 @@ class ArticleSearchAPI(APIView):
 
         sr = Search(using=es, index="article")
 
+        # highlight title and blurb containing query
+        sr = sr.highlight("title", "blurb", fragment_size=20000)
+
         # generate elastic search query
-        must_query = {}
+        must_query = [{"wildcard": { "cover_image": "*"}}]
         should_query = []
 
         if query:
             query = query.lower()
-            must_query = {"multi_match": {"query": query,"fields": ["title", "blurb"]}}
+            must_query.append({"multi_match": {"query": query, "fields": ["title", "blurb"]}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
             for tag in tags:
-                sq = {"match_phrase": {"hash_tags" : tag}}
+                sq = {"match_phrase": {"hash_tags": tag}}
                 should_query.append(sq)
 
         if must_query:
@@ -631,9 +666,11 @@ class ArticleSearchAPI(APIView):
             sr = sr.filter("terms", domain=list(domain))
 
         if category:
-            cat_objs = Category.objects.filter(id__in=category)
+            cat_objs = Category.objects.filter(name__in=category)
             category = cat_objs.values_list("id", flat=True)
-            cat_assn_objs = CategoryAssociation.objects.filter(parent_cat__in=cat_objs).values_list("child_cat__id", flat=True)
+            cat_assn_objs = CategoryAssociation.objects.filter(
+                parent_cat__in=cat_objs).values_list(
+                "child_cat__id", flat=True)
             if cat_assn_objs:
                 new_category = set(list(cat_assn_objs) + list(category))
                 sr = sr.filter("terms", category_id=list(new_category))
@@ -643,24 +680,23 @@ class ArticleSearchAPI(APIView):
 
         if source:
             source = [s.lower() for s in source]
-            sr = sr.filter("terms", source=source)
+            sr = sr.filter("terms", source__keyword=source)
 
-        sr = sr.sort({"article_score" : {"order" : sort}})
-        sr = sr.sort({"published_on" : {"order" : sort}})
+        sr = sr.sort({"article_score": {"order": sort}})
+        sr = sr.sort({"published_on": {"order": sort}})
 
         # pagination
         start = (page - 1) * size
         end = start + size
         sr = sr[start:end]
 
-        #generate facets
+        # generate facets
         sr.aggs.bucket("category", "terms", field="category.keyword")
         sr.aggs.bucket("source", "terms", field="source.keyword")
         sr.aggs.bucket("hash_tags", "terms", field="hash_tags.keyword", size=50)
 
         # execute query
         response = sr.execute()
-
         results, filters = self.format_response(response)
         count = response["hits"]["total"]
         total_pages = math.ceil(count / size)
@@ -698,15 +734,15 @@ class MenuAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        domain = self.request.GET.get("domain")
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
         if not domain:
             return Response(create_error_response({"domain": ["Domain id is required"]}))
 
-        domain_obj = Domain.objects.filter(domain_id=domain).first()
-        if not domain_obj:
-            return Response(create_error_response({"domain": ["Domain id is required"]}))
-
-        menus = MenuSerializer(Menu.objects.filter(domain=domain_obj), many=True)
+        menus = MenuSerializer(Menu.objects.filter(domain=domain), many=True)
         menus_list = menus.data
         new_menulist = []
         for menu in menus_list:
@@ -714,14 +750,14 @@ class MenuAPIView(APIView):
             menu_dict['heading'] = menu
             new_menulist.append(menu_dict)
 
-        return Response(create_response({'results' : new_menulist}))
+        return Response(create_response({'results': new_menulist}))
 
 
 class DevicesAPIView(APIView):
     """
     this api will add device_id and device_name
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
@@ -767,10 +803,13 @@ class NotificationAPIView(APIView):
             if notification:
                 notification.update(breaking_news=breaking_news, daily_edition=daily_edition, personalized=personalized)
                 return Response(create_response({"Msg": "Notification updated successfully"}))
-            Notification.objects.create(breaking_news=breaking_news, daily_edition=daily_edition, personalized=personalized, device=device)
+            Notification.objects.create(breaking_news=breaking_news, daily_edition=daily_edition,
+                                        personalized=personalized, device=device)
             return Response(create_response({"Msg": "Notification created successfully"}))
         else:
-            return Response(create_error_response({"Msg": "device_id, device_name, breaking_news, daily_edition and personalized are required"}))
+            return Response(
+                create_error_response(
+                    {"Msg": "device_id, device_name, breaking_news, daily_edition and personalized are required"}))
 
     def get(self, request):
         device_id = request.GET.get("device_id")
@@ -824,7 +863,7 @@ class SocialLoginView(generics.GenericAPIView):
 
         return first_name, last_name
 
-    def create_user_profile(self, first_name, last_name, username, email,image_url, sid, provider):
+    def create_user_profile(self, first_name, last_name, username, email, image_url, sid, provider):
         """
         this method is used to create base user profile object for given
         social account
@@ -853,7 +892,8 @@ class SocialLoginView(generics.GenericAPIView):
         """
         graph = facebook.GraphAPI(access_token=token_id)
         try:
-            res_data = graph.get_object(id='me?fields=email,id,first_name,last_name,name,picture.width(150).height(150)')
+            res_data = graph.get_object(
+                id='me?fields=email,id,first_name,last_name,name,picture.width(150).height(150)')
             return res_data
         except Exception as e:
             log.debug("error in facebook fetch data: {0}".format(e))
@@ -987,38 +1027,163 @@ class TrendingArticleAPIView(APIView):
         """
         List all the trending articles
         """
-        source = TrendingArticleSerializer(TrendingArticle.objects.all(), many=True)
+        domain_id = self.request.GET.get("domain")
+        if not domain_id:
+            return Response(create_error_response({"domain": ["Domain id is required"]}))
+
+        domain = Domain.objects.filter(domain_id=domain_id).first()
+        if not domain:
+            return Response(create_error_response({"domain": ["Invalid domain name"]}))
+
+        source = TrendingArticleSerializer(TrendingArticle.objects.filter(domain=domain), many=True)
         return Response(create_response({"results": source.data}))
 
 
-class ArticleCreateUpdateView(APIView):
+class SocailMediaPublishing():
+    """
+    this class is to update news arrticles on social media
+    """
+
+    def twitter(self, data):
+        """
+        this function will tweet article title and its url in twitter
+        """
+        try:
+            auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+            auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
+            api = tweepy.API(auth)
+            api.update_status(data["title"] + "\n" + data["url"])
+        except Exception as e:
+            print("Error in twitter post: ", e)
+
+
+class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
     """
     Article create update view
     """
     permission_classes = (IsAuthenticated,)
 
+    def get_tags(self, tags):
+        """
+        this method will return tag name from tags objects
+        """
+        tag_list = []
+        for tag in tags:
+            tag_list.append(tag["name"])
+        return tag_list
+
+    def publish(self, obj):
+        serializer = ArticleSerializer(obj)
+        json_data = serializer.data
+        if json_data["hash_tags"]:
+            tag_list = self.get_tags(json_data["hash_tags"])
+            json_data["hash_tags"] = tag_list
+        ingest_to_elastic([json_data], "article", "article", "id")
+        tweet_data = {
+            "title": serializer.instance.title,
+            "url": serializer.instance.source_url,
+        }
+        self.twitter(tweet_data)
+
     def post(self, request):
-        serializer = ArticleCreateUpdateSerializer(data=request.data)
+        publish = request.data.get("publish")
+        # origin is used to join with cover image
+        # to generate proper image url
+        origin = request.META.get("HTTP_ORIGIN")
+        cover_image_id = request.data.get("cover_image_id")
+
+        if cover_image_id:
+            DraftMedia.objects.filter(id=cover_image_id).delete()
+
+        if not request.data.get("cover_image"):
+            request.data["cover_image"] = "/".join(
+                [origin, request.user.domain.default_image.url])
+        context = {"publish": publish, "user": request.user}
+        serializer = ArticleCreateUpdateSerializer(
+            data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
+            if publish:
+                self.publish(serializer.instance)
             return Response(create_response(serializer.data))
         return Response(create_error_response(serializer.errors), status=400)
 
     def put(self, request):
         _id = request.data.get("id")
-        obj = Article.objects.get(id=_id)
-        serializer = ArticleCreateUpdateSerializer(obj, data=request.data)
+        publish = request.data.get("publish")
+        # origin is used to join with cover image
+        # to generate proper image url
+        origin = request.META.get("HTTP_ORIGIN")
+        cover_image_id = request.data.get("cover_image_id")
+        if cover_image_id:
+            DraftMedia.objects.filter(id=cover_image_id).delete()
+
+        if not request.data.get("cover_image"):
+            request.data["cover_image"] = "/".join(
+                [origin, request.user.domain.default_image.url])
+        context = {"publish": publish, "user": request.user}
+        article = Article.objects.get(id=_id)
+        serializer = ArticleCreateUpdateSerializer(
+            article, data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
+            if publish:
+                self.publish(serializer.instance)
             return Response(create_response(serializer.data))
         return Response(create_error_response(serializer.errors), status=400)
+
+
+class ChangeArticleStatusView(APIView, SocailMediaPublishing):
+    """
+    this view is used to update status of given article activate or deactivate
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def get_tags(self, tags):
+        """
+        this method will return tag name from tags objects
+        """
+        tag_list = []
+        for tag in tags:
+            tag_list.append(tag["name"])
+        return tag_list
+
+    def publish(self, obj):
+        serializer = ArticleSerializer(obj)
+        json_data = serializer.data
+        if obj.active:
+            if json_data["hash_tags"]:
+                tag_list = self.get_tags(json_data["hash_tags"])
+                json_data["hash_tags"] = tag_list
+            ingest_to_elastic([json_data], "article", "article", "id")
+            tweet_data = {
+                "title": serializer.instance.title,
+                "url": serializer.instance.source_url,
+            }
+            self.twitter(tweet_data)
+        else:
+            delete_from_elastic([json_data], "article", "article", "id")
+
+    def post(self, request):
+        _id = request.data.get("id")
+        active_status = request.data.get("activate")
+        article = Article.objects.filter(id=_id).first()
+        if not article:
+            return Response(create_error_response({"error": "Article does not exists"}), status=400)
+        article.active = active_status
+        article.save()
+        self.publish(article)
+        return Response(create_response({
+            "id": article.id,
+            "active": article.active
+        }))
 
 
 class CategoryBulkUpdate(APIView):
     """
     update whole bunch of articles in one go
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
         """
@@ -1047,37 +1212,6 @@ class CategoryBulkUpdate(APIView):
         return Response({"ok": "cool"})
 
 
-class GetAds(APIView):
-    """
-    this api is used to get active ads
-    """
-    permission_classes = (AllowAny,)
-
-    def get(self, request):
-        ads = Advertisement.objects.filter(is_active=True)
-        ad = ads[random.randint(0, len(ads)-1)]
-        ad.delivered += 1
-        ad.save()
-        ad_serializer = AdvertisementSerializer(ad, context={"request": request})
-        return Response(create_response(ad_serializer.data))
-
-
-class AdRedirectView(RedirectView):
-    """
-    this view is used to redirect given add url
-    """
-
-    def get_redirect_url(self, *args, **kwargs):
-        aid = self.request.GET.get("aid")
-        ad_url = self.request.GET.get("url")
-        ad = Advertisement.objects.filter(id=aid).first()
-        if ad:
-            ad.click_count += 1
-            ad.save()
-            return ad_url
-        return Http404
-
-
 class GetDailyDigestView(ListAPIView):
     serializer_class = ArticleSerializer
     permission_classes = (AllowAny,)
@@ -1090,7 +1224,7 @@ class GetDailyDigestView(ListAPIView):
         return results
 
     def get_queryset(self):
-        device_id = self.request.GET.get("device_id","")
+        device_id = self.request.GET.get("device_id", "")
         queryset = Devices.objects.filter(device_id=device_id).first()
         if not queryset:
             return queryset
@@ -1107,8 +1241,8 @@ class GetDailyDigestView(ListAPIView):
         if not queryset:
             sr = Search(using=es, index="article")
             sort = "desc"
-            sr = sr.sort({"article_score" : {"order" : sort}})
-            sr = sr.sort({"published_on" : {"order" : sort}})
+            sr = sr.sort({"article_score": {"order": sort}})
+            sr = sr.sort({"published_on": {"order": sort}})
             sr = sr[0:20]
             response = sr.execute()
             results = self.format_response(response)
@@ -1118,206 +1252,181 @@ class GetDailyDigestView(ListAPIView):
         if serializer.data:
             return Response(create_response(serializer.data))
         else:
-            return Response(create_error_response({"Msg" : "Daily Digest Doesn't Exist"}), status=400)
+            return Response(create_error_response({"Msg": "Daily Digest Doesn't Exist"}), status=400)
 
 
-class CampaignCategoriesListView(APIView):
-    permission_classes = (AllowAny,)
-
-    def get(self, request, format=None, *args, **kwargs):
-        """
-        List all news category
-        """
-        categories = CategorySerializer(Category.objects.all(), many=True)
-        campaigns = CampaignSerializer(Campaign.objects.all(), many=True)
-        return Response(create_response({"categories": categories.data, "campaigns": campaigns.data}))
-
-
-class CampaignView(APIView):
+class DraftMediaUploadViewSet(viewsets.ViewSet):
     """
-    this view is used to create,update,list and delete Campaign's
+    this view is used to upload article images
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        """
-        get list of all campaigns
-        """
-        campaign_objs = Campaign.objects.all().order_by('-id')
-        serializer = CampaignSerializer(campaign_objs, many=True)
+    def create(self, request):
+        image_file = request.data.get("image")
+        if not image_file:
+            return Response(create_error_response({"error": "Image file is required."}))
+
+        draft_image = DraftMedia.objects.create(image=image_file)
+        serializer = DraftMediaSerializer(draft_image)
         return Response(create_response(serializer.data))
 
-    def post(self, request):
-        """
-        create new campaign
-        """
-        serializer = CampaignSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+    def update(self, request, pk):
+        image_file = request.data.get("image")
+        if not image_file:
+            return Response(create_error_response({"error": "Image file is required."}))
 
-    def put(self, request):
-        """
-        update existing campaign
-        """
-        _id = request.data.get("id")
-        obj = Campaign.objects.get(id=_id)
-        serializer = CampaignSerializer(obj, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        draft_image = DraftMedia.objects.get(id=pk)
+        if not draft_image:
+            return Http404
 
-
-class CampaignDeleteView(APIView):
-    """
-    this view is used to delete Campaign's
-    """
-    permission_classes = (AllowAny,)
-
-    def delete(self, request, cid):
-        """
-        delete existing campaign
-        """
-        obj = Campaign.objects.filter(id=cid).first()
-        if not obj:
-            raise CampaignNotFoundException()
-        obj.delete()
-        return Response(create_response({"Msg": "Campaign deleted successfully"}), status=200)
-
-
-class AdGroupView(APIView):
-    """
-    this view is used to create,update,list and delete AdGroup's
-    """
-    permission_classes = (AllowAny,)
-
-    def get(self, request):
-        """
-        get list of all adgroups
-        """
-        adgroup_objs = AdGroup.objects.all().order_by('-id')
-        serializer = GetAdGroupSerializer(adgroup_objs, many=True)
+        draft_image.image = image_file
+        draft_image.save()
+        serializer = DraftMediaSerializer(draft_image)
         return Response(create_response(serializer.data))
 
-    def post(self, request):
-        """
-        create new campaign
-        """
-        categories = request.data.pop("category", None)
-        serializer = AdGroupSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.save()
-            for cat in categories:
-                cat_obj = Category.objects.get(id=cat)
-                data.category.add(cat_obj)
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+    def destroy(self, request, pk):
+        draft_image = DraftMedia.objects.get(id=pk)
+        if not draft_image:
+            return Http404
 
-    def put(self, request):
-        """
-        update existing adGroup
-        """
-        _id = request.data.get("id")
-        categories = request.data.get("category")
-        obj = AdGroup.objects.get(id=_id)
-        serializer = AdGroupSerializer(obj, data=request.data)
-        if serializer.is_valid():
-            data = serializer.save()
-            data.category.clear()
-            for cat in categories:
-                cat_obj = Category.objects.get(id=cat)
-                data.category.add(cat_obj)
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+        draft_image.delete()
+        return Response(create_response({"Msg": "Image deleted successfully"}))
 
 
-class AdGroupDeleteView(APIView):
-    """
-    this view is used to delete AdGroup's
-    """
-    permission_classes = (AllowAny,)
+class CommentViewSet(viewsets.ViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PostpageNumberPagination
+    ordering = "-created_at"
 
-    def delete(self, request, cid):
+    def get_permissions(self):
         """
-        delete existing AdGroup
+        Instantiates and returns the list of permissions that this view requires.
         """
-        obj = AdGroup.objects.filter(id=cid).first()
-        if not obj:
-            raise AdGroupNotFoundException()
-        obj.delete()
-        return Response(create_response({"Msg": "AdGroup deleted successfully"}), status=200)
+        if self.action == 'list':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return [permission() for permission in self.permission_classes]
 
+    def create(self, request):
+        captcha_response_key = 0
+        captcha_key = request.data.get("captcha_key")
+        captcha_value = request.data.get("captcha_value")
 
-class GroupTypeListView(APIView):
-    permission_classes = (AllowAny,)
+        captcha = CaptchaStore.objects.filter(hashkey=captcha_key).first()
+        if not captcha:
+            return Response(create_error_response({"error": "Invalid Captcha"}))
 
-    def get(self, request, format=None, *args, **kwargs):
-        """
-        List all news category
-        """
-        groups = GetAdGroupSerializer(AdGroup.objects.all(), many=True)
-        types = AdTypeSerializer(AdType.objects.all(), many=True)
-        return Response(create_response({"groups": groups.data, "types": types.data}))
+        if captcha.response != captcha_value.lower():
+            return Response(create_error_response({"error": "Invalid Captcha"}))
 
-
-class AdvertisementView(APIView):
-    """
-    this view is used to create, list and update advertisement
-    """
-    permission_classes = (AllowAny,)
-
-    def get(self, request):
-        """
-        get list of all Advertisements
-        """
-        advertisement_objs = Advertisement.objects.all().order_by('-id')
-        serializer = GetAdSerializer(advertisement_objs, many=True)
-        return Response(create_response(serializer.data))
-
-    def post(self, request):
-        """
-        create new Advertisement
-        """
-        file_obj = request.data['file']
-        serializer = AdCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            ad = serializer.save()
-            ad.media = file_obj
-            ad.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
-
-    def put(self, request):
-        """
-        update existing Advertisement
-        """
-        _id = request.data.get("id")
-        file_obj = request.data['file']
-        obj = Advertisement.objects.get(id=_id)
-        if file_obj:
-            obj.media = file_obj
-            obj.save
-        serializer = AdCreateSerializer(obj, data=request.data)
+        data = request.data.copy()
+        data["user"] = request.user.id
+        serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(create_response(serializer.data))
-        return Response(create_error_response(serializer.errors), status=400)
+            return Response(create_response({"result": serializer.data}))
+        return Response(create_error_response({"error": "Enter Valid data"}))
+
+    def list(self, request):
+        article_id = request.GET.get("article_id", "")
+        if not article_id:
+            return Response(
+                create_error_response(
+                    {"error": "Article ID has not been entered by the user"}
+                )
+            )
+        article_obj = Article.objects.filter(id=article_id).first()
+        if not article_obj:
+            return Response(create_error_response({"error": "Article does not exist"})
+                            )
+        comment_list = Comment.objects.filter(article=article_obj, reply=None)
+        serializer = CommentSerializer(comment_list, many=True)
+        return Response(
+            create_response(
+                {"results": serializer.data, "total_article_likes": ArticleLike.objects.filter(
+                    article=article_obj).count()}))
+
+    def destroy(self, request, pk):
+        comment_obj = Comment.objects.filter(id=pk)
+        if not comment_obj:
+            return Response(create_error_response({"error": "Comment does not exist"}))
+
+        comment_obj.delete()
+        return Response(create_response({"Msg": "Comment deleted successfully"}))
 
 
-class AdvertisementDeleteView(APIView):
-    """
-    this view is used to delete Advertisement's
-    """
+class LikeAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    pagination_class = PostpageNumberPagination
+    ordering = "-created_at"
+
+    def post(self, request):
+        post_data = request.data.copy()
+        post_data["user"] = request.user.id
+        serializer = ArticleLikeSerializer(data=post_data)
+        if serializer.is_valid():
+            serializer.save()
+            if serializer.data.get("id"):
+                return Response(create_response({"Msg": "Liked"}))
+            return Response(create_response({"Msg": "Removed Like"}))
+        return Response(create_error_response({"error": "Invalid Data Entered"}))
+
+
+class CaptchaCommentApiView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        captcha_len = len(CaptchaStore.objects.all())
+        if captcha_len > 500:
+            captcha = CaptchaStore.objects.order_by('?')[:1]
+            to_json_response = dict()
+            to_json_response['status'] = 1
+            to_json_response['new_captch_key'] = captcha[0].hashkey
+            to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
+            return Response(create_response({"result": json.dumps(to_json_response)}))
+        else:
+            to_json_response = dict()
+            to_json_response['status'] = 1
+            to_json_response['new_captch_key'] = CaptchaStore.generate_key()
+            to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
+            return Response(create_response({"result": json.dumps(to_json_response)}))
+
+
+class AutoCompleteAPIView(generics.GenericAPIView):
     permission_classes = (AllowAny,)
 
-    def delete(self, request, cid):
-        """
-        delete existing Advertisement
-        """
-        obj = Advertisement.objects.filter(id=cid).first()
-        if not obj:
-            raise AdvertisementNotFoundException()
-        obj.delete()
-        return Response(create_response({"Msg": "Advertisement deleted successfully"}), status=200)
+    def format_response(self, response):
+        results = []
+        if response['hits']['hits']:
+            for result in response['hits']['hits']:
+                results.append(result["_source"])
+        return results
+
+    def get(self, request):
+        result_list = []
+        query = request.GET.get("q", "")
+        if query:
+            results = es.search(
+                index="auto_suggestions",
+                body={
+                    "suggest": {
+                        "results": {
+                            "text": query,
+                            "completion": {"field": "name_suggest"},
+                        }
+                    }
+                },
+            )
+            results = results['suggest']['results'][0]['options']
+            if results:
+                for result in results:
+                    result_list.append(
+                        {
+                            "value": result["_source"]["name_suggest"],
+                            "key": result["_source"]["desc"],
+                        }
+                    )
+                return Response(create_response({"result": result_list}))
+        return Response(create_response({"result": []}))

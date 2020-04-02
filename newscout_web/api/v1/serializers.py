@@ -1,16 +1,12 @@
 from rest_framework import serializers
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
-                              ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
-                              Devices, Notification,TrendingArticle, Advertisement,
-                              Campaign, AdGroup, AdType)
+                         ArticleLike, HashTag, ArticleMedia, Menu, SubMenu,
+                         Devices, Notification, TrendingArticle, DraftMedia, Comment,
+                         CategoryAssociation)
 from django.contrib.auth import authenticate
 from rest_framework import exceptions
 from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
-try:
-    from urllib import urlencode, quote
-except:
-    from urllib.parse import urlencode, quote
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -24,11 +20,13 @@ class SourceSerializer(serializers.ModelSerializer):
         model = Source
         fields = ('name', 'id')
 
+
 class HashTagSerializer(serializers.ModelSerializer):
     count = serializers.IntegerField(default=1)
+
     class Meta:
         model = HashTag
-        fields = ('id','name','count')
+        fields = ('id', 'name', 'count')
 
 
 class ArticleMediaSerializer(serializers.ModelSerializer):
@@ -44,15 +42,19 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ('id', 'title', 'source', 'category', 'hash_tags','source_url',
-                  'cover_image', 'blurb', 'published_on', 'is_book_mark',
-                  'isLike','article_media', 'category_id', 'domain')
+        fields = ('id', 'title', 'source', 'category', 'hash_tags', 'source_url', 'cover_image', 'blurb',
+                  'published_on', 'is_book_mark', 'isLike', 'article_media', 'category_id', 'domain', 'active',
+                  'source_id', 'article_format', 'author', 'slug', 'root_category', 'root_category_id')
 
     source = serializers.ReadOnlyField(source='source.name')
     category = serializers.ReadOnlyField(source='category.name')
     category_id = serializers.ReadOnlyField(source='category.id')
+    source_id = serializers.ReadOnlyField(source='source.id')
     domain = serializers.ReadOnlyField(source='domain.domain_id')
+    root_category = serializers.SerializerMethodField()
+    root_category_id = serializers.SerializerMethodField()
     hash_tags = HashTagSerializer(many=True)
+    author = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(ArticleSerializer, self).__init__(*args, **kwargs)
@@ -61,6 +63,24 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     def get_hash_tags(self, instance):
         return list(instance.hash_tags.all().values_list("name", flat=True))
+
+    def get_author(self, instance):
+        if instance.author:
+            return "{0} {1}".format(
+                instance.author.first_name, instance.author.last_name)
+        return ""
+
+    def get_root_category(self, instance):
+        if instance.category.name not in ["Uncategorised", "Uncategorized"]:
+            root_category = CategoryAssociation.objects.get(child_cat=instance.category)
+            return root_category.parent_cat.name
+        return instance.category.name
+
+    def get_root_category_id(self, instance):
+        if instance.category.name not in ["Uncategorised", "Uncategorized"]:
+            root_category = CategoryAssociation.objects.get(child_cat=instance.category)
+            return root_category.parent_cat_id
+        return instance.category.id
 
 
 class UserSerializer(serializers.Serializer):
@@ -85,7 +105,7 @@ class LoginUserSerializer(serializers.Serializer):
     password = serializers.CharField()
 
     def validate(self, data):
-        user = authenticate(username=data["email"], password=data["password"])
+        user = authenticate(request=None, username=data["email"], password=data["password"])
         if user:
             return user
         raise exceptions.AuthenticationFailed('User inactive or deleted')
@@ -94,28 +114,44 @@ class LoginUserSerializer(serializers.Serializer):
 class BaseUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUserProfile
-        fields = ('id','passion', 'first_name', 'last_name')
+        fields = ('id', 'passion', 'first_name', 'last_name')
 
     passion = CategorySerializer(many=True)
 
 
 class BookmarkArticleSerializer(serializers.ModelSerializer):
     status = serializers.IntegerField(default=1)
+    article = ArticleSerializer()
+
     class Meta:
         model = BookmarkArticle
         fields = ('id', 'article', 'status')
 
 
-class ArtilcleLikeSerializer(serializers.ModelSerializer):
+class ArticleLikeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ArtilcleLike
-        fields = ('id', 'article', 'is_like')
+        model = ArticleLike
+        fields = ('id', 'article', 'user', 'is_like')
+
+    def create(self, validated_data):
+        article_obj = validated_data.get("article", "")
+        user = validated_data.get("user", "")
+        if not article_obj:
+            raise serializers.ValidationError("Article does not exist")
+        if not user:
+            raise serializers.ValidationError("User not logged in")
+        article_like = ArticleLike.objects.filter(article=article_obj, user=user)
+        if not article_like:
+            like_obj = ArticleLike.objects.create(article=article_obj, user=user)
+            return like_obj
+        ArticleLike.objects.filter(article=article_obj, user=user).delete()
+        return {"article": article_obj, "user": user}
 
 
 class SubMenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubMenu
-        fields = ('name', 'category_id', 'hash_tags')
+        fields = ('name', 'category_id', 'hash_tags', 'icon')
 
     hash_tags = HashTagSerializer(many=True)
     name = serializers.SerializerMethodField()
@@ -131,7 +167,7 @@ class SubMenuSerializer(serializers.ModelSerializer):
 class MenuSerializer(serializers.ModelSerializer):
     class Meta:
         model = Menu
-        fields = ('name', 'category_id', 'submenu')
+        fields = ('name', 'category_id', 'submenu', 'icon')
 
     name = serializers.SerializerMethodField()
     category_id = serializers.SerializerMethodField()
@@ -154,6 +190,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ('breaking_news', 'daily_edition', 'personalized',)
+
 
 class TrendingArticleSerializer(serializers.ModelSerializer):
     articles = ArticleSerializer(read_only=True, many=True, context={"hash_tags_list": True})
@@ -181,10 +218,19 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
         })
         return internal_value
 
+    def get_source_url(self, article_id):
+        url = "http://www.newscout.in/news/article/{0}/".format(article_id)
+        return url
+
     def create(self, validated_data):
         hash_tags = validated_data.pop("hash_tags")
         article_media = validated_data.pop("article_media")
         article = Article.objects.create(**validated_data)
+        user = self.context.get("user")
+
+        if not article.domain:
+            article.domain = user.domain
+            article.save()
 
         if hash_tags:
             hash_tags = [HashTag.objects.get_or_create(name=name)[0] for name in hash_tags]
@@ -199,12 +245,22 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
                 video_url=am["video_url"]
             ) for am in article_media]
 
+        article.author = user
+        article.save()
+
+        article.source_url = self.get_source_url(article.id)
+        article.save()
+
+        if self.context.get("publish"):
+            article.active = True
+            article.save()
+
         return article
 
     def update(self, instance, validated_data):
         hash_tags = validated_data.pop("hash_tags")
         article_media = validated_data.pop("article_media")
-
+        user = self.context.get("user")
         instance.title = validated_data.get("title", instance.title)
         instance.source = validated_data.get("source", instance.source)
         instance.category = validated_data.get("category", instance.category)
@@ -215,6 +271,10 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
         instance.published_on = validated_data.get("published_on", instance.published_on)
         instance.spam = validated_data.get("spam", instance.spam)
         instance.save()
+
+        if not instance.domain:
+            instance.domain = user.domain
+            instance.save()
 
         if hash_tags:
             hash_tags = [HashTag.objects.get_or_create(name=name)[0] for name in hash_tags]
@@ -230,89 +290,100 @@ class ArticleCreateUpdateSerializer(serializers.ModelSerializer):
                 video_url=am["video_url"]
             )[0] for am in article_media]
 
+        if self.context.get("publish"):
+            instance.active = True
+            instance.save()
+
         return instance
 
 
-class AdvertisementSerializer(serializers.ModelSerializer):
-
+class DraftMediaSerializer(serializers.ModelSerializer):
+    """
+    serializer for draftmedia model
+    """
     class Meta:
-        model = Advertisement
-        fields = ('id', 'ad_text', 'media', 'ad_url')
-
-    ad_url = serializers.SerializerMethodField()
-
-    def get_ad_url(self, instance):
-        request = self.context.get("request")
-        host = request.META.get("HTTP_HOST")
-        utm_source = "NewsCout"
-        utm_medium = request.GET.get("category") or " ".join(instance.adgroup.category.all().values_list('name', flat=True))
-        utm_campaign = instance.adgroup.campaign.name
-        params = urlencode({"utm_source": utm_source, "utm_medium": utm_medium, "utm_campaign": utm_campaign})
-        if "&" in instance.ad_url:
-            ad_url = instance.ad_url + params
-        else:
-            ad_url = quote(instance.ad_url + "?" + params)
-        print(ad_url)
-        url = "http://" + host + "/getad-redirect/?url={0}&aid={1}".format(ad_url, instance.id)
-        return url
-
-
-class CampaignSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Campaign
+        model = DraftMedia
         fields = '__all__'
 
 
-class CampaignNameIdSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
+    article_id = serializers.IntegerField()
 
     class Meta:
-        model = Campaign
-        fields = ('id', 'name')
+        model = Comment
+        fields = (
+            "id",
+            "created_at",
+            "comment",
+            "article_id",
+            "user",
+            "user_name",
+            "reply",
+            "replies"
+        )
+
+    def create(self, validated_data):
+        article_id = validated_data.get("article_id", "")
+        comment = validated_data.get("comment", "")
+        user = validated_data.get("user", "")
+        reply = validated_data.get("reply", "")
+        if not article_id:
+            raise serializers.ValidationError("Article Id not entered")
+        if not comment:
+            raise serializers.ValidationError("Comment not entered")
+        if not user:
+            raise serializers.ValidationError("User is not logged in")
+        article_obj = Article.objects.filter(id=article_id).first()
+        if not article_obj:
+            raise serializers.ValidationError("Article does not exist")
+        if reply:
+            if reply.article.id == article_id:
+                comment_reply_obj = Comment.objects.create(article=article_obj, comment=comment,
+                                                           user=user, reply=reply)
+                return comment_reply_obj
+            raise serializers.ValidationError("Replying on wrong article")
+        comment_obj = Comment.objects.create(article=article_obj, comment=comment, user=user)
+        return comment_obj
+
+    def get_user_name(self, instance):
+        user_name = instance.user.first_name + " " + instance.user.last_name
+        return user_name
+
+    def get_replies(self, instance):
+        replies = []
+        comment_reply_qs = Comment.objects.filter(reply=instance.id).values().order_by("-id")
+        for reply in comment_reply_qs:
+            reply_data = CommentListSerializer(reply).data
+            replies.append(reply_data)
+        return replies
 
 
-class AdGroupSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=True, read_only=True)
-    
+class CommentListSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField()
+
     class Meta:
-        model = AdGroup
-        fields = '__all__'
+        model = Comment
+        fields = (
+            "id",
+            "created_at",
+            "comment",
+            "article_id",
+            "user_id",
+            "user_name",
+            "replies"
+        )
 
+    def get_user_name(self, instance):
+        user_obj = BaseUserProfile.objects.get(id=instance["user_id"])
+        user_name = user_obj.first_name + " " + user_obj.last_name
+        return user_name
 
-class GetAdGroupSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=True, read_only=True)
-    campaign = CampaignNameIdSerializer()
-
-    class Meta:
-        model = AdGroup
-        fields = '__all__'
-
-
-class AdTypeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = AdType
-        fields = '__all__'
-
-
-class GetAdSerializer(serializers.ModelSerializer):
-    adgroup = GetAdGroupSerializer(read_only=True)
-    ad_type = AdTypeSerializer()
-
-    class Meta:
-        model = Advertisement
-        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'media', 'is_active', 'impsn_limit')
-
-
-class AdSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Advertisement
-        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'media', 'is_active', 'impsn_limit')
-
-
-class AdCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Advertisement
-        fields = ('id', 'adgroup', 'ad_type', 'ad_text', 'ad_url', 'is_active', 'impsn_limit')
+    def get_replies(self, instance):
+        replies = []
+        comment_reply = Comment.objects.filter(reply=instance["id"]).values().order_by("-id")
+        for reply in comment_reply:
+            replies.append(CommentListSerializer(reply).data)
+        return replies

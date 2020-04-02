@@ -1,0 +1,19 @@
+{
+"editor.tabSize": 4,
+"editor.rulers": [79, 120],
+"editor.formatOnSave": true,
+"python.linting.lintOnSave": true,
+"python.pythonPath": "/Users/witchkings/Installs/envs/vscode/bin/python",
+"python.linting.enabled": true,
+"python.linting.pylintEnabled": false,
+"python.linting.pylintPath": "/Users/witchkings/Installs/envs/vscode/bin/pylint",
+"python.formatting.provider": "autopep8",
+"python.formatting.autopep8Path": "/Users/witchkings/Installs/envs/vscode/bin/autopep8",
+"python.formatting.autopep8Args": [
+    "--max-line-length",
+    "120",
+    "--experimental"
+    ],
+    "python.linting.flake8Enabled": true,
+    "python.linting.pycodestyleEnabled": false
+}

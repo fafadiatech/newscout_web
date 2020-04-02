@@ -1,0 +1,17 @@
+{
+"editor.tabSize": 4,
+"editor.rulers": [79, 120],
+"editor.formatOnSave": true,
+"python.linting.lintOnSave": true,
+"python.pythonPath": "env/bin/python",
+"python.linting.enabled": true,
+"python.linting.pylintEnabled": true,
+"python.linting.pylintPath": "env/bin/pylint",
+"python.formatting.provider": "autopep8",
+"python.formatting.autopep8Path": "env/bin/autopep8",
+"python.formatting.autopep8Args": [
+    "--max-line-length",
+    "120",
+    "--experimental"
+    ]
+}

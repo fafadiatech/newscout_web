@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from pymongo import MongoClient
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,10 @@ SECRET_KEY = '_am!u5!_zzqh*tmls(jctl_3j186fuh5r7*p*t0*czpvu&i%+x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Enble sqlite database quick mode (by default disabled)
+QUICK_MODE = False
+
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -40,13 +44,23 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'rest_framework.authtoken',
-    'ajax_select'
+    'ajax_select',
+    'event_tracking',
+    'advertising',
+    'analytics',
+    'dashboard',
+    'frontend',
+    'rest_framework_swagger',
+    'corsheaders',
+    'news_site',
+    'captcha',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -77,25 +91,24 @@ WSGI_APPLICATION = 'newscout_web.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'newscout',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3'),
+if QUICK_MODE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, '..', 'db.sqlite3'),
+        }
     }
-}
-
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'newscout_web',
+            'USER': 'postgres',
+            'PASSWORD': 'root#123',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -134,30 +147,36 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
+    'core.backends.EmailModelBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'news_site.backends.EmailModelBackend'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
-    'EXCEPTION_HANDLER': 'api.v1.exception_handler.newscout_exception_handler'
+    'EXCEPTION_HANDLER': 'api.v1.exception_handler.newscout_exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 
 }
 
 AUTH_USER_MODEL = 'core.BaseUserProfile'
+LOGIN_URL = "/login/"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -167,6 +186,18 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
+EMAIL_FROM = ''
 
 ELASTIC_SERVER_IP="localhost"
 ELASTIC_SERVER_PORT="9200"
+
+DBNAME = 'newscout_analytics'
+client = MongoClient()
+DB = client[DBNAME]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+TWITTER_CONSUMER_KEY = ""
+TWITTER_CONSUMER_SECRET = ""
+TWITTER_ACCESS_TOKEN = ""
+TWITTER_ACCESS_TOKEN_SECRET = ""
