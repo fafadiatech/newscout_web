@@ -12,7 +12,7 @@ import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, Mo
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -53,6 +53,7 @@ class ArticleDetail extends React.Component {
 			isChecked: false,
 			next_article: '',
 			prev_article: '',
+			options:[]
 		};
 	}
 
@@ -324,22 +325,33 @@ class ArticleDetail extends React.Component {
 
 	handleNextArticle = () => {
 		this.setState({ isLoading: true })
-		var new_url = "http://localhost:8000/news/article/"+this.state.next_article;
-		window.location.href = new_url
-		// window.history.pushState({urlPath: new_url}, "", new_url)
-		// getRequest(ARTICLE_DETAIL_URL+this.state.next_article+"?"+this.state.domain, this.getArticleDetail);
+		var new_url = BASE_URL+"/news/article/"+this.state.next_article;
+		window.location.href = new_url;
 	}
 
 	handlePrevArticle = () => {
 		this.setState({ isLoading: true })
-		var new_url = "http://localhost:8000/news/article/"+this.state.prev_article;
-		window.location.href = new_url
-		// window.history.pushState({urlPath: new_url}, "", new_url)
-		// getRequest(ARTICLE_DETAIL_URL+this.state.prev_article+"?"+this.state.domain, this.getArticleDetail);
+		var new_url = BASE_URL+"/news/article/"+this.state.prev_article;
+		window.location.href = new_url;
 	}
 
+	handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+    }
+
 	componentDidMount() {
-		console.log(ARTICLE_DETAIL_URL+SLUG)
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment);
@@ -363,7 +375,7 @@ class ArticleDetail extends React.Component {
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids, isChecked, isLoading } = this.state;
+		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids, isChecked, isLoading, options } = this.state;
     	var root_category = ""
 		var category = ""
 		if(article.root_category) {
@@ -387,6 +399,8 @@ class ArticleDetail extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				<div className="container-fluid">
 					<div className="row">

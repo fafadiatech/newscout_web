@@ -7,7 +7,7 @@ import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, Vertic
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -38,7 +38,8 @@ class Bookmark extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: []
 		};
 	}
 
@@ -200,6 +201,22 @@ class Bookmark extends React.Component {
 		window.location.href = "/"
     }
 
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		if(cookies.get('full_name')){
@@ -223,7 +240,8 @@ class Bookmark extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state;
+		
 		var results = newsPosts.map((item, index) => {
 			return (
 				<div className="col-lg-4 col-md-4 mb-4">
@@ -267,6 +285,8 @@ class Bookmark extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				
 				<div className="container-fluid">

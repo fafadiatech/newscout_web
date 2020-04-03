@@ -7,7 +7,7 @@ import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, Vertic
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -51,7 +51,8 @@ class SubmenuPosts extends React.Component {
 				source_url: '',
 				image: ''
 			},
-			isChecked: false
+			isChecked: false,
+			options: []
 		};
 	}
 
@@ -289,6 +290,22 @@ class SubmenuPosts extends React.Component {
 		})
     }
 
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
@@ -316,7 +333,7 @@ class SubmenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article, isChecked } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, ads_article, isChecked, options } = this.state;
 		
 		var items = newsPosts.map((item, index) => {
 			return (
@@ -378,6 +395,8 @@ class SubmenuPosts extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				
 				<div className="container-fluid">
