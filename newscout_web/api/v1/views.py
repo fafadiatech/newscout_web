@@ -1416,7 +1416,10 @@ class AutoCompleteAPIView(generics.GenericAPIView):
 
     def get(self, request):
         result_list = []
-        query = request.GET.get("q", "")
+        if request.data:
+            query = request.data["q"]
+        else:
+            query = request.GET.get("q", "")
         if query:
             results = es.search(
                 index="auto_suggestions",

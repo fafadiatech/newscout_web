@@ -9,7 +9,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -53,6 +53,7 @@ class SearchResult extends React.Component {
 			cat_array: [],
 			source_array: [],
 			hashtags_array: [],
+			options: []
 		};
 	}
 
@@ -330,6 +331,22 @@ class SearchResult extends React.Component {
 		})
 	}
 
+	handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
@@ -361,7 +378,7 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked, options } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return (
@@ -397,6 +414,7 @@ class SearchResult extends React.Component {
 		} else {
 			document.getElementsByTagName("body")[0].style = "overflow:auto";
 		}
+
 		return (
 			<React.Fragment>
 				<Menu
@@ -411,6 +429,8 @@ class SearchResult extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				<div className="container-fluid">
 					<div className="row">

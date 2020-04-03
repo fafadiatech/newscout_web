@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, ImageOverlay, SideBar, Footer } from 'newscout';
 
-import { MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 import Auth from './Auth';
@@ -74,7 +74,8 @@ class MenuPosts extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: []
 		};
 	}
 
@@ -232,6 +233,22 @@ class MenuPosts extends React.Component {
 		})
     }
 
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
@@ -252,7 +269,7 @@ class MenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options } = this.state;
 		
 		var result = newsPosts.map((item, index) => {
 			return (
@@ -313,6 +330,8 @@ class MenuPosts extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				<div className="container-fluid">
 					<div className="row">

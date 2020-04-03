@@ -14,7 +14,7 @@ import 'newscout/assets/CardItem.css';
 import 'newscout/assets/ToogleCard.css'
 import 'newscout/assets/ImageOverlay.css';
 
-import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import config_data from './config.json';
@@ -42,7 +42,8 @@ class Trending extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: []
 		};
 	}
 
@@ -239,6 +240,22 @@ class Trending extends React.Component {
 		})
     }
 
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
@@ -266,7 +283,7 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state;
+		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state;
 
 		var result = trending.map((item, index) => {
 			return (
@@ -306,6 +323,8 @@ class Trending extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				<div className="container-fluid">
 					<div className="row">
