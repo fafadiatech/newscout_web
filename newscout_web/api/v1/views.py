@@ -288,6 +288,16 @@ class ArticleDetailAPIView(APIView):
 
         user = self.request.user
         article = Article.objects.filter(slug=slug).first()
+        try:
+            next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
+        except:
+            next_article = Article.objects.aggregate(Min("id"))['id__min']
+        
+        try:
+            prev_article = Article.objects.filter(id__gt=article.id).order_by("-id")[0:1].get().slug
+        except:
+            prev_article = Article.objects.aggregate(Max("id"))['id__max']
+        
         if article:
             response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
             if not user.is_anonymous:
@@ -307,7 +317,7 @@ class ArticleDetailAPIView(APIView):
                     response_data["isLike"] = 2
 
             return Response(create_response({
-                "article": response_data}))
+                "article": response_data, "next_article": next_article, "prev_article": prev_article}))
         raise NoarticleFound
 
     def post(self, request, *args, **kwargs):
