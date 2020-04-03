@@ -3,6 +3,7 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
+import KeyboardEventHandler from 'react-keyboard-event-handler';
 import { JumboBox, Menu, SideBox, SideBar, Footer } from 'newscout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
@@ -49,7 +50,9 @@ class ArticleDetail extends React.Component {
 			is_captcha : true,
 			isSideOpen: true,
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			next_article: '',
+			prev_article: '',
 		};
 	}
 
@@ -163,21 +166,27 @@ class ArticleDetail extends React.Component {
 	}
 
 	getArticleDetail = (data) => {
+		var article = data.body.article;
+		var next_article = data.body.next_article;
+		var prev_article = data.body.prev_article;
 		var state = this.state;
 		var article_dict = {}
-		state.article.id = data.body.article.id;
-		state.article.slug = "/news/article/"+data.body.article.slug;
-		state.article.title = data.body.article.title;
-		state.article.altText = data.body.article.title;
-		state.article.caption = data.body.article.blurb;
-		state.article.source = data.body.article.source;
-		state.article.source_url = data.body.article.source_url;
-		state.article.root_category = data.body.article.root_category;
-		state.article.category = data.body.article.category;
-		state.article.hash_tags = data.body.article.hash_tags;
-		state.article.date = moment(data.body.article.published_on).format('D MMMM YYYY');
-		if(data.body.article.cover_image){
-			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(data.body.article.cover_image);
+		state.article.id = article.id;
+		state.article.slug = "/news/article/"+article.slug;
+		state.article.title = article.title;
+		state.article.altText = article.title;
+		state.article.caption = article.blurb;
+		state.article.source = article.source;
+		state.article.source_url = article.source_url;
+		state.article.root_category = article.root_category;
+		state.article.category = article.category;
+		state.article.hash_tags = article.hash_tags;
+		state.article.date = moment(article.published_on).format('D MMMM YYYY');
+		state.next_article = next_article;
+		state.prev_article = prev_article;
+		state.isLoading = false
+		if(article.cover_image){
+			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(article.cover_image);
 		} else {
 			state.article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/"+config_data.defaultImage;
 		}
@@ -313,7 +322,24 @@ class ArticleDetail extends React.Component {
 		}
 	}
 
+	handleNextArticle = () => {
+		this.setState({ isLoading: true })
+		var new_url = "http://localhost:8000/news/article/"+this.state.next_article;
+		window.location.href = new_url
+		// window.history.pushState({urlPath: new_url}, "", new_url)
+		// getRequest(ARTICLE_DETAIL_URL+this.state.next_article+"?"+this.state.domain, this.getArticleDetail);
+	}
+
+	handlePrevArticle = () => {
+		this.setState({ isLoading: true })
+		var new_url = "http://localhost:8000/news/article/"+this.state.prev_article;
+		window.location.href = new_url
+		// window.history.pushState({urlPath: new_url}, "", new_url)
+		// getRequest(ARTICLE_DETAIL_URL+this.state.prev_article+"?"+this.state.domain, this.getArticleDetail);
+	}
+
 	componentDidMount() {
+		console.log(ARTICLE_DETAIL_URL+SLUG)
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL+SLUG+"?"+this.state.domain, this.getArticleDetail);
 		getRequest(ARTICLE_COMMENT+"?article_id="+ARTICLEID, this.getArticleComment);
@@ -337,7 +363,7 @@ class ArticleDetail extends React.Component {
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids, isChecked } = this.state;
+		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids, isChecked, isLoading } = this.state;
     	var root_category = ""
 		var category = ""
 		if(article.root_category) {
@@ -390,24 +416,28 @@ class ArticleDetail extends React.Component {
 											<div className="row">
 												<div className="col-lg-12">
 													<div className="article-detail">
-														<JumboBox
-															id={article.id} 
-															image={article.src}
-															title={article.title}
-															description={article.caption}
-															uploaded_by={article.source}
-															source_url={article.source_url}
-															slug_url={article.slug}
-															category={article.category}
-															hash_tags={article.hash_tags}
-															uploaded_on={article.date}
-															is_loggedin={is_loggedin}
-															toggle={this.toggle}
-															is_open={modal}
-															getArticleId={this.getArticleId}
-															bookmark_ids={bookmark_ids}
-															base_url={BASE_URL}
-														/>
+														{isLoading ?
+															<Skeleton height={500} />
+														:
+															<JumboBox
+																id={article.id} 
+																image={article.src}
+																title={article.title}
+																description={article.caption}
+																uploaded_by={article.source}
+																source_url={article.source_url}
+																slug_url={article.slug}
+																category={article.category}
+																hash_tags={article.hash_tags}
+																uploaded_on={article.date}
+																is_loggedin={is_loggedin}
+																toggle={this.toggle}
+																is_open={modal}
+																getArticleId={this.getArticleId}
+																bookmark_ids={bookmark_ids}
+																base_url={BASE_URL}
+															/>
+														}
 													</div>
 												</div>
 											</div>
@@ -436,20 +466,24 @@ class ArticleDetail extends React.Component {
 															</div>
 														</div>
 														<div className="mt-4">
-															<Comments 
-																comments={this.state.articlecomments} 
-																handleSubmit={this.handleSubmit} 
-																successComment={this.state.successComment} 
-																is_loggedin_validation={this.state.is_loggedin_validation} 
-																captchaImage={captchaImage} 
-																InvalidCaptcha={this.state.InvalidCaptcha} 
-																fetchCaptcha={this.fetchCaptcha} 
-																resetAll={this.state.resetAll} 
-																is_captcha={this.state.is_captcha} 
-																is_loggedin={is_loggedin} 
-																toggle={this.toggle}
-																is_open={modal} 
-															/>
+															{isLoading ?
+																<Skeleton height={300} />
+															:
+																<Comments 
+																	comments={this.state.articlecomments} 
+																	handleSubmit={this.handleSubmit} 
+																	successComment={this.state.successComment} 
+																	is_loggedin_validation={this.state.is_loggedin_validation} 
+																	captchaImage={captchaImage} 
+																	InvalidCaptcha={this.state.InvalidCaptcha} 
+																	fetchCaptcha={this.fetchCaptcha} 
+																	resetAll={this.state.resetAll} 
+																	is_captcha={this.state.is_captcha} 
+																	is_loggedin={is_loggedin} 
+																	toggle={this.toggle}
+																	is_open={modal} 
+																/>
+															}
 														</div>
 													</div>
 												</div>
@@ -462,7 +496,11 @@ class ArticleDetail extends React.Component {
 														<div className="heading">
 															<h3 className="text-center">More News</h3>
 														</div>
-														<SideBox posts={recommendations} />
+														{isLoading ?
+															<Skeleton height={400} />
+														:
+															<SideBox posts={recommendations} />
+														}
 													</div>
 												</div>
 											</div>
@@ -475,8 +513,10 @@ class ArticleDetail extends React.Component {
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
-
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
+				
+				<KeyboardEventHandler handleKeys={['right']} onKeyEvent={this.handleNextArticle} />
+				<KeyboardEventHandler handleKeys={['left']} onKeyEvent={this.handlePrevArticle} />
 			</React.Fragment>
 		)
 	}
