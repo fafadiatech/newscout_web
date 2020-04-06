@@ -235,7 +235,7 @@ class App extends React.Component {
 					article_dict['category'] = articles.category
 					article_dict['slug'] = "/news/article/"+articles.slug
 					article_dict['source_url'] = articles.source_url
-					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles.cover_image)
+					article_dict['src'] = "http://images.newscout.in/unsafe/1175x500/center/"+decodeURIComponent(articles.cover_image)
 					trending_array.push(article_dict)
 				}
 			}
@@ -660,40 +660,12 @@ class App extends React.Component {
 							<div className="container">
 								<div className="pt-50">
 									<div className="row">
-										<div className="col-lg-7 col-12 mb-4 trending-slider">
+										<div className="col-lg-12 col-12 mb-4 trending-slider">
 											{isLoading ?
 												<Skeleton height={500} />
 											:
 												<Slider {...settingsTrending}>{trendingSlider}</Slider>
 											}
-										</div>
-										<div className="col-lg-5 col-12 mb-4">
-											<React.Fragment>
-												{isLoading ?
-													<Skeleton height={500} />
-												:
-													<React.Fragment>
-														{trending.length > 0 ?
-															<ContentOverlay
-																id={trending[5].id} 
-																title={trending[5].header}
-																description={trending[5].caption}
-																uploaded_by={trending[5].source}
-																source_url={trending[5].slug}
-																slug_url={trending[5].slug}
-																category={trending[5].category}
-																is_loggedin={is_loggedin}
-																toggle={this.toggle}
-																is_open={modal}
-																getArticleId={this.getArticleId}
-																bookmark_ids={bookmark_ids}
-																base_url={BASE_URL}
-															/>
-														: ""
-														}
-													</React.Fragment>
-												}
-											</React.Fragment>
 										</div>
 									</div>
 								</div>
