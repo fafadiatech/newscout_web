@@ -190,6 +190,7 @@ class MenuPosts extends React.Component {
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src_xs'] = "http://images.newscout.in/unsafe/300x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(news_array.length <= 9){
 					news_array.push(article_dict)
 				}
@@ -292,6 +293,7 @@ class MenuPosts extends React.Component {
 											:
 												<ImageOverlay 
 													image={sub_item.src}
+													image_xs={sub_item.src_xs}
 													title={sub_item.header}
 													description={sub_item.caption}
 													uploaded_by={sub_item.source}
