@@ -27,7 +27,7 @@ const cookies = new Cookies();
 const settings = {
 	dots: false,
 	infinite: false,
-	speed: 500,
+	speed: 1500,
 	slidesToShow: 3,
 	slidesToScroll: 3,
 	initialSlide: 0,
@@ -62,7 +62,7 @@ const settings = {
 const settingsTrending = {
 	dots: false,
 	infinite: true,
-	speed: 500,
+	speed: 1500,
 	autoplay: true,
 	slidesToShow: 1,
 	slidesToScroll: 1,
@@ -236,6 +236,7 @@ class App extends React.Component {
 					article_dict['slug'] = "/news/article/"+articles.slug
 					article_dict['source_url'] = articles.source_url
 					article_dict['src'] = "http://images.newscout.in/unsafe/1175x500/center/"+decodeURIComponent(articles.cover_image)
+					article_dict['src_xs'] = "http://images.newscout.in/unsafe/350x325/center/"+decodeURIComponent(articles.cover_image)
 					trending_array.push(article_dict)
 				}
 			}
@@ -342,6 +343,7 @@ class App extends React.Component {
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src_xs'] = "http://images.newscout.in/unsafe/325x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(financeposts_array.length < 8){
 					financeposts_array.push(article_dict)
 				}
@@ -473,7 +475,9 @@ class App extends React.Component {
 		} else {
 			this.setState({ isSideOpen: false })
 		}
-		this.getTheme()
+		this.getTheme();
+
+		document.addEventListener('click', this.handleDocumentClick, true);
 	}
 
 	render() {
@@ -514,6 +518,7 @@ class App extends React.Component {
 					<ImageOverlay
 						id={item.id} 
 						image={item.src}
+						image_xs={item.src_xs}
 						title={item.header}
 						description={item.caption}
 						uploaded_by={item.source}
@@ -567,6 +572,7 @@ class App extends React.Component {
 					:
 						<ImageOverlay 
 							image={item.src}
+							image_xs={item.src_xs}
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
