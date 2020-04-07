@@ -14,8 +14,6 @@ import Comments from './Comments'
 
 import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
-import { Helmet } from "react-helmet";
-
 
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/JumboBox.css'
@@ -389,14 +387,6 @@ class ArticleDetail extends React.Component {
 
 		return (
 			<React.Fragment>
-				<Helmet>
-					<meta charSet="utf-8" />
-					<title>{article.title}</title>
-					<meta name="description" content="Newscout Article Details" />
-					<meta property="og:title" content={article.title} />
-					<meta property="og:url" content={article.source_url} />
-					<meta property="og:image" content={article.src} />
-				</Helmet>
 				<Menu
 					navitems={menus}
 					url={URL}
