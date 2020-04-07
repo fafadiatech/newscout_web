@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block metatags %}
+	<meta property="og:title" content={{article_title|safe}} />
+	<meta name="description" content="{{article_desc}}" />
+	<meta property="og:url" content={{article_url}} />
+	<meta property="og:image" content={{article_image}} />
+{% endblock metatags %}
+
 {% block title %}NewScout - Article Detail{% endblock title %}
 
 {% block content %}
