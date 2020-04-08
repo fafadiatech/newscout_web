@@ -487,7 +487,7 @@ class Advertisement extends React.Component {
 							<Form>
 								<FormGroup>
 									<Label for="adgroup">Campaign</Label>
-									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
+									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups.reverse()} />
 									<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 								</FormGroup>
 								<FormGroup>
