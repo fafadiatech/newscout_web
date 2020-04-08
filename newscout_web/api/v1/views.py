@@ -292,12 +292,12 @@ class ArticleDetailAPIView(APIView):
             next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
         except:
             next_article = Article.objects.aggregate(Min("id"))['id__min']
-        
+
         try:
             prev_article = Article.objects.filter(id__gt=article.id).order_by("-id")[0:1].get().slug
         except:
             prev_article = Article.objects.aggregate(Max("id"))['id__max']
-        
+
         if article:
             response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
             if not user.is_anonymous:
@@ -543,7 +543,7 @@ class HashTagAPIView(ListAPIView):
 
         if weekly:
             weekly = int(weekly)
-            start = end - timedelta(days=7*weekly)
+            start = end - timedelta(days=7 * weekly)
             hash_tags = articles.filter(published_on__range=(start, end)).values(
                 'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
@@ -552,7 +552,7 @@ class HashTagAPIView(ListAPIView):
 
         if monthly:
             monthly = int(monthly)
-            start = end - timedelta(days=30*monthly)
+            start = end - timedelta(days=30 * monthly)
             hash_tags = articles.filter(published_on__range=(start, end)).values(
                 'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
@@ -650,7 +650,7 @@ class ArticleSearchAPI(APIView):
         sr = sr.highlight("title", "blurb", fragment_size=20000)
 
         # generate elastic search query
-        must_query = [{"wildcard": { "cover_image": "*"}}]
+        must_query = [{"wildcard": {"cover_image": "*"}}]
         should_query = []
 
         if query:
@@ -1395,13 +1395,13 @@ class CaptchaCommentApiView(APIView):
             to_json_response['status'] = 1
             to_json_response['new_captch_key'] = captcha[0].hashkey
             to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
-            return Response(create_response({"result": json.dumps(to_json_response)}))
+            return Response(create_response({"result": to_json_response}))
         else:
             to_json_response = dict()
             to_json_response['status'] = 1
             to_json_response['new_captch_key'] = CaptchaStore.generate_key()
             to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
-            return Response(create_response({"result": json.dumps(to_json_response)}))
+            return Response(create_response({"result": to_json_response}))
 
 
 class AutoCompleteAPIView(generics.GenericAPIView):
