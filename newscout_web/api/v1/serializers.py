@@ -1,12 +1,13 @@
-from rest_framework import serializers
+from rest_framework import (exceptions, serializers)
+
+from django.contrib.auth import authenticate
+from rest_framework.validators import UniqueValidator
+from rest_framework.authtoken.models import Token
+
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
                          ArticleLike, HashTag, ArticleMedia, Menu, SubMenu,
                          Devices, Notification, TrendingArticle, DraftMedia, Comment,
-                         CategoryAssociation)
-from django.contrib.auth import authenticate
-from rest_framework import exceptions
-from rest_framework.validators import UniqueValidator
-from rest_framework.authtoken.models import Token
+                         CategoryAssociation, Subscription)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -387,3 +388,9 @@ class CommentListSerializer(serializers.ModelSerializer):
         for reply in comment_reply:
             replies.append(CommentListSerializer(reply).data)
         return replies
+
+
+class SubsMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscription
+        fields = '__all__'

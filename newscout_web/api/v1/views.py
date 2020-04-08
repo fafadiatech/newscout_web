@@ -5,7 +5,8 @@ from django.http import Http404
 from core.models import (Category, Article, Source, BaseUserProfile,
                          BookmarkArticle, ArticleLike, HashTag, Menu, Notification, Devices,
                          SocialAccount, Category, CategoryAssociation,
-                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
+                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment,
+                         Subscription)
 
 from rest_framework.authtoken.models import Token
 
@@ -16,7 +17,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
                           ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
-                          CommentListSerializer)
+                          CommentListSerializer, SubsMediaSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -292,12 +293,12 @@ class ArticleDetailAPIView(APIView):
             next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
         except:
             next_article = Article.objects.aggregate(Min("id"))['id__min']
-        
+
         try:
             prev_article = Article.objects.filter(id__gt=article.id).order_by("-id")[0:1].get().slug
         except:
             prev_article = Article.objects.aggregate(Max("id"))['id__max']
-        
+
         if article:
             response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
             if not user.is_anonymous:
@@ -650,7 +651,7 @@ class ArticleSearchAPI(APIView):
         sr = sr.highlight("title", "blurb", fragment_size=20000)
 
         # generate elastic search query
-        must_query = [{"wildcard": { "cover_image": "*"}}]
+        must_query = [{"wildcard": {"cover_image": "*"}}]
         should_query = []
 
         if query:
@@ -1443,3 +1444,19 @@ class AutoCompleteAPIView(generics.GenericAPIView):
                     )
                 return Response(create_response({"result": result_list}))
         return Response(create_response({"result": []}))
+
+
+class SubsAPIView(ListAPIView):
+    serializer_class = SubsMediaSerializer
+    permission_classes = (AllowAny,)
+
+    def format_response(self, response):
+        results = []
+        if response.hits.hits:
+            for result in response.hits.hits:
+                results.append(result["_source"])
+        return results
+
+    def get(self):
+        queryset = Subscription.objects.all()
+        return queryset
