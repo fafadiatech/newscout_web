@@ -369,4 +369,4 @@ class Subscription(NewsSiteBaseModel):
     payement_mode = models.CharField(choices=SUBS_TYPE, max_length=50)
 
     def __str__(self):
-        return f"{self.user}, {self.sub_typ}"
+        return "{self.user}, {self.sub_typ}"
