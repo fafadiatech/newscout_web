@@ -486,12 +486,12 @@ class Advertisement extends React.Component {
 						<ModalBody>
 							<Form>
 								<FormGroup>
-									<Label for="adgroup">Select Group</Label>
-									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
+									<Label for="adgroup">Campaign</Label>
+									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups.reverse()} />
 									<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 								</FormGroup>
 								<FormGroup>
-									<Label for="ad_type">Select Group Type</Label>
+									<Label for="ad_type">Bid Type</Label>
 									<Select refs="ad_type" value={this.state.fields["ad_type"] ? this.state.fields["ad_type"] : ''} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptypes} />
 									<FormText color="danger">{this.state.errors["ad_type"]}</FormText>
 								</FormGroup>
@@ -516,7 +516,7 @@ class Advertisement extends React.Component {
 							<div className="clearfix" style={{ width: "100%" }}>
 								<div className="float-left">
 									{this.state.formSuccess ?
-										<h6 className="text-success m-0">Form submitted successfully.</h6>
+										<h6 className="text-success m-0">Ad created successfully.</h6>
 										: ""}
 								</div>
 								<div className="float-right">
