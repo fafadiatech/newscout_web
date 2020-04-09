@@ -1,6 +1,6 @@
 export const BASE_URL = "http://www.newscout.in";
 
-export const RED_COLOR = "#ff4263";
+export const RED_COLOR = "#f04138";
 export const GREEN_COLOR = "#63ff42";
 export const BLUE_COLOR = "#4263ff";
 
