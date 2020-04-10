@@ -1,3 +1,4 @@
+import time
 import pytest
 
 from .base import BASE_URL, CREDS, NSE2ETestBase
@@ -13,4 +14,11 @@ class TestDashboard(NSE2ETestBase):
         driver.get(f"{BASE_URL}login/")
         self.login(self.dashboard_username, self.dashboard_password)
         assert (self.page_contains("Dashboard") is not None)
-        test_url = f'{BASE_URL}'
+
+    def test_kpis_rendering(self):
+        driver = self.driver
+        driver.get(f"{BASE_URL}dashboard/")
+        print(dir(driver))
+        kpi = driver.find_element_by_xpath("/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[1]/h3")
+        time.sleep(3)
+        assert (kpi.text != "0")
