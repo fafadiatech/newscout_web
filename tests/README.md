@@ -9,4 +9,4 @@ you will need to ensure
 
 Be sure to fill "-" with right values with right values
 
-To run test suite just type `pytest`
+To run test suite just type `cd e2e && pytest`
