@@ -44,7 +44,7 @@ class TestFrontend(NSE2ETestBase):
     def test_more_news(self):
         self.check_item_exists_on_page("news/article/renault-launches-bs-vi-compliant-duster-price-starts-at-rs-849000-1499290/", "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div/h4/a")
 
-    def test_login(self):
+    def _test_login(self):
         driver = self.driver
         driver.get(f"{BASE_URL}login/")
         time.sleep(3)
