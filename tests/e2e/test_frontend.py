@@ -37,3 +37,6 @@ class TestFrontend(NSE2ETestBase):
 
     def test_rss_page(self):
         self.check_item_exists_on_page("news/rss/?domain=newscout", "/html/body/div[1]/table/tbody/tr[2]/td[1]")
+
+    def test_more_news(self):
+        self.check_item_exists_on_page("news/article/renault-launches-bs-vi-compliant-duster-price-starts-at-rs-849000-1499290/", "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div/h4/a")
