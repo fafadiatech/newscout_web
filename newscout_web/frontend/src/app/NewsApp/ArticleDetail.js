@@ -174,7 +174,7 @@ class ArticleDetail extends React.Component {
 		var state = this.state;
 		var article_dict = {}
 		state.article.id = article.id;
-		state.article.slug = "/news/article/"+article.slug;
+		state.article.slug = "/news/article/" + article.slug;
 		state.article.title = article.title;
 		state.article.altText = article.title;
 		state.article.caption = article.blurb;
@@ -261,7 +261,7 @@ class ArticleDetail extends React.Component {
 	}
 
 	setCaptcha = (data) => {
-		var results = JSON.parse(data["body"]["result"])
+		var results = data["body"]["result"]
 		var captcha_image = BASE_URL + results["new_captch_image"]
 		var state = this.state
 		state.captchaImage = captcha_image
@@ -326,18 +326,18 @@ class ArticleDetail extends React.Component {
 
 	handleNextArticle = () => {
 		this.setState({ isLoading: true })
-		var new_url = BASE_URL+"/news/article/"+this.state.next_article;
+		var new_url = BASE_URL + "/news/article/" + this.state.next_article;
 		window.location.href = new_url;
 	}
 
 	handlePrevArticle = () => {
 		this.setState({ isLoading: true })
-		var new_url = BASE_URL+"/news/article/"+this.state.prev_article;
+		var new_url = BASE_URL + "/news/article/" + this.state.prev_article;
 		window.location.href = new_url;
 	}
 
 	handleSearch = (query) => {
-		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		var url = SUGGESTIONS + "?q=" + query + "&" + this.state.domain
 		getRequest(url, this.getSuggestionsResponse)
 	}
 
@@ -350,7 +350,7 @@ class ArticleDetail extends React.Component {
 		this.setState({
 			options: options_array
 		})
-    }
+	}
 
 	componentDidMount() {
 		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
@@ -377,7 +377,7 @@ class ArticleDetail extends React.Component {
 
 	render() {
 		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids, isChecked, isLoading, options } = this.state;
-    	var root_category = "";
+		var root_category = "";
 		var category = "";
 		if (article.root_category) {
 			var root_category = article.root_category.replace(" ", "-").toLowerCase()
@@ -433,9 +433,9 @@ class ArticleDetail extends React.Component {
 													<div className="article-detail">
 														{isLoading ?
 															<Skeleton height={500} />
-														:
+															:
 															<JumboBox
-																id={article.id} 
+																id={article.id}
 																image={article.src}
 																title={article.title}
 																description={article.caption}
@@ -483,20 +483,20 @@ class ArticleDetail extends React.Component {
 														<div className="mt-4">
 															{isLoading ?
 																<Skeleton height={300} />
-															:
-																<Comments 
-																	comments={this.state.articlecomments} 
-																	handleSubmit={this.handleSubmit} 
-																	successComment={this.state.successComment} 
-																	is_loggedin_validation={this.state.is_loggedin_validation} 
-																	captchaImage={captchaImage} 
-																	InvalidCaptcha={this.state.InvalidCaptcha} 
-																	fetchCaptcha={this.fetchCaptcha} 
-																	resetAll={this.state.resetAll} 
-																	is_captcha={this.state.is_captcha} 
-																	is_loggedin={is_loggedin} 
+																:
+																<Comments
+																	comments={this.state.articlecomments}
+																	handleSubmit={this.handleSubmit}
+																	successComment={this.state.successComment}
+																	is_loggedin_validation={this.state.is_loggedin_validation}
+																	captchaImage={captchaImage}
+																	InvalidCaptcha={this.state.InvalidCaptcha}
+																	fetchCaptcha={this.fetchCaptcha}
+																	resetAll={this.state.resetAll}
+																	is_captcha={this.state.is_captcha}
+																	is_loggedin={is_loggedin}
 																	toggle={this.toggle}
-																	is_open={modal} 
+																	is_open={modal}
 																/>
 															}
 														</div>
@@ -513,7 +513,7 @@ class ArticleDetail extends React.Component {
 														</div>
 														{isLoading ?
 															<Skeleton height={400} />
-														:
+															:
 															<SideBox posts={recommendations} />
 														}
 													</div>
@@ -529,7 +529,7 @@ class ArticleDetail extends React.Component {
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
-				
+
 				<KeyboardEventHandler handleKeys={['right']} onKeyEvent={this.handleNextArticle} />
 				<KeyboardEventHandler handleKeys={['left']} onKeyEvent={this.handlePrevArticle} />
 			</React.Fragment>
