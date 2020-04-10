@@ -1,10 +1,13 @@
 import time
 import pytest
 
-from .base import BASE_URL, NSE2ETestBase
+from .base import BASE_URL, CREDS, NSE2ETestBase
 
 @pytest.mark.usefixtures("setup")
 class TestFrontend(NSE2ETestBase):
+
+    frontend_username = CREDS['frontend']['username']
+    frontend_password = CREDS['dashboard']['password']
 
     def test_trending(self):
         self.check_item_exists_on_page("news/trending/", "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[1]/div/div[1]/div/div/div[2]/h3/a")
@@ -40,3 +43,11 @@ class TestFrontend(NSE2ETestBase):
 
     def test_more_news(self):
         self.check_item_exists_on_page("news/article/renault-launches-bs-vi-compliant-duster-price-starts-at-rs-849000-1499290/", "/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div/h4/a")
+
+    def test_login(self):
+        driver = self.driver
+        driver.get(f"{BASE_URL}login/")
+        time.sleep(3)
+        self.login(self.frontend_username, self.frontend_password)
+        error_message = driver.find_element_by_xpath("/html/body/div[1]/form/div[3]/div")
+        assert (error_message.text != "Email or Password Is Incorrect")
