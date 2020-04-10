@@ -145,7 +145,7 @@ class Comments extends React.Component {
 				}
 				<div className="comment-list mt-4">
 					<div className="heading">
-						<h5><strong>{`${comments.length > 0 ? comments.length + "Comments" : "Be the first to say something !!!"}`}</strong></h5>
+						<h5><strong>{`${comments.length > 0 ? comments.length + " Comments" : "Be the first to say something !!!"}`}</strong></h5>
 					</div>
 					{comments.length > 0 ?
 						<div className="all-comment  mt-3">{all_comments}</div>
