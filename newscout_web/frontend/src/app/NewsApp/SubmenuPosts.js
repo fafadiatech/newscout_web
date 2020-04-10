@@ -37,7 +37,7 @@ class SubmenuPosts extends React.Component {
 			next: null,
 			previous: null,
 			domain: "domain="+DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			isSideOpen: true,
 			modal: false,
 			is_loggedin: false,
@@ -217,7 +217,7 @@ class SubmenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
-		this.setState({isLoading: true, cat_name: cat_name})
+		this.setState({cat_name: cat_name})
 		getRequest(url, this.newsData)
 	}
 
@@ -247,9 +247,11 @@ class SubmenuPosts extends React.Component {
 			newsPosts: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loadingPagination: false,
-			isLoading: false
+			loadingPagination: false
 		})
+		setTimeout(() => { 
+			this.setState({isLoading: false})
+		}, 3000)
 	}
 
 	isSideBarToogle = (data) => {

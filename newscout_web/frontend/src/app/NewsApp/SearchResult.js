@@ -43,7 +43,7 @@ class SearchResult extends React.Component {
 			previous: null,
 			isSideOpen: true,
 			domain: "domain=" + DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
@@ -266,9 +266,11 @@ class SearchResult extends React.Component {
 			searchResult: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loadingPagination: false,
-			isLoading: false
+			loadingPagination: false
 		})
+		setTimeout(() => { 
+			this.setState({isLoading: false})
+		}, 3000)
 	}
 
 	queryFilter = (data, checked) => {
