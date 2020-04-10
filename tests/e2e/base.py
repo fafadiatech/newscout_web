@@ -112,3 +112,16 @@ class NSE2ETestBase():
         Use this function to switch window
         """
         return self.driver.switch_to.window(window_handles)
+
+    def check_item_exists_on_page(self, url_to_check, first_element_xpath, wait_seconds=3):
+        """
+        1. Go to a page mentioned in `url_to_check`
+        2. Get first element with `first_element_xpath`
+        3. Wait for `wait_seconds`
+        4. Check for non empty contents
+        """
+        driver = self.driver
+        driver.get("{0}{1}".format(BASE_URL, url_to_check))
+        first_item = driver.find_element_by_xpath(first_element_xpath)
+        time.sleep(wait_seconds)
+        assert (first_item.text != "")
