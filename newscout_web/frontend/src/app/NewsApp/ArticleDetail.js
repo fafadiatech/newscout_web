@@ -53,7 +53,8 @@ class ArticleDetail extends React.Component {
 			isChecked: false,
 			next_article: '',
 			prev_article: '',
-			options:[]
+			options:[],
+			isLoading: true
 		};
 	}
 
@@ -185,13 +186,13 @@ class ArticleDetail extends React.Component {
 		state.article.date = moment(article.published_on).format('D MMMM YYYY');
 		state.next_article = next_article;
 		state.prev_article = prev_article;
-		state.isLoading = false
 		if(article.cover_image){
 			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(article.cover_image);
 		} else {
 			state.article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/" + config_data.defaultImage;
 		}
 		getRequest(ARTICLE_DETAIL_URL + state.article.id + "/recommendations/?" + this.state.domain, this.getRecommendationsResults);
+		state.isLoading = false
 		this.setState(state)
 	}
 
