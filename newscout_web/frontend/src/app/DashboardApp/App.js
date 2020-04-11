@@ -442,6 +442,13 @@ class App extends React.Component {
 								</div>
 							</div>
 							<div className="row">
+								<div className="col-lg-12">
+									<div className="graph-section">
+										<ArticlesPerCategoryGraph data={this.state.ArticlesPerCategoryData} loading={this.state.ArticlesPerCategoryLoading} no_data={this.state.ArticlesPerCategoryNoData} />
+									</div>
+								</div>
+							</div>
+							<div className="row">
 								<div className="col-lg-6">
 									<div className="graph-section">
 										<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData}/>
@@ -454,14 +461,16 @@ class App extends React.Component {
 								</div>
 							</div>
 							<div className="row">
-								<div className="col-lg-6">
-									<div className="graph-section">
-										<ArticlesPerCategoryGraph data={this.state.ArticlesPerCategoryData} loading={this.state.ArticlesPerCategoryLoading} no_data={this.state.ArticlesPerCategoryNoData} />
-									</div>
-								</div>
-								<div className="col-lg-6">
+								<div className="col-lg-12">
 									<div className="graph-section">
 										<InteractionsPerCategoryGraph data={this.state.InteractionsPerCategoryData} loading={this.state.InteractionsPerCategoryLoading} no_data={this.state.InteractionsPerCategoryNoData} />
+									</div>
+								</div>
+							</div>
+							<div className="row">
+								<div className="col-lg-12">
+									<div className="graph-section">
+										<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
 									</div>
 								</div>
 							</div>
@@ -478,14 +487,9 @@ class App extends React.Component {
 								</div>
 							</div>
 							<div className="row">
-								<div className="col-lg-6">
+								<div className="col-lg-12">
 									<div className="graph-section">
 										<ArticlesPerSessionGraph data={this.state.ArticlesPerSessionData} loading={this.state.ArticlesPerSessionLoading} no_data={this.state.ArticlesPerSessionNoData} />
-									</div>
-								</div>
-								<div className="col-lg-6">
-									<div className="graph-section">
-										<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
 									</div>
 								</div>
 							</div>
