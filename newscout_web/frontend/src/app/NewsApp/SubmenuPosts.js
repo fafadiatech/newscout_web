@@ -338,7 +338,7 @@ class SubmenuPosts extends React.Component {
 		
 		var items = newsPosts.map((item, index) => {
 			return (
-				<div className="col-lg-4 col-md-4 mb-4">
+				<div className="col-lg-4 col-md-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 					: 
@@ -370,7 +370,7 @@ class SubmenuPosts extends React.Component {
 			resultsRender.push(items[i]);
 			if ((i+1) % 25 === 0) {
 				resultsRender.push(
-					<div className="col-lg-4 col-md-4 mb-4">
+					<div className="col-lg-4 col-md-4 mb-4" key={ads_article.id}>
 						<VerticleCardAd
 							id={ads_article.id}
 							image={ads_article.image}

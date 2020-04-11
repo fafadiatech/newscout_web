@@ -383,7 +383,7 @@ class SearchResult extends React.Component {
 
 		var result = searchResult.map((item, index) => {
 			return (
-				<div className="col-lg-4 mb-5">
+				<div className="col-lg-4 mb-5" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 						:

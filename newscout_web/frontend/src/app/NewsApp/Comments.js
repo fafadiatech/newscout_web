@@ -98,7 +98,7 @@ class Comments extends React.Component {
 												<img src={captchaImage} alt={captchaImage} />
 											</div>
 											<div className="form-group">
-												<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>
+												<button type="button" className="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>
 													<FontAwesomeIcon icon={faRedo} />
 												</button>
 											</div>
