@@ -118,7 +118,7 @@ class Bookmark extends React.Component {
 	}
 
 	articleBookmarkResponse = (data) => {
-		var bookmark_obj = data.body.bookmark_article
+		var bookmark_obj = data.body.bookmark_article;
 		var index = this.state.newsPosts.indexOf(bookmark_obj.article);
 		this.state.newsPosts.splice(index, 1);
 		this.setState({
@@ -160,7 +160,6 @@ class Bookmark extends React.Component {
 
 	getBookmarksArticles = (data) => {
 		var news_array = []
-		var article_array = []
 		data.body.results.map((item, index) => {
 			if(item.article.cover_image){
 				var article_dict = {}
@@ -175,7 +174,7 @@ class Bookmark extends React.Component {
 				article_dict['published_on'] = moment(item.article.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.article.cover_image)
 				news_array.push(article_dict)
-				article_array.push(item.article.id)
+				article_array.push(item.article)
 			}
 		})
 		this.setState({

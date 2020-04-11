@@ -41,6 +41,7 @@ nav.navbar {
   background-size: cover;
   width: 135px;
   height: 50px;
+  padding: 0px;
 }
 
 .menu-item {

@@ -39,10 +39,9 @@ class ParseDateRange():
         return first_date_obj, last_date_obj
 
     def get_default_date_range(self):
-        end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=6)
-        start_date = datetime.combine(start_date, time.min)
-        end_date = datetime.combine(end_date, time.max)
+        date = datetime.now().date() - timedelta(days=30)
+        start_date = datetime.combine(date, time.min)
+        end_date = datetime.combine(datetime.now().date(), time.max)
         # start_aware = start_date.replace(tzinfo=self.tz)
         # end_aware = end_date.replace(tzinfo=self.tz)
         # start_date_obj = start_aware.astimezone(pytz.UTC)
@@ -64,13 +63,14 @@ class ParseDateRange():
                 return start_date, end_date, ""
 
             elif date_range == "7days":
-                return self.get_default_date_range()
+                end_date = datetime.now().date()
+                start_date = end_date - timedelta(days=6)
+                start_date = datetime.combine(start_date, time.min)
+                end_date = datetime.combine(end_date, time.max)
+                return start_date, end_date, ""
 
             elif date_range == "30days":
-                date = datetime.now().date() - timedelta(days=30)
-                start_date = datetime.combine(date, time.min)
-                end_date = datetime.combine(datetime.now().date(), time.max)
-                return start_date, end_date, ""
+                return self.get_default_date_range()
 
             elif date_range == "last_month":
                 date = datetime.now().date()

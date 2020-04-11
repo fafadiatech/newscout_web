@@ -68,7 +68,7 @@ class MenuPosts extends React.Component {
 			menus: [],
 			isSideOpen: true,
 			domain: "domain="+DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
@@ -168,7 +168,6 @@ class MenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id, submenu) => {
 		submenu.map((item, index) => {
-			this.setState({isLoading: true})
 			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
 			getRequest(url, this.newsData, false, item)
 		})
@@ -204,9 +203,11 @@ class MenuPosts extends React.Component {
 			return a.menuid - b.menuid
 		})
 		this.setState({
-			newsPosts: final_data,
-			isLoading: false
+			newsPosts: final_data
 		})
+		setTimeout(() => { 
+			this.setState({isLoading: false})
+		}, 3000)
 	}
 
 	isSideBarToogle = (data) => {
@@ -289,7 +290,7 @@ class MenuPosts extends React.Component {
 									return (
 										<React.Fragment>
 											{isLoading ?
-												<Skeleton height={525} />
+												<Skeleton height={200} />
 											:
 												<ImageOverlay 
 													image={sub_item.src}
