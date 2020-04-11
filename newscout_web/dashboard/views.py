@@ -18,8 +18,8 @@ class EditorTemplateView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return redirect_to_login(request.get_full_path(),
-                                         self.get_login_url(),
-                                         self.get_redirect_field_name())
+                                     self.get_login_url(),
+                                     self.get_redirect_field_name())
 
         if not request.user.is_editor:
             return HttpResponseRedirect("/")
@@ -37,7 +37,7 @@ class EditorTemplateView(LoginRequiredMixin, TemplateView):
 
 
 class MainIndexView(TemplateView):
-    	template_name = "index.html"
+    template_name = "index.html"
 
 
 class IndexView(EditorTemplateView):
@@ -50,48 +50,48 @@ class IndexView(EditorTemplateView):
 
 
 class CampaignView(EditorTemplateView):
-	template_name = "dashboard-campaign.html"
+    template_name = "dashboard-campaign.html"
 
-	def get_context_data(self, **kwargs):
-		context = super(CampaignView, self).get_context_data(**kwargs)
-		context['active_page'] = "campaign"
-		return context
+    def get_context_data(self, **kwargs):
+        context = super(CampaignView, self).get_context_data(**kwargs)
+        context['active_page'] = "campaign"
+        return context
 
 
 class GroupView(EditorTemplateView):
-	template_name = "dashboard-group.html"
+    template_name = "dashboard-group.html"
 
-	def get_context_data(self, **kwargs):
-		context = super(GroupView, self).get_context_data(**kwargs)
-		context['active_page'] = "group"
-		return context
+    def get_context_data(self, **kwargs):
+        context = super(GroupView, self).get_context_data(**kwargs)
+        context['active_page'] = "group"
+        return context
 
 
 class AdvertisementView(EditorTemplateView):
-	template_name = "dashboard-advertisement.html"
+    template_name = "dashboard-advertisement.html"
 
-	def get_context_data(self, **kwargs):
-		context = super(AdvertisementView, self).get_context_data(**kwargs)
-		context['active_page'] = "advertisement"
-		return context
+    def get_context_data(self, **kwargs):
+        context = super(AdvertisementView, self).get_context_data(**kwargs)
+        context['active_page'] = "advertisement"
+        return context
 
 
 class ArticleView(EditorTemplateView):
-	template_name = "dashboard-article.html"
+    template_name = "dashboard-article.html"
 
-	def get_context_data(self, **kwargs):
-		context = super(ArticleView, self).get_context_data(**kwargs)
-		context['active_page'] = "article"
-		return context
+    def get_context_data(self, **kwargs):
+        context = super(ArticleView, self).get_context_data(**kwargs)
+        context['active_page'] = "article"
+        return context
 
 
 class ArticleCreateView(EditorTemplateView):
-	template_name = "dashboard-article-create.html"
+    template_name = "dashboard-article-create.html"
 
-	def get_context_data(self, **kwargs):
-		context = super(ArticleCreateView, self).get_context_data(**kwargs)
-		context['active_page'] = 'article-create'
-		return context
+    def get_context_data(self, **kwargs):
+        context = super(ArticleCreateView, self).get_context_data(**kwargs)
+        context['active_page'] = 'article-create'
+        return context
 
 
 class ArticleEditView(EditorTemplateView):
@@ -162,3 +162,16 @@ class LogOutView(RedirectView):
         res = HttpResponseRedirect(url)
         res.delete_cookie("token")
         return res
+
+
+class SubscriptionView(EditorTemplateView):
+    template_name = "dashboard-subscription.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(SubscriptionView, self).get_context_data(**kwargs)
+        context['active_page'] = "subscription"
+        if 'pk' in kwargs:
+            context['pk'] = kwargs.get('pk')
+        else:
+            context['pk'] = None
+        return context

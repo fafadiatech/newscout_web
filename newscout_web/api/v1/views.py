@@ -33,7 +33,7 @@ from rest_framework.parsers import JSONParser
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from datetime import datetime, timedelta
-from django.db.models import Count
+from django.db.models import Count, Max, Min
 import pytz
 import uuid
 from core.utils import es, ingest_to_elastic, delete_from_elastic
@@ -90,10 +90,7 @@ class SignUpAPIView(APIView):
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
-            return Response(create_response(
-                {"Msg": "sign up successfully",
-
-                 }))
+            return Response(create_response({"Msg": "sign up successfully"}))
         else:
             return Response(
                 create_serializer_error_response(user_serializer.errors),
@@ -288,19 +285,28 @@ class ArticleDetailAPIView(APIView):
         slug = self.kwargs.get("slug", "")
 
         user = self.request.user
-        article = Article.objects.filter(slug=slug).first()
+        article = Article.objects.first()
+        has_subscribed = False
+        if not self.request.user.is_anonymous and \
+            Subscription.objects.filter(
+            user=self.request.user).exlcude(subs_type='Basic').exists():
+            has_subscribed = True
+        
         try:
             next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
-        except:
+        except Exception as error:
+            print(error)
             next_article = Article.objects.aggregate(Min("id"))['id__min']
 
         try:
             prev_article = Article.objects.filter(id__gt=article.id).order_by("-id")[0:1].get().slug
-        except:
+        except Exception as error:
+            print(error)
             prev_article = Article.objects.aggregate(Max("id"))['id__max']
 
         if article:
-            response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
+            response_data = ArticleSerializer(article, context={
+                "hash_tags_list": True, 'has_subscribed': has_subscribed}).data
             if not user.is_anonymous:
                 book_mark_article = BookmarkArticle.objects.filter(
                     user=user, article=article).first()
@@ -951,7 +957,6 @@ class SocialLoginView(generics.GenericAPIView):
         data["breaking_news"] = notification.data[0]['breaking_news']
         data["daily_edition"] = notification.data[0]['daily_edition']
         data["personalized"] = notification.data[0]['personalized']
-
         return data
 
     def post(self, request, *args, **kwargs):
@@ -1177,17 +1182,14 @@ class ChangeArticleStatusView(APIView, SocailMediaPublishing):
 
     def post(self, request):
         _id = request.data.get("id")
-        active_status = request.data.get("activate")
         article = Article.objects.filter(id=_id).first()
         if not article:
             return Response(create_error_response({"error": "Article does not exists"}), status=400)
-        article.active = active_status
+        article.active = request.data.get("activate")
         article.save()
         self.publish(article)
         return Response(create_response({
-            "id": article.id,
-            "active": article.active
-        }))
+            "id": article.id, "active": article.active}))
 
 
 class CategoryBulkUpdate(APIView):
@@ -1449,14 +1451,36 @@ class AutoCompleteAPIView(generics.GenericAPIView):
 class SubsAPIView(ListAPIView):
     serializer_class = SubsMediaSerializer
     permission_classes = (AllowAny,)
+    pagination_class = PostpageNumberPagination
 
-    def format_response(self, response):
-        results = []
-        if response.hits.hits:
-            for result in response.hits.hits:
-                results.append(result["_source"])
-        return results
+    def get(self, request):
+        q = self.request.GET.get("q", None)
+        subs = Subscription.objects.all()
+        if q:
+            subs = subs.filter(user__email__icontains=q)
+        source = SubsMediaSerializer(subs, many=True)
+        return Response(create_response({"results": source.data}))
 
-    def get(self):
-        queryset = Subscription.objects.all()
-        return queryset
+
+class UpdateSubsAPIView(APIView):
+    serializer_class = SubsMediaSerializer
+    permission_classes = (AllowAny,)
+
+    def get(self, request, pk):
+        source = SubsMediaSerializer(Subscription.objects.get(id=pk))
+        return Response(create_response({"results": source.data}))
+
+    def post(self, request, *args, **kwargs):
+        subs_id = self.request.POST.get('id')
+        subs = Subscription.objects.filter(id=subs_id)
+        if subs.exists():
+            subs = subs.first()
+            subs.subs_type = self.request.POST.get('subs_type')
+            auto_renew = self.request.POST.get('auto_renew')
+            if auto_renew == 'No':
+                subs.auto_renew = False
+            else:
+                subs.auto_renew = True
+            subs.save()
+            return Response(create_response({"results": "success"}))
+        return Response(create_response({"results": "error"}))
