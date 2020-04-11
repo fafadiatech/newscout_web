@@ -1,12 +1,13 @@
-from rest_framework import serializers
+from rest_framework import (exceptions, serializers)
+
+from django.contrib.auth import authenticate
+from rest_framework.validators import UniqueValidator
+from rest_framework.authtoken.models import Token
+
 from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
                          ArticleLike, HashTag, ArticleMedia, Menu, SubMenu,
                          Devices, Notification, TrendingArticle, DraftMedia, Comment,
-                         CategoryAssociation)
-from django.contrib.auth import authenticate
-from rest_framework import exceptions
-from rest_framework.validators import UniqueValidator
-from rest_framework.authtoken.models import Token
+                         CategoryAssociation, Subscription)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -55,11 +56,17 @@ class ArticleSerializer(serializers.ModelSerializer):
     root_category_id = serializers.SerializerMethodField()
     hash_tags = HashTagSerializer(many=True)
     author = serializers.SerializerMethodField()
+    blurb = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(ArticleSerializer, self).__init__(*args, **kwargs)
         if self.context.get("hash_tags_list"):
             self.fields["hash_tags"] = serializers.SerializerMethodField()
+
+    def get_blurb(self, instance):
+        if not self.context.get("hash_subscribed"):
+            return instance.blurb[:1000] + '...'
+        return instance.blurb
 
     def get_hash_tags(self, instance):
         return list(instance.hash_tags.all().values_list("name", flat=True))
@@ -96,6 +103,7 @@ class UserSerializer(serializers.Serializer):
         user.set_password(validated_data["password"])
         user.username = validated_data["email"]
         user.save()
+        Subscription.objects.get_or_create(user=user, subs_type="Basic", payement_mode="Basic")
         token, _ = Token.objects.get_or_create(user=user)
         return user
 
@@ -387,3 +395,15 @@ class CommentListSerializer(serializers.ModelSerializer):
         for reply in comment_reply:
             replies.append(CommentListSerializer(reply).data)
         return replies
+
+
+class SubsMediaSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format="%a, %d %B")
+
+    def get_email(self, instance):
+        return instance.user.email
+
+    class Meta:
+        model = Subscription
+        fields = '__all__'

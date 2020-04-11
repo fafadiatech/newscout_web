@@ -364,9 +364,9 @@ SUBS_TYPE = (
 class Subscription(NewsSiteBaseModel):
     user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
     subs_type = models.CharField(choices=SUBS_TYPE, max_length=50)
-    expires_on = models.DateTimeField()
+    expires_on = models.DateTimeField(blank=True, null=True)
     auto_renew = models.BooleanField(default=True)
     payement_mode = models.CharField(choices=SUBS_TYPE, max_length=50)
 
     def __str__(self):
-        return "{self.user}, {self.sub_typ}"
+        return f"{self.user}, {self.sub_typ}"

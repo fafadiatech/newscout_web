@@ -42,3 +42,6 @@ export const CAPTCHA_URL = ARTICLE_API_URL + "comment-captcha/";
 export const ARTICLE_BOOKMARK = ARTICLE_API_URL + "articles/bookmark/";
 export const ALL_ARTICLE_BOOKMARK = ARTICLE_API_URL + "bookmark-articles/bookmark-news-list/";
 export const SUGGESTIONS = ARTICLE_API_URL + "suggest/";
+
+// export const SUBSCRIPTION_URL = ARTICLE_API_URL + "subscription/";
+export const SUBSCRIPTION_URL =  "/api/v1/subscription/";

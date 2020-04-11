@@ -102,10 +102,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'newscout_web',
+            'NAME': 'newscoutweb',
             'USER': 'postgres',
-            'PASSWORD': 'root#123',
-            'HOST': 'localhost',
+            'PASSWORD': 'postgres',
+            'HOST': '139.59.2.130',
             'PORT': '5432',
         }
     }
@@ -188,8 +188,8 @@ EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
 EMAIL_FROM = ''
 
-ELASTIC_SERVER_IP="localhost"
-ELASTIC_SERVER_PORT="9200"
+ELASTIC_SERVER_IP = "167.71.238.145"
+ELASTIC_SERVER_PORT = "9200"
 
 DBNAME = 'newscout_analytics'
 client = MongoClient()

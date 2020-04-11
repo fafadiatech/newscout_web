@@ -2,23 +2,24 @@
 {% load static %}
 
 {% block metatags %}
-	<meta property="og:title" content={{article_title|safe}} />
-	<meta name="description" content="{{article_desc}}" />
-	<meta property="og:url" content={{article_url}} />
-	<meta property="og:image" content={{article_image}} />
+<meta property="og:title" content={{article_title|safe}} />
+<meta name="description" content="{{article_desc}}" />
+<meta property="og:url" content={{article_url}} />
+<meta property="og:image" content={{article_image}} />
 {% endblock metatags %}
 
 {% block title %}NewScout - Article Detail{% endblock title %}
 
 {% block content %}
-	<div id="article-detail"></div>
+<div id="article-detail"></div>
 {% endblock content %}
 
 {% block js %}
-	<script type="text/javascript">
-		var DOMAIN = "{{domain|safe}}"
-		var SLUG = "{{slug|safe}}"
-		var ARTICLEID = "{{articleId|safe}}"
-	</script>
-	<script src="{% static "js/react/newsArticleDetail.js" %}"></script>
+<script type="text/javascript">
+	var DOMAIN = "{{domain|safe}}"
+	var SLUG = "{{slug|safe}}"
+	var ARTICLEID = "{{articleId|safe}}"
+	var SUBSCRIBED = "{{has_subscribed}}"
+</script>
+<script src="{% static "js/react/newsArticleDetail.js" %}"></script>
 {% endblock js %}

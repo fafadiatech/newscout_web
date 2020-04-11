@@ -53,8 +53,9 @@ class ArticleDetail extends React.Component {
 			isChecked: false,
 			next_article: '',
 			prev_article: '',
-			options:[],
-			isLoading: true
+			options: [],
+			isLoading: true,
+			has_subscribed: SUBSCRIBED === 'True' ? true : false,
 		};
 	}
 
@@ -186,8 +187,8 @@ class ArticleDetail extends React.Component {
 		state.article.date = moment(article.published_on).format('D MMMM YYYY');
 		state.next_article = next_article;
 		state.prev_article = prev_article;
-		if(article.cover_image){
-			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/"+decodeURIComponent(article.cover_image);
+		if (article.cover_image) {
+			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/" + decodeURIComponent(article.cover_image);
 		} else {
 			state.article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/" + config_data.defaultImage;
 		}
@@ -375,14 +376,22 @@ class ArticleDetail extends React.Component {
 	}
 
 	render() {
-		var { menus, article, recommendations, username, modal, captchaImage, isSideOpen, is_loggedin, bookmark_ids, isChecked, isLoading, options } = this.state;
+		var { menus, article, recommendations, username, modal, captchaImage,
+			isSideOpen, is_loggedin, bookmark_ids, isChecked,
+			isLoading, options } = this.state;
 		var root_category = "";
 		var category = "";
 		if (article.root_category) {
-			var root_category = article.root_category.replace(" ", "-").toLowerCase()
+			root_category = article.root_category.replace(" ", "-").toLowerCase()
 		}
 		if (article.category) {
 			var category = article.category.replace(" ", "-").toLowerCase()
+		}
+		var description = article.caption;
+		var source_url = article.source_url;
+		if (!this.state.has_subscribed) {
+			source_url = "";
+			description = article.caption
 		}
 
 		return (
@@ -400,8 +409,7 @@ class ArticleDetail extends React.Component {
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
 					handleSearch={this.handleSearch}
-					options={options}
-				/>
+					options={options} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
@@ -437,9 +445,9 @@ class ArticleDetail extends React.Component {
 																id={article.id}
 																image={article.src}
 																title={article.title}
-																description={article.caption}
+																description={description}
 																uploaded_by={article.source}
-																source_url={article.source_url}
+																source_url={source_url}
 																slug_url={article.slug}
 																category={article.category}
 																hash_tags={article.hash_tags}
