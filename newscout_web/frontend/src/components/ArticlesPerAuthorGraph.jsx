@@ -40,7 +40,7 @@ class ArticlesPerAuthorGraph extends PureComponent {
                     </React.Fragment>
                 :
                     <React.Fragment>
-                        <div style={{ width: '80%', height: 450 }}>
+                        <div style={{ height: 450 }}>
                             <ResponsiveContainer>
                                 <BarChart
                                     width={500}
