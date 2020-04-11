@@ -131,14 +131,14 @@ class SubmenuPosts extends React.Component {
 	}
 
 	articleBookmarkResponse = (data) => {
-		var bookmark_obj = data.body.bookmark_article
-		var index = article_array.indexOf(bookmark_obj.article);
+		var bookmark_obj = data.body.bookmark_article;
+		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
 		
 		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
 		}
 		
-		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
 			article_array.splice(index, 1);
 		}
 		this.setState({
@@ -265,7 +265,6 @@ class SubmenuPosts extends React.Component {
 	}
 
 	getBookmarksArticles = (data) => {
-		var article_array = []
 		var article_ids = data.body.results;
 		for(var i = 0; i < article_ids.length; i++){
 			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
