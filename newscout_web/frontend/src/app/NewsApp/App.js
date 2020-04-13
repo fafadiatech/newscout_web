@@ -483,7 +483,7 @@ class App extends React.Component {
 		
 		var sector_update = sector_update.map((item, index) => {
 			return(
-				<div className="col-lg-4 mb-4">
+				<div className="col-lg-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 					:
@@ -529,6 +529,7 @@ class App extends React.Component {
 						getArticleId={this.getArticleId}
 						bookmark_ids={bookmark_ids}
 						base_url={BASE_URL}
+						key={index}
 					/>
 				)
 			}
@@ -536,7 +537,7 @@ class App extends React.Component {
 
 		var regional_update = regional_update.map((item, index) => {
 			return(
-				<div className="col-lg-6 mb-4">
+				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={250} />
 					:
@@ -565,7 +566,7 @@ class App extends React.Component {
 
 		var finance = finance.map((item, index) => {
 			return (
-				<React.Fragment>
+				<React.Fragment key={index}>
 					{isLoading ?
 						<Skeleton height={230} />
 					:
@@ -587,7 +588,7 @@ class App extends React.Component {
 
 		var economics = economics.map((item, index) => {
 			return(
-				<div className="col-lg-6 mb-4">
+				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={230} />
 					:
@@ -616,7 +617,7 @@ class App extends React.Component {
 
 		var misc = misc.map((item, index) => {
 			return(
-				<div className="col-lg-4 mb-4">
+				<div className="col-lg-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 					:

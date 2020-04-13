@@ -412,7 +412,7 @@ class ArticleDetail extends React.Component {
 					options={options} />
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
+						<SideBar menuitems={menus} className={isSideOpen} isChecked={isChecked} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
