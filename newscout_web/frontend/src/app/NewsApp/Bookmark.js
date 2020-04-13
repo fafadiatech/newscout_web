@@ -32,7 +32,7 @@ class Bookmark extends React.Component {
 			newsPosts: [],
 			menus: [],
 			domain: "domain="+DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			isSideOpen: true,
 			modal: false,
 			is_loggedin: false,
@@ -123,8 +123,7 @@ class Bookmark extends React.Component {
 		var index = this.state.newsPosts.indexOf(bookmark_obj.article);
 		this.state.newsPosts.splice(index, 1);
 		this.setState({
-			newsPosts: this.state.newsPosts,
-			isLoading: true
+			newsPosts: this.state.newsPosts
 		})
 		if(cookies.get('full_name')){
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
@@ -180,9 +179,11 @@ class Bookmark extends React.Component {
 		})
 		this.setState({
 			newsPosts: news_array,
-			bookmark_ids: article_array,
-			isLoading: false
+			bookmark_ids: article_array
 		})
+		setTimeout(() => {
+			this.setState({isLoading: false})
+		}, 300)
 	}
 
 	handleLogout = () => {
@@ -314,7 +315,7 @@ class Bookmark extends React.Component {
 														</React.Fragment>
 												: ""
 												}
-												{results.length > 1 ?
+												{results ?
 													results
 												:
 													<div className="col-lg-12 text-center">
