@@ -64,7 +64,7 @@ class ArticleDetailView(TemplateView):
         context['has_subscribed'] = False
         if not self.request.user.is_anonymous and \
             Subscription.objects.filter(
-                user=self.request.user).exlcude(subs_type='Basic').exists():
+                user=self.request.user).exclude(subs_type='Basic').exists():
             context['has_subscribed'] = True
         article_id = slug.split("-")[-1]
         context['articleId'] = article_id
