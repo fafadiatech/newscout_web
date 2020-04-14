@@ -285,7 +285,7 @@ class ArticleDetailAPIView(APIView):
         slug = self.kwargs.get("slug", "")
 
         user = self.request.user
-        article = Article.objects.first()
+        article = Article.objects.filter(slug=slug).first()
         has_subscribed = False
         if not self.request.user.is_anonymous and \
             Subscription.objects.filter(
