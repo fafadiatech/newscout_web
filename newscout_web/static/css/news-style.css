@@ -616,7 +616,8 @@ ul.usr li {
 }
 
 .footer-area p a,
-.footer-area ul li a {
+.footer-area ul li a,
+.result-count {
   font-weight: 600;
 }
 
@@ -625,7 +626,7 @@ ul.usr li {
   color: #f0442c;
 }
 
-.bookmarked {
+.bookmarked, .result-count {
   color: #fc0a02c2;
 }
 

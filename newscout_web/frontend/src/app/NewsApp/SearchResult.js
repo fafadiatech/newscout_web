@@ -53,7 +53,8 @@ class SearchResult extends React.Component {
 			cat_array: [],
 			source_array: [],
 			hashtags_array: [],
-			options: []
+			options: [],
+			result_count: null
 		};
 	}
 
@@ -193,6 +194,7 @@ class SearchResult extends React.Component {
 		var source_filters = data.body.filters.source;
 		var hashtags_filters = data.body.filters.hash_tags;
 		var cat_filters = data.body.filters.category;
+		var result_count = data.body.count;
 		if (cat_filters && this.state.cat_array.length === 0) {
 			cat_filters.map((item, index) => {
 				if (item.key !== "") {
@@ -266,7 +268,8 @@ class SearchResult extends React.Component {
 			searchResult: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loadingPagination: false
+			loadingPagination: false,
+			result_count: result_count.toLocaleString()+" results found."
 		})
 		setTimeout(() => { 
 			this.setState({isLoading: false})
@@ -379,7 +382,7 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked, options } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked, options, result_count } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return (
@@ -455,7 +458,7 @@ class SearchResult extends React.Component {
 										</div>
 									</div>
 									<div className="row">
-										<div className="col-lg-12 mb-4">
+										<div className="col-lg-12 mb-2">
 											<div className="clerfix">
 												<div className="float-right">
 													<div className="filter" onClick={this.toggleFilter}>
@@ -463,9 +466,7 @@ class SearchResult extends React.Component {
 													</div>
 												</div>
 												<div className="float-left">
-													<div className="section-title">
-														<h2 className="m-0 section-title">Search result: <span className="text-capitalize">{QUERY}</span></h2>
-													</div>
+													<div className="result-count">{result_count}</div>
 												</div>
 											</div>
 										</div>
