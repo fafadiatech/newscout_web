@@ -82,20 +82,18 @@ class ChangePassword extends React.Component {
 	}
 
 	changePasswordResponse = (data) => {
-		let errors = {};
-		let formIsValid = true;
-		let error_msg = data.errors.Msg;
-		if(data.errors) {
-			formIsValid = false;
-			errors[data.errors.field] = error_msg;
-		}
-		this.setState({errors: errors});
-
 		if(data.body) {
 			toast.success(data.body.Msg);
 			setTimeout(() => {
 				window.location.href = "/"
 			}, 3000);
+		} else {
+			let errors = {};
+			let formIsValid = true;
+			let error_msg = data.errors.Msg;
+			formIsValid = false;
+			errors[data.errors.field] = error_msg;
+			this.setState({errors: errors});
 		}
 	}
 
