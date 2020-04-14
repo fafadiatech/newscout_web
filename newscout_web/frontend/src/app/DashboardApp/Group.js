@@ -37,6 +37,7 @@ export default class Group extends React.Component {
 			q: "",
 			page : 0,
 			isSideOpen: true,
+			username: USERNAME
 		};
 	}
 
@@ -333,7 +334,7 @@ export default class Group extends React.Component {
 	}
 
 	render(){
-		var { menus, isSideOpen } = this.state
+		var { menus, isSideOpen, username } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -404,6 +405,7 @@ export default class Group extends React.Component {
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
 						domain="dashboard"
+						username={username}
 					/>
 					<div className="container-fluid">
 						<div className="row">

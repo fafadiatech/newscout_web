@@ -28,7 +28,8 @@ class SubscriptionDetail extends React.Component {
             subs_type: 'Basic',
             autoRenew: 'Yes',
             payement_mode: 'Basic',
-            createdOn: ''
+            createdOn: '',
+            username: USERNAME
         };
     }
 
@@ -99,7 +100,7 @@ class SubscriptionDetail extends React.Component {
     }
 
     render() {
-        var isSideOpen = this.state;
+        var {isSideOpen, username} = this.state;
         return (
             <React.Fragment>
                 <ToastContainer />
@@ -110,7 +111,8 @@ class SubscriptionDetail extends React.Component {
                         isSlider={true}
                         isSideBarToogle={this.isSideBarToogle}
                         isSideOpen={isSideOpen}
-                        domain="dashboard" />
+                        domain="dashboard"
+                        username={username} />
                     <div className="container-fluid">
                         <div className="row">
                             <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
