@@ -277,24 +277,31 @@ class SearchResult extends React.Component {
 	}
 
 	queryFilter = (data, checked) => {
-		if (checked == true) {
-			query_array.push(data);
-		} else {
-			query_array.splice(query_array.indexOf(data), 1);
-		}
-		final_query = query_array.join("&");
-		this.setState({
-			final_query: final_query,
-			isLoading: true
-		})
-
-		if (history.pushState) {
-			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+		var data_array = []
+		if(data.toString() === data_array.toString()){
 			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
-			if (final_query) {
-				newurl = newurl + "&" + final_query;
-			}
 			window.history.pushState({}, '', newurl);
+			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY, this.getSearchResult);
+		} else {
+			if (checked == true) {
+				query_array.push(data);
+			} else {
+				query_array.splice(query_array.indexOf(data), 1);
+			}
+			final_query = query_array.join("&");
+			this.setState({
+				final_query: final_query,
+				isLoading: true
+			})
+
+			if (history.pushState) {
+				getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+				var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
+				if (final_query) {
+					newurl = newurl + "&" + final_query;
+				}
+				window.history.pushState({}, '', newurl);
+			}
 		}
 	}
 
