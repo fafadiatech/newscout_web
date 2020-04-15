@@ -40,7 +40,8 @@ class Bookmark extends React.Component {
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
 			isChecked: false,
-			options: []
+			options: [],
+			is_bookmark_empty: false
 		};
 	}
 
@@ -179,7 +180,8 @@ class Bookmark extends React.Component {
 		})
 		this.setState({
 			newsPosts: news_array,
-			bookmark_ids: article_array
+			bookmark_ids: article_array,
+			is_bookmark_empty: news_array.length > 0 ? false : true
 		})
 		setTimeout(() => {
 			this.setState({isLoading: false})
@@ -241,8 +243,8 @@ class Bookmark extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state;
-		
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, isChecked, options, is_bookmark_empty } = this.state;
+
 		var results = newsPosts.map((item, index) => {
 			return (
 				<div className="col-lg-4 col-md-4 mb-4" key={index}>
@@ -315,9 +317,8 @@ class Bookmark extends React.Component {
 														</React.Fragment>
 												: ""
 												}
-												{results ?
-													results
-												:
+												{results}
+												{is_bookmark_empty ?
 													<div className="col-lg-12 text-center">
 														<div className="m-5 mb-0">
 															<img src={bookmark_empty} className="img-fluid" style={{height: '100px'}} />
@@ -327,6 +328,7 @@ class Bookmark extends React.Component {
 															<h3 className="text-center" style={{color:"#f0442c"}}>Start Bookmarking now</h3>
 														</div>
 													</div>
+												: ""
 												}
 											</React.Fragment>
 										</div>
