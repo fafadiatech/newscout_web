@@ -639,7 +639,7 @@ ul.usr li {
 }
 
 .navbar-filter {
-  z-index: 0;
+  z-index: 1;
   top: 66px;
   padding: 0px;
   border-top: 1px solid #ddd;
