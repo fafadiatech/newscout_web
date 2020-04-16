@@ -637,3 +637,40 @@ ul.usr li {
 .trending-slider .slick-slider .slick-next {
   right: 0px;
 }
+
+.navbar-filter {
+  z-index: 0;
+  top: 66px;
+  padding: 0px;
+  border-top: 1px solid #ddd;
+}
+
+.navbar-filter .inner {
+  width: 100%;
+}
+
+.filter-section {
+  background-color: #fff;
+  padding: 0px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.filter-section .filter {
+  color: #3b5265;
+  text-transform: capitalize;
+}
+
+.related-queries-btn,
+.related-queries-btn:hover,
+.related-queries-btn:focus,
+.related-queries-btn.btn-secondary:not(:disabled):not(.disabled):active {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0px !important;
+  outline: 0 !important;
+  color: #3b5265 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}

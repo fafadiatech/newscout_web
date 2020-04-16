@@ -54,7 +54,7 @@ class SearchResult extends React.Component {
 			source_array: [],
 			hashtags_array: [],
 			options: [],
-			result_count: null
+			result_count: null,
 		};
 	}
 
@@ -442,6 +442,9 @@ class SearchResult extends React.Component {
 					isChecked={isChecked}
 					handleSearch={this.handleSearch}
 					options={options}
+					isNavbarFilter={true}
+					toggleFilter={this.toggleFilter}
+					query={QUERY}
 				/>
 				<div className="container-fluid">
 					<div className="row">
@@ -449,7 +452,7 @@ class SearchResult extends React.Component {
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
-									<div className="row">
+									<div className="row d-none d-sm-block">
 										<div className="col-lg-12">
 											<div className="row">
 												<div className="col-lg-12">
@@ -467,7 +470,7 @@ class SearchResult extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 mb-2">
 											<div className="clerfix">
-												<div className="float-right">
+												<div className="float-right d-none d-sm-block">
 													<div className="filter" onClick={this.toggleFilter}>
 														<FontAwesomeIcon icon={faFilter} /> Filter
 													</div>
