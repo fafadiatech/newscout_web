@@ -651,6 +651,12 @@ class ArticleSearchAPI(APIView):
         if not domain:
             return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
 
+        # mort like this for related queries
+        mlt_fields = ["has_tags"]
+        if source:
+            mlt_fields = ["has_tags", "source", "domain"]
+        mlt = Search(using=es,  index="article").query("more_like_this", fields=mlt_fields, like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt.execute()
         sr = Search(using=es, index="article")
 
         # highlight title and blurb containing query
@@ -662,7 +668,8 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query, "fields": ["title", "blurb"]}})
+            must_query.append({"multi_match": {"query": query, 
+            "fields": ["title", "blurb"], 'type': 'phrase'}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
