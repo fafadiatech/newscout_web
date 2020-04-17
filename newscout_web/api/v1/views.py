@@ -657,6 +657,12 @@ class ArticleSearchAPI(APIView):
         if not domain:
             return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
 
+        # mort like this for related queries
+        mlt_fields = ["has_tags"]
+        if source:
+            mlt_fields = ["has_tags", "source", "domain"]
+        mlt = Search(using=es,  index="article").query("more_like_this", fields=mlt_fields, like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt.execute()
         sr = Search(using=es, index="article")
 
         # highlight title and blurb containing query
@@ -668,7 +674,8 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query, "fields": ["title", "blurb"]}})
+            must_query.append({"multi_match": {"query": query, 
+            "fields": ["title", "blurb"], 'type': 'phrase'}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
@@ -1244,15 +1251,11 @@ class GetDailyDigestView(ListAPIView):
 
     def get_queryset(self):
         device_id = self.request.GET.get("device_id", "")
-        queryset = Devices.objects.filter(device_id=device_id).first()
-        if not queryset:
-            return queryset
-
-        dd = DailyDigest.objects.filter(device=queryset).first()
-        if not dd:
-            return queryset
-
-        return dd.articles.all().order_by("-published_on")
+        queryset = Devices.objects.filter(device_id=device_id)
+        dd = DailyDigest.objects.filter(device__in=queryset)
+        if not queryset.exists() or not dd.exists():
+            return []
+        return dd.first().articles.all().order_by("-published_on")
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
