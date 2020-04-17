@@ -53,7 +53,8 @@ class SearchResult extends React.Component {
 			cat_array: [],
 			source_array: [],
 			hashtags_array: [],
-			options: []
+			options: [],
+			result_count: null,
 		};
 	}
 
@@ -193,6 +194,7 @@ class SearchResult extends React.Component {
 		var source_filters = data.body.filters.source;
 		var hashtags_filters = data.body.filters.hash_tags;
 		var cat_filters = data.body.filters.category;
+		var result_count = data.body.count;
 		if (cat_filters && this.state.cat_array.length === 0) {
 			cat_filters.map((item, index) => {
 				if (item.key !== "") {
@@ -266,7 +268,8 @@ class SearchResult extends React.Component {
 			searchResult: results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loadingPagination: false
+			loadingPagination: false,
+			result_count: result_count.toLocaleString()+" results found."
 		})
 		setTimeout(() => { 
 			this.setState({isLoading: false})
@@ -274,24 +277,31 @@ class SearchResult extends React.Component {
 	}
 
 	queryFilter = (data, checked) => {
-		if (checked == true) {
-			query_array.push(data);
-		} else {
-			query_array.splice(query_array.indexOf(data), 1);
-		}
-		final_query = query_array.join("&");
-		this.setState({
-			final_query: final_query,
-			isLoading: true
-		})
-
-		if (history.pushState) {
-			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+		var data_array = []
+		if(data.toString() === data_array.toString()){
 			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
-			if (final_query) {
-				newurl = newurl + "&" + final_query;
-			}
 			window.history.pushState({}, '', newurl);
+			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY, this.getSearchResult);
+		} else {
+			if (checked == true) {
+				query_array.push(data);
+			} else {
+				query_array.splice(query_array.indexOf(data), 1);
+			}
+			final_query = query_array.join("&");
+			this.setState({
+				final_query: final_query,
+				isLoading: true
+			})
+
+			if (history.pushState) {
+				getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+				var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
+				if (final_query) {
+					newurl = newurl + "&" + final_query;
+				}
+				window.history.pushState({}, '', newurl);
+			}
 		}
 	}
 
@@ -379,11 +389,11 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked, options } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked, options, result_count } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return (
-				<div className="col-lg-4 mb-5">
+				<div className="col-lg-4 mb-5" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 						:
@@ -432,6 +442,9 @@ class SearchResult extends React.Component {
 					isChecked={isChecked}
 					handleSearch={this.handleSearch}
 					options={options}
+					isNavbarFilter={true}
+					toggleFilter={this.toggleFilter}
+					query={QUERY}
 				/>
 				<div className="container-fluid">
 					<div className="row">
@@ -439,7 +452,7 @@ class SearchResult extends React.Component {
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
-									<div className="row">
+									<div className="row d-none d-sm-block">
 										<div className="col-lg-12">
 											<div className="row">
 												<div className="col-lg-12">
@@ -455,17 +468,15 @@ class SearchResult extends React.Component {
 										</div>
 									</div>
 									<div className="row">
-										<div className="col-lg-12 mb-4">
+										<div className="col-lg-12 mb-2">
 											<div className="clerfix">
-												<div className="float-right">
+												<div className="float-right d-none d-sm-block">
 													<div className="filter" onClick={this.toggleFilter}>
 														<FontAwesomeIcon icon={faFilter} /> Filter
 													</div>
 												</div>
 												<div className="float-left">
-													<div className="section-title">
-														<h2 className="m-0 section-title">Search result: <span className="text-capitalize">{QUERY}</span></h2>
-													</div>
+													<div className="result-count">{result_count}</div>
 												</div>
 											</div>
 										</div>

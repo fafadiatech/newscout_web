@@ -256,7 +256,7 @@ class Trending extends React.Component {
 		})
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.getTrendingPosts()
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);

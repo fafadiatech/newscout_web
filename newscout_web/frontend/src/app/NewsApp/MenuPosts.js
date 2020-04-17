@@ -288,7 +288,7 @@ class MenuPosts extends React.Component {
 							<Slider {...settings}>
 								{item.posts.map((sub_item, sub_index) => {
 									return (
-										<React.Fragment>
+										<React.Fragment key={sub_index}>
 											{isLoading ?
 												<Skeleton height={200} />
 											:

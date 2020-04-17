@@ -11,6 +11,7 @@
 	<script type="text/javascript">
         var ACTIVE_PAGE = '{{active_page|safe}}'
         var ARTICLE_SLUG = '{{article_slug|safe}}'
+        var USERNAME = '{{request.user.first_name}} {{request.user.last_name}}'
 	</script>
 	<script src="{% static "js/react/dashboardArticleForm.js" %}"></script>
 {% endblock js %}

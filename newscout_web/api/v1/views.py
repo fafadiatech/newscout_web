@@ -472,39 +472,45 @@ class ChangePasswordAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        password = self.request.POST.get("password", "")
-        old_password = self.request.POST.get("old_password", "")
-        confirm_password = self.request.POST.get("confirm_password", "")
+        if request.data:
+            password = request.data["password"]
+            old_password = request.data["old_password"]
+            confirm_password = request.data["confirm_password"]
+        else:
+            password = self.request.POST.get("password", "")
+            old_password = self.request.POST.get("old_password", "")
+            confirm_password = self.request.POST.get("confirm_password", "")
+            
         user = self.request.user
         if old_password:
             if not user.check_password(old_password):
                 msg = "Old Password Does Not Match With User"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "old_password"
                 }))
             if confirm_password != password:
                 msg = "Password and Confirm Password does not match"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "confirm_password"
                 }))
             if old_password == password:
                 msg = "New password should not same as Old password"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "password"
                 }))
             if user and password:
                 user.set_password(password)
                 user.save()
                 return Response(create_response({
-                    "Msg": "Password changed successfully"
+                    "Msg": "Password changed successfully", "field": "confirm_password"
                 }))
             else:
                 return Response(create_error_response({
-                    "Msg": "Password field is required"
+                    "Msg": "Password field is required", "field": "password"
                 }))
         else:
             return Response(create_error_response({
-                "Msg": "Old Password field is required"
+                "Msg": "Old Password field is required", "field": "old_password"
             }))
 
 

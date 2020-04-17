@@ -32,7 +32,8 @@ class Article extends React.Component {
 			q: "",
 			articleUpdateId: "",
 			isSideOpen: true,
-			isChecked: false
+			isChecked: false,
+			username: USERNAME
 		};
 	}
 
@@ -158,7 +159,7 @@ class Article extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen, isChecked } = this.state
+		var { menus, isSideOpen, isChecked, username } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -217,7 +218,8 @@ class Article extends React.Component {
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
 						domain="dashboard"
-						isChecked={isChecked} />
+						isChecked={isChecked}
+						username={username} />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
