@@ -1251,15 +1251,11 @@ class GetDailyDigestView(ListAPIView):
 
     def get_queryset(self):
         device_id = self.request.GET.get("device_id", "")
-        queryset = Devices.objects.filter(device_id=device_id).first()
-        if not queryset:
-            return queryset
-
-        dd = DailyDigest.objects.filter(device=queryset).first()
-        if not dd:
-            return queryset
-
-        return dd.articles.all().order_by("-published_on")
+        queryset = Devices.objects.filter(device_id=device_id)
+        dd = DailyDigest.objects.filter(device__in=queryset)
+        if not queryset.exists() or not dd.exists():
+            return []
+        return dd.first().articles.all().order_by("-published_on")
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
