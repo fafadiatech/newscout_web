@@ -289,9 +289,9 @@ class ArticleDetailAPIView(APIView):
         has_subscribed = False
         if not self.request.user.is_anonymous and \
             Subscription.objects.filter(
-            user=self.request.user).exlcude(subs_type='Basic').exists():
+                user=self.request.user).exlcude(subs_type='Basic').exists():
             has_subscribed = True
-        
+
         try:
             next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
         except Exception as error:
@@ -1484,3 +1484,22 @@ class UpdateSubsAPIView(APIView):
             subs.save()
             return Response(create_response({"results": "success"}))
         return Response(create_response({"results": "error"}))
+
+
+class RSSAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        data = {}
+        domain = request.GET.get("domain")
+        if domain:
+            domain_obj = Domain.objects.filter(domain_id=domain).first()
+            if domain_obj:
+                menus = Menu.objects.filter(domain=domain_obj)
+                for menu in menus:
+                    all_categories = menu.submenu.all()
+                    for category in all_categories:
+                        data[category.name.name] = "/article/rss/?domain=" + domain + "&category=" + category.name.name
+                return Response(create_response({"results": data}))
+            return Response(create_error_response({"error": "Domain do not exist."}))
+        return Response(create_error_response({"error": "Domain is required"}))

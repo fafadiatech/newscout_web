@@ -22,6 +22,7 @@ module.exports = {
     newsBookmark: './src/app/NewsApp/Bookmark.js',
     dashboardSubscription: './src/app/DashboardApp/Subscription.js',
     dashboardSubscriptionDetails: './src/app/DashboardApp/SubscriptionDetails.js',
+    newsRSS: './src/app/NewsApp/RSS.js',
   },
   output: {
     path: path.resolve(__dirname, "..", "static", "js", "react"),
