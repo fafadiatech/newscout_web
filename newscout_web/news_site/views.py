@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from core.models import Domain, Menu
 from django.views.generic import TemplateView
 
+from core.models import Domain, Menu, Article, Subscription
 
 class IndexView(TemplateView):
     template_name = "news-index.html"
@@ -59,9 +59,22 @@ class ArticleDetailView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ArticleDetailView, self).get_context_data(**kwargs)
         context['domain'] = self.request.GET.get('domain', 'newscout')
-        context['slug'] = self.kwargs['slug']
-        article_id = context['slug'].split("-")[-1]
+        slug = self.kwargs['slug']
+        context['slug'] = slug
+        context['has_subscribed'] = False
+        if not self.request.user.is_anonymous and \
+            Subscription.objects.filter(
+                user=self.request.user).exclude(subs_type='Basic').exists():
+            context['has_subscribed'] = True
+        article_id = slug.split("-")[-1]
         context['articleId'] = article_id
+
+        article = Article.objects.filter(slug=slug).first()
+        if article:
+            context['article_title'] = article.title
+            context['article_desc'] = article.blurb
+            context['article_url'] = article.source_url
+            context['article_image'] = article.cover_image
         return context
 
 

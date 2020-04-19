@@ -352,3 +352,21 @@ class Comment(NewsSiteBaseModel):
 
     def __str__(self):
         return self.comment
+
+
+SUBS_TYPE = (
+    ("Basic", "Basic"),
+    ("Silver", "Silver"),
+    ("Gold", "Gold"),
+)
+
+
+class Subscription(NewsSiteBaseModel):
+    user = models.ForeignKey(BaseUserProfile, on_delete=models.CASCADE)
+    subs_type = models.CharField(choices=SUBS_TYPE, max_length=50)
+    expires_on = models.DateTimeField(blank=True, null=True)
+    auto_renew = models.BooleanField(default=True)
+    payement_mode = models.CharField(choices=SUBS_TYPE, max_length=50)
+
+    def __str__(self):
+        return "{self.user}, {self.sub_typ}"

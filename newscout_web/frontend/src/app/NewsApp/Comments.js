@@ -50,9 +50,9 @@ class Comments extends React.Component {
 	render() {
 
 		var state = this.state;
-		let { comments, successComment, is_loggedin_validation, captchaImage,InvalidCaptcha, resetAll, is_captcha, is_loggedin } = this.props
-		
-		if(resetAll){
+		let { comments, successComment, is_loggedin_validation, captchaImage, InvalidCaptcha, resetAll, is_captcha, is_loggedin } = this.props
+
+		if (resetAll) {
 			state.comment = ""
 			state.captcha = ""
 			this.props.fetchCaptcha();
@@ -88,7 +88,7 @@ class Comments extends React.Component {
 					<div className="comment-post">
 						<Form onSubmit={this.handleSubmit}>
 							<FormGroup>
-								<Input type="textarea" name="comment" id="exampleText" onChange={(e) => this.handleChange("comment", e)} value={this.state.comment} placeholder="Enter comments here..."/>
+								<Input type="textarea" name="comment" id="exampleText" onChange={(e) => this.handleChange("comment", e)} value={this.state.comment} placeholder="Enter comments here..." />
 							</FormGroup>
 							<FormGroup>
 								<div className="clearfix">
@@ -98,7 +98,7 @@ class Comments extends React.Component {
 												<img src={captchaImage} alt={captchaImage} />
 											</div>
 											<div className="form-group">
-												<button type="button" class="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>
+												<button type="button" className="btn btn-default btn-sm" onClick={() => this.props.fetchCaptcha()}>
 													<FontAwesomeIcon icon={faRedo} />
 												</button>
 											</div>
@@ -136,16 +136,16 @@ class Comments extends React.Component {
 							</FormGroup>
 						</Form>
 					</div>
-				:
+					:
 					<div className="row">
 						<div className="col-lg-2 offset-lg-5">
-							<button className="btn btn-danger btn-block" style={{fontWeight:600}} onClick={this.toggle}>Login</button>
+							<button className="btn btn-danger btn-block" style={{ fontWeight: 600 }} onClick={this.toggle}>Login</button>
 						</div>
 					</div>
 				}
 				<div className="comment-list mt-4">
 					<div className="heading">
-						<h5><strong>{`${comments.length > 0 ? comments.length : "0"}`} Comments</strong></h5>
+						<h5><strong>{`${comments.length > 0 ? comments.length + " Comments" : "Be the first to say something !!!"}`}</strong></h5>
 					</div>
 					{comments.length > 0 ?
 						<div className="all-comment  mt-3">{all_comments}</div>

@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine,
-  ResponsiveContainer, Label } from 'recharts';
-import {RED_COLOR, BLUE_COLOR} from '../utils/Constants';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { RED_COLOR } from '../utils/Constants';
 
 
 class AllArticlesOpenGraph extends PureComponent {
@@ -42,14 +40,14 @@ render() {
                 </React.Fragment>
             :
                 <React.Fragment>
-                    <div style={{ width: '80%', height: 450 }}>
+                    <div style={{ height: 450 }}>
                     <ResponsiveContainer>
-                        <LineChart
+                        <BarChart
                             width={500}
                             height={400}
                             data={this.state.data}
                             margin={{
-                                top: 20, right: 50, left: 20, bottom: 5,
+                                top: 5, right: 30, left: 20, bottom: 5,
                             }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
@@ -57,10 +55,8 @@ render() {
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <ReferenceLine x={this.state.max.dateStr} stroke={BLUE_COLOR} label="Max Articles Date" />
-                            <ReferenceLine y={this.state.max.count} label="Max Count" stroke={BLUE_COLOR} />
-                            <Line type="monotone" dataKey="count" stroke={RED_COLOR} />
-                        </LineChart>
+                            <Bar dataKey="count" fill={RED_COLOR} />
+                        </BarChart>
                     </ResponsiveContainer>
                     </div>
                 </React.Fragment>

@@ -14,7 +14,7 @@ import 'newscout/assets/CardItem.css';
 import 'newscout/assets/ToogleCard.css'
 import 'newscout/assets/ImageOverlay.css';
 
-import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import config_data from './config.json';
@@ -35,14 +35,15 @@ class Trending extends React.Component {
 			previous: null,
 			loadingPagination: false,
 			domain: "domain="+DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			isSideOpen: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: []
 		};
 	}
 
@@ -82,7 +83,7 @@ class Trending extends React.Component {
 			this.setState({ isChecked: false })
 			cookies.remove('isChecked', { path: '/' });
 		}
-	};
+	}
 
 	getTheme = () => {
 		if(cookies.get('isChecked')){
@@ -114,13 +115,13 @@ class Trending extends React.Component {
 
 	articleBookmarkResponse = (data) => {
 		var bookmark_obj = data.body.bookmark_article
-		var index = article_array.indexOf(bookmark_obj.article);
+		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
 		
 		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
 		}
 		
-		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
 			article_array.splice(index, 1);
 		}
 		this.setState({
@@ -179,18 +180,19 @@ class Trending extends React.Component {
 		var final_results = [
 			...this.state.trending,
 			...trending_data
-		]
+		]		
 		this.setState({
 			trending: final_results,
 			next: data.body.next,
 			previous: data.body.previous,
-			loadingPagination: false,
-			isLoading: false
+			loadingPagination: false
 		})
+		setTimeout(() => {
+			this.setState({isLoading: false})
+		}, 2000)
 	}
 
 	getTrendingPosts = () => {
-		this.setState({isLoading: true})
 		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
 	}
 
@@ -213,7 +215,6 @@ class Trending extends React.Component {
 	}
 
 	getBookmarksArticles = (data) => {
-		var article_array = []
 		var article_ids = data.body.results;
 		for(var i = 0; i < article_ids.length; i++){
 			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
@@ -239,10 +240,26 @@ class Trending extends React.Component {
 		})
     }
 
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
+		this.getTrendingPosts()
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		this.getTrendingPosts()
 		if(cookies.get('full_name')){
 			this.setState({is_loggedin:true})
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
@@ -266,16 +283,12 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state;
-
+		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state;
 		var result = trending.map((item, index) => {
 			return (
 				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
-						<React.Fragment>
-							<h3>Loading</h3>
-							<Skeleton height={525} />
-						</React.Fragment>
+						<Skeleton height={160} />
 					:
 						<ToogleCard
 							items={item}
@@ -306,6 +319,8 @@ class Trending extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				<div className="container-fluid">
 					<div className="row">
@@ -322,6 +337,7 @@ class Trending extends React.Component {
 									</div>
 									<div className="accordion" id="accordionExample">
 										<div className="row">
+											{result}
 											{
 												this.state.loadingPagination ?
 													<React.Fragment>
@@ -329,7 +345,6 @@ class Trending extends React.Component {
 													</React.Fragment>
 												: ""
 											}
-											{result}
 										</div>
 									</div>
 								</div>

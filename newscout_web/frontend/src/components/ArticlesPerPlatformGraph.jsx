@@ -1,7 +1,5 @@
 import React, { PureComponent } from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {RED_COLOR, GREEN_COLOR, BLUE_COLOR} from '../utils/Constants';
 
 
@@ -40,7 +38,7 @@ class ArticlesPerPlatformGraph extends PureComponent {
                     </React.Fragment>
                 :
                     <React.Fragment>
-                        <div style={{ width: '80%', height: 450 }}>
+                        <div style={{ height: 450 }}>
                             <ResponsiveContainer>
                                 <BarChart
                                     width={500}

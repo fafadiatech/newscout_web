@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Select from 'react-select';
 import Cookies from 'universal-cookie';
 import logo from '../NewsApp/logo.png';
+import SelectComponent from './SelectComponent';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
@@ -18,7 +19,7 @@ import 'newscout/assets/Sidebar.css'
 
 const cookies = new Cookies();
 
-class Group extends React.Component {
+export default class Group extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -36,6 +37,7 @@ class Group extends React.Component {
 			q: "",
 			page : 0,
 			isSideOpen: true,
+			username: USERNAME
 		};
 	}
 
@@ -217,21 +219,22 @@ class Group extends React.Component {
 		this.setState({rows});
 	}
 
-	deleteGroupResponse = (data) => {
-		this.getGroups();
+	deleteGroupResponse = (data, extra_data) => {
+		var findrow = extra_data;
+		setTimeout(() => {
+			findrow.style.transition = '0.8s';
+			findrow.style.opacity = '0';
+			document.getElementById("group-table").deleteRow(findrow.rowIndex);
+		}, 1000);
 		notify(data.body.Msg)
+		window.location.reload()
 	}
 
 	deleteRow = (e) => {
 		let dataindex = e.target.getAttribute('data-id');
 		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
 		let url = GROUP_URL + dataindex + "/";
-		deleteRequest(url, this.deleteGroupResponse, authHeaders)
-		setTimeout(function() {
-			findrow.style.transition = '0.8s';
-			findrow.style.opacity = '0';
-			document.getElementById("group-table").deleteRow(findrow.rowIndex);
-		}, 1000);
+		deleteRequest(url, this.deleteGroupResponse, authHeaders, findrow)
 	}
 
 	getCampaignCategories = (data) => {
@@ -331,7 +334,7 @@ class Group extends React.Component {
 	}
 
 	render(){
-		var { menus, isSideOpen } = this.state
+		var { menus, isSideOpen, username } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -343,7 +346,13 @@ class Group extends React.Component {
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
-							<Select value={this.state.fields['category']} onChange={(e) => this.handleChange("category", e, true)} options={this.state.categories} isMulti={true} />
+							<SelectComponent
+								options={this.state.categories}
+								isMulti={true}
+								onChange={(e) => this.handleChange("category", e, true)}
+								allowSelectAll={true}
+								value={this.state.fields['category']}
+							/>
 							<FormText color="danger">{this.state.errors["category"]}</FormText>
 						</React.Fragment>
 					:
@@ -395,7 +404,9 @@ class Group extends React.Component {
 						isSlider={true}
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
-						domain="dashboard" />
+						domain="dashboard"
+						username={username}
+					/>
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
@@ -448,7 +459,13 @@ class Group extends React.Component {
 							<Form>
 								<FormGroup>
 									<Label for="category">Select Categories</Label>
-									<Select refs="category" value={this.state.fields['category'] ? this.state.fields['category'].value : ''} onChange={(e) => this.handleChange("category", e)} options={this.state.categories} isMulti={true}/>
+									<SelectComponent
+										options={this.state.categories}
+										isMulti={true}
+										onChange={(e) => this.handleChange("category", e)}
+										allowSelectAll={true}
+										value={this.state.fields['category'] ? this.state.fields['category'].value : ''}
+									/>
 									<FormText color="danger">{this.state.errors["category"]}</FormText>
 								</FormGroup>
 								<FormGroup>
@@ -478,8 +495,6 @@ class Group extends React.Component {
 		);
 	}
 }
-
-export default Group;
 
 ReactDOM.render(<Group />, document.getElementById('root'));
 serviceWorker.unregister();

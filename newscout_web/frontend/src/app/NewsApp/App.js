@@ -6,10 +6,9 @@ import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -27,7 +26,7 @@ const cookies = new Cookies();
 const settings = {
 	dots: false,
 	infinite: false,
-	speed: 500,
+	speed: 1500,
 	slidesToShow: 3,
 	slidesToScroll: 3,
 	initialSlide: 0,
@@ -62,7 +61,7 @@ const settings = {
 const settingsTrending = {
 	dots: false,
 	infinite: true,
-	speed: 500,
+	speed: 1500,
 	autoplay: true,
 	slidesToShow: 1,
 	slidesToScroll: 1,
@@ -115,7 +114,8 @@ class App extends React.Component {
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: []
 		}
 	}
 
@@ -186,14 +186,14 @@ class App extends React.Component {
 	}
 
 	articleBookmarkResponse = (data) => {
-		var bookmark_obj = data.body.bookmark_article
-		var index = article_array.indexOf(bookmark_obj.article);
-		
+		var bookmark_obj = data.body.bookmark_article;
+		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
+
 		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
 		}
 		
-		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
 			article_array.splice(index, 1);
 		}
 		this.setState({
@@ -234,7 +234,8 @@ class App extends React.Component {
 					article_dict['category'] = articles.category
 					article_dict['slug'] = "/news/article/"+articles.slug
 					article_dict['source_url'] = articles.source_url
-					article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles.cover_image)
+					article_dict['src'] = "http://images.newscout.in/unsafe/1175x500/center/"+decodeURIComponent(articles.cover_image)
+					article_dict['src_xs'] = "http://images.newscout.in/unsafe/350x325/center/"+decodeURIComponent(articles.cover_image)
 					trending_array.push(article_dict)
 				}
 			}
@@ -341,6 +342,7 @@ class App extends React.Component {
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src_xs'] = "http://images.newscout.in/unsafe/325x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(financeposts_array.length < 8){
 					financeposts_array.push(article_dict)
 				}
@@ -412,7 +414,6 @@ class App extends React.Component {
 	}
 
 	getBookmarksArticles = (data) => {
-		var article_array = []
 		var article_ids = data.body.results;
 		for(var i = 0; i < article_ids.length; i++){
 			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
@@ -426,15 +427,31 @@ class App extends React.Component {
 
 	handleLogout = () => {
 		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
-    }
+	    getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+	}
 
-    authLogoutResponse = (data) => {
-    	cookies.remove('token', { path: '/' })
-    	cookies.remove('full_name', { path: '/' })
-        this.setState({
+	authLogoutResponse = (data) => {
+		cookies.remove('token', { path: '/' })
+		cookies.remove('full_name', { path: '/' })
+	    this.setState({
 			is_loggedin: false,
 			bookmark_ids: []
+		})
+	}
+
+	handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
 		})
     }
 
@@ -456,15 +473,17 @@ class App extends React.Component {
 		} else {
 			this.setState({ isSideOpen: false })
 		}
-		this.getTheme()
+		this.getTheme();
+
+		document.addEventListener('click', this.handleDocumentClick, true);
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state
 		
 		var sector_update = sector_update.map((item, index) => {
 			return(
-				<div className="col-lg-4 mb-4">
+				<div className="col-lg-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 					:
@@ -497,6 +516,7 @@ class App extends React.Component {
 					<ImageOverlay
 						id={item.id} 
 						image={item.src}
+						image_xs={item.src_xs}
 						title={item.header}
 						description={item.caption}
 						uploaded_by={item.source}
@@ -509,6 +529,7 @@ class App extends React.Component {
 						getArticleId={this.getArticleId}
 						bookmark_ids={bookmark_ids}
 						base_url={BASE_URL}
+						key={index}
 					/>
 				)
 			}
@@ -516,11 +537,12 @@ class App extends React.Component {
 
 		var regional_update = regional_update.map((item, index) => {
 			return(
-				<div className="col-lg-6 mb-4">
+				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={250} />
 					:
 						<HorizontalCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -544,12 +566,13 @@ class App extends React.Component {
 
 		var finance = finance.map((item, index) => {
 			return (
-				<React.Fragment>
+				<React.Fragment key={index}>
 					{isLoading ?
 						<Skeleton height={230} />
 					:
 						<ImageOverlay 
 							image={item.src}
+							image_xs={item.src_xs}
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
@@ -565,11 +588,12 @@ class App extends React.Component {
 
 		var economics = economics.map((item, index) => {
 			return(
-				<div className="col-lg-6 mb-4">
+				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={230} />
 					:
 						<HorizontalCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -593,11 +617,12 @@ class App extends React.Component {
 
 		var misc = misc.map((item, index) => {
 			return(
-				<div className="col-lg-4 mb-4">
+				<div className="col-lg-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 					:
 						<VerticleCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -633,6 +658,9 @@ class App extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
+					isNavbarFilter={false}
 				/>
 				<div className="container-fluid">
 					<div className="row">
@@ -641,40 +669,12 @@ class App extends React.Component {
 							<div className="container">
 								<div className="pt-50">
 									<div className="row">
-										<div className="col-lg-7 col-12 mb-4 trending-slider">
+										<div className="col-lg-12 col-12 mb-4 trending-slider">
 											{isLoading ?
 												<Skeleton height={500} />
 											:
 												<Slider {...settingsTrending}>{trendingSlider}</Slider>
 											}
-										</div>
-										<div className="col-lg-5 col-12 mb-4">
-											<React.Fragment>
-												{isLoading ?
-													<Skeleton height={500} />
-												:
-													<React.Fragment>
-														{trending.length > 0 ?
-															<ContentOverlay
-																id={trending[5].id} 
-																title={trending[5].header}
-																description={trending[5].caption}
-																uploaded_by={trending[5].source}
-																source_url={trending[5].slug}
-																slug_url={trending[5].slug}
-																category={trending[5].category}
-																is_loggedin={is_loggedin}
-																toggle={this.toggle}
-																is_open={modal}
-																getArticleId={this.getArticleId}
-																bookmark_ids={bookmark_ids}
-																base_url={BASE_URL}
-															/>
-														: ""
-														}
-													</React.Fragment>
-												}
-											</React.Fragment>
 										</div>
 									</div>
 								</div>

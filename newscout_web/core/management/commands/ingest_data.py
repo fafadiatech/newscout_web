@@ -171,8 +171,6 @@ class Command(BaseCommand):
         published_on = self.parse_date(doc["published_on"])
         if not published_on:
             published_on = timezone.now()
-        author = doc.get("author", "")
-        author_twitter = doc.get("author_twitter", "")
         video_data = doc.get("video_data", "")
         images = doc["images"]
         tags = doc["tags"]

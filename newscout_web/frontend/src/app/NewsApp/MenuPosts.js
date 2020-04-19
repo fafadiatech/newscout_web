@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { CardItem, Menu, ImageOverlay, SideBar, Footer } from 'newscout';
 
-import { MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 import Auth from './Auth';
@@ -68,13 +68,14 @@ class MenuPosts extends React.Component {
 			menus: [],
 			isSideOpen: true,
 			domain: "domain="+DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: []
 		};
 	}
 
@@ -167,7 +168,6 @@ class MenuPosts extends React.Component {
 
 	getPosts = (cat_name, cat_id, submenu) => {
 		submenu.map((item, index) => {
-			this.setState({isLoading: true})
 			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
 			getRequest(url, this.newsData, false, item)
 		})
@@ -189,6 +189,7 @@ class MenuPosts extends React.Component {
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
+				article_dict['src_xs'] = "http://images.newscout.in/unsafe/300x200/left/top/"+decodeURIComponent(item.cover_image)
 				if(news_array.length <= 9){
 					news_array.push(article_dict)
 				}
@@ -202,9 +203,11 @@ class MenuPosts extends React.Component {
 			return a.menuid - b.menuid
 		})
 		this.setState({
-			newsPosts: final_data,
-			isLoading: false
+			newsPosts: final_data
 		})
+		setTimeout(() => { 
+			this.setState({isLoading: false})
+		}, 3000)
 	}
 
 	isSideBarToogle = (data) => {
@@ -232,6 +235,22 @@ class MenuPosts extends React.Component {
 		})
     }
 
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+
 	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
 		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
@@ -252,7 +271,7 @@ class MenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options } = this.state;
 		
 		var result = newsPosts.map((item, index) => {
 			return (
@@ -269,12 +288,13 @@ class MenuPosts extends React.Component {
 							<Slider {...settings}>
 								{item.posts.map((sub_item, sub_index) => {
 									return (
-										<React.Fragment>
+										<React.Fragment key={sub_index}>
 											{isLoading ?
-												<Skeleton height={525} />
+												<Skeleton height={200} />
 											:
 												<ImageOverlay 
 													image={sub_item.src}
+													image_xs={sub_item.src_xs}
 													title={sub_item.header}
 													description={sub_item.caption}
 													uploaded_by={sub_item.source}
@@ -313,6 +333,8 @@ class MenuPosts extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				<div className="container-fluid">
 					<div className="row">

@@ -73,6 +73,7 @@ class App extends React.Component {
 			ArticlesPerSessionAvgCount: 0,
 			InteractionsPerSessionAvgCount: 0,
 			isSideOpen: true,
+			username: USERNAME,
 		};
 	}
 
@@ -285,7 +286,7 @@ class App extends React.Component {
 	}
 
 	render(){
-		var { menus, isSideOpen } = this.state
+		var { menus, isSideOpen, username } = this.state
 		return(
 			<div className="App">
 				<Menu
@@ -294,7 +295,8 @@ class App extends React.Component {
 					isSlider={true}
 					isSideBarToogle={this.isSideBarToogle}
 					isSideOpen={isSideOpen}
-					domain="dashboard" />
+					domain="dashboard"
+					username={username} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
@@ -306,8 +308,8 @@ class App extends React.Component {
 										<Input type="select" name="date_range" id="date_range" onChange={(e) => this.onChangeSelect(e)}>
 											<option value="today">Today</option>
 											<option value="yesterday">Yesterday</option>
-											<option value="7days" selected>Last 7 Days</option>
-											<option value="30days">Last 30 Days</option>
+											<option value="7days">Last 7 Days</option>
+											<option value="30days" selected>Last 30 Days</option>
 											<option value="last_month">Last Month</option>
 											<option value="custom">Custom</option>
 										</Input>
@@ -333,7 +335,7 @@ class App extends React.Component {
 									<Button color="danger" onClick={this.handleSubmitBtn} disabled={this.state.disabled}>Submit</Button>
 								</div>
 							</div>
-							<div className="row mt-5">
+							<div className="row mt-3">
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
@@ -387,7 +389,7 @@ class App extends React.Component {
 									</div>
 								</div>
 							</div>
-							<div className="row mb-5">
+							<div className="row mb-3">
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
@@ -442,43 +444,55 @@ class App extends React.Component {
 								</div>
 							</div>
 							<div className="row">
-								<div className="graph-section">
-									<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData}/>
+								<div className="col-lg-12">
+									<div className="graph-section">
+										<ArticlesPerCategoryGraph data={this.state.ArticlesPerCategoryData} loading={this.state.ArticlesPerCategoryLoading} no_data={this.state.ArticlesPerCategoryNoData} />
+									</div>
 								</div>
 							</div>
 							<div className="row">
-								<div className="graph-section">
-									<ArticlesPerPlatformGraph data={this.state.ArticlesPerPlatformData} loading={this.state.ArticlesPerPlatformLoading} no_data={this.state.ArticlesPerPlatformNoData} />
+								<div className="col-lg-6">
+									<div className="graph-section">
+										<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData}/>
+									</div>
+								</div>
+								<div className="col-lg-6">
+									<div className="graph-section">
+										<ArticlesPerPlatformGraph data={this.state.ArticlesPerPlatformData} loading={this.state.ArticlesPerPlatformLoading} no_data={this.state.ArticlesPerPlatformNoData} />
+									</div>
 								</div>
 							</div>
 							<div className="row">
-								<div className="graph-section">
-									<ArticlesPerCategoryGraph data={this.state.ArticlesPerCategoryData} loading={this.state.ArticlesPerCategoryLoading} no_data={this.state.ArticlesPerCategoryNoData} />
+								<div className="col-lg-12">
+									<div className="graph-section">
+										<InteractionsPerCategoryGraph data={this.state.InteractionsPerCategoryData} loading={this.state.InteractionsPerCategoryLoading} no_data={this.state.InteractionsPerCategoryNoData} />
+									</div>
 								</div>
 							</div>
 							<div className="row">
-								<div className="graph-section">
-									<InteractionsPerCategoryGraph data={this.state.InteractionsPerCategoryData} loading={this.state.InteractionsPerCategoryLoading} no_data={this.state.InteractionsPerCategoryNoData} />
+								<div className="col-lg-12">
+									<div className="graph-section">
+										<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
+									</div>
 								</div>
 							</div>
 							<div className="row">
-								<div className="graph-section">
-									<ArticlesPerAuthorGraph data={this.state.ArticlesPerAuthorData} loading={this.state.ArticlesPerAuthorLoading} no_data={this.state.ArticlesPerAuthorNoData} />
+								<div className="col-lg-6">
+									<div className="graph-section">
+										<ArticlesPerAuthorGraph data={this.state.ArticlesPerAuthorData} loading={this.state.ArticlesPerAuthorLoading} no_data={this.state.ArticlesPerAuthorNoData} />
+									</div>
+								</div>
+								<div className="col-lg-6">
+									<div className="graph-section">
+										<InteractionsPerAuthorGraph data={this.state.InteractionsPerAuthorData} loading={this.state.InteractionsPerAuthorLoading} no_data={this.state.InteractionsPerAuthorNoData} />
+									</div>
 								</div>
 							</div>
 							<div className="row">
-								<div className="graph-section">
-									<InteractionsPerAuthorGraph data={this.state.InteractionsPerAuthorData} loading={this.state.InteractionsPerAuthorLoading} no_data={this.state.InteractionsPerAuthorNoData} />
-								</div>
-							</div>
-							<div className="row">
-								<div className="graph-section">
-									<ArticlesPerSessionGraph data={this.state.ArticlesPerSessionData} loading={this.state.ArticlesPerSessionLoading} no_data={this.state.ArticlesPerSessionNoData} />
-								</div>
-							</div>
-							<div className="row">
-								<div className="graph-section">
-									<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
+								<div className="col-lg-12">
+									<div className="graph-section">
+										<ArticlesPerSessionGraph data={this.state.ArticlesPerSessionData} loading={this.state.ArticlesPerSessionLoading} no_data={this.state.ArticlesPerSessionNoData} />
+									</div>
 								</div>
 							</div>
 						</div>

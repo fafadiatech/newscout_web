@@ -3,11 +3,12 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
+import bookmark_empty from './bookmark-empty.png'
 import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, VerticleCardAd } from 'newscout';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -31,14 +32,16 @@ class Bookmark extends React.Component {
 			newsPosts: [],
 			menus: [],
 			domain: "domain="+DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			isSideOpen: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
-			isChecked: false
+			isChecked: false,
+			options: [],
+			is_bookmark_empty: false
 		};
 	}
 
@@ -117,12 +120,11 @@ class Bookmark extends React.Component {
 	}
 
 	articleBookmarkResponse = (data) => {
-		var bookmark_obj = data.body.bookmark_article
+		var bookmark_obj = data.body.bookmark_article;
 		var index = this.state.newsPosts.indexOf(bookmark_obj.article);
 		this.state.newsPosts.splice(index, 1);
 		this.setState({
-			newsPosts: this.state.newsPosts,
-			isLoading: true
+			newsPosts: this.state.newsPosts
 		})
 		if(cookies.get('full_name')){
 			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
@@ -159,7 +161,6 @@ class Bookmark extends React.Component {
 
 	getBookmarksArticles = (data) => {
 		var news_array = []
-		var article_array = []
 		data.body.results.map((item, index) => {
 			if(item.article.cover_image){
 				var article_dict = {}
@@ -174,14 +175,17 @@ class Bookmark extends React.Component {
 				article_dict['published_on'] = moment(item.article.published_on).format('D MMMM YYYY')
 				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.article.cover_image)
 				news_array.push(article_dict)
-				article_array.push(item.article.id)
+				article_array.push(item.article)
 			}
 		})
 		this.setState({
 			newsPosts: news_array,
 			bookmark_ids: article_array,
-			isLoading: false
+			is_bookmark_empty: news_array.length > 0 ? false : true
 		})
+		setTimeout(() => {
+			this.setState({isLoading: false})
+		}, 300)
 	}
 
 	handleLogout = () => {
@@ -199,6 +203,22 @@ class Bookmark extends React.Component {
 		})
 		window.location.href = "/"
     }
+
+    handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, index) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
 
 	componentDidMount() {
 		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
@@ -223,10 +243,11 @@ class Bookmark extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, isChecked } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, modal, is_loggedin, bookmark_ids, username, isChecked, options, is_bookmark_empty } = this.state;
+
 		var results = newsPosts.map((item, index) => {
 			return (
-				<div className="col-lg-4 col-md-4 mb-4">
+				<div className="col-lg-4 col-md-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 					: 
@@ -267,6 +288,8 @@ class Bookmark extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
 				/>
 				
 				<div className="container-fluid">
@@ -286,14 +309,28 @@ class Bookmark extends React.Component {
 								<div className="row">
 									<div className="col-lg-12">
 										<div className="row">
-											{
-												this.state.loadingPagination ?
-													<React.Fragment>
-														<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
-													</React.Fragment>
-											: ""
-											}
-											{results}
+											<React.Fragment>
+												{
+													this.state.loadingPagination ?
+														<React.Fragment>
+															<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+														</React.Fragment>
+												: ""
+												}
+												{results}
+												{is_bookmark_empty ?
+													<div className="col-lg-12 text-center">
+														<div className="m-5 mb-0">
+															<img src={bookmark_empty} className="img-fluid" style={{height: '100px'}} />
+														</div>
+														<div className="mt-0 mb-5">
+															<h4 className="text-center">Bookmarks allow you keep track of stories you'd like to remember.</h4>
+															<h3 className="text-center" style={{color:"#f0442c"}}>Start Bookmarking now</h3>
+														</div>
+													</div>
+												: ""
+												}
+											</React.Fragment>
 										</div>
 									</div>
 								</div>

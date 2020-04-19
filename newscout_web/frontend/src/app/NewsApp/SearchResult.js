@@ -9,7 +9,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -43,7 +43,7 @@ class SearchResult extends React.Component {
 			previous: null,
 			isSideOpen: true,
 			domain: "domain=" + DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
@@ -53,6 +53,8 @@ class SearchResult extends React.Component {
 			cat_array: [],
 			source_array: [],
 			hashtags_array: [],
+			options: [],
+			result_count: null,
 		};
 	}
 
@@ -132,13 +134,13 @@ class SearchResult extends React.Component {
 
 	articleBookmarkResponse = (data) => {
 		var bookmark_obj = data.body.bookmark_article
-		var index = article_array.indexOf(bookmark_obj.article);
+		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
 
 		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
 		}
 
-		if (article_array.includes(bookmark_obj.article) === true && bookmark_obj.status === 0) {
+		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
 			article_array.splice(index, 1);
 		}
 		this.setState({
@@ -192,6 +194,7 @@ class SearchResult extends React.Component {
 		var source_filters = data.body.filters.source;
 		var hashtags_filters = data.body.filters.hash_tags;
 		var cat_filters = data.body.filters.category;
+		var result_count = data.body.count;
 		if (cat_filters && this.state.cat_array.length === 0) {
 			cat_filters.map((item, index) => {
 				if (item.key !== "") {
@@ -266,29 +269,39 @@ class SearchResult extends React.Component {
 			next: data.body.next,
 			previous: data.body.previous,
 			loadingPagination: false,
-			isLoading: false
+			result_count: result_count.toLocaleString()+" results found."
 		})
+		setTimeout(() => { 
+			this.setState({isLoading: false})
+		}, 3000)
 	}
 
 	queryFilter = (data, checked) => {
-		if (checked == true) {
-			query_array.push(data);
-		} else {
-			query_array.splice(query_array.indexOf(data), 1);
-		}
-		final_query = query_array.join("&");
-		this.setState({
-			final_query: final_query,
-			isLoading: true
-		})
-
-		if (history.pushState) {
-			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+		var data_array = []
+		if(data.toString() === data_array.toString()){
 			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
-			if (final_query) {
-				newurl = newurl + "&" + final_query;
-			}
 			window.history.pushState({}, '', newurl);
+			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY, this.getSearchResult);
+		} else {
+			if (checked == true) {
+				query_array.push(data);
+			} else {
+				query_array.splice(query_array.indexOf(data), 1);
+			}
+			final_query = query_array.join("&");
+			this.setState({
+				final_query: final_query,
+				isLoading: true
+			})
+
+			if (history.pushState) {
+				getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY + "&" + final_query, this.getSearchResult);
+				var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
+				if (final_query) {
+					newurl = newurl + "&" + final_query;
+				}
+				window.history.pushState({}, '', newurl);
+			}
 		}
 	}
 
@@ -303,7 +316,6 @@ class SearchResult extends React.Component {
 	}
 
 	getBookmarksArticles = (data) => {
-		var article_array = []
 		var article_ids = data.body.results;
 		for (var i = 0; i < article_ids.length; i++) {
 			if (this.state.bookmark_ids.indexOf(article_ids[i].article) === -1) {
@@ -327,6 +339,22 @@ class SearchResult extends React.Component {
 			is_loggedin: false,
 			is_captcha: true,
 			bookmark_ids: []
+		})
+	}
+
+	handleSearch = (query) => {
+		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
 		})
 	}
 
@@ -361,11 +389,11 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked } = this.state;
+		var { menus, searchResult, filters, isFilterOpen, isSideOpen, isLoading, username, is_loggedin, modal, bookmark_ids, isChecked, options, result_count } = this.state;
 
 		var result = searchResult.map((item, index) => {
 			return (
-				<div className="col-lg-4 mb-5">
+				<div className="col-lg-4 mb-5" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
 						:
@@ -397,6 +425,7 @@ class SearchResult extends React.Component {
 		} else {
 			document.getElementsByTagName("body")[0].style = "overflow:auto";
 		}
+
 		return (
 			<React.Fragment>
 				<Menu
@@ -411,6 +440,11 @@ class SearchResult extends React.Component {
 					handleLogout={this.handleLogout}
 					toggleSwitch={this.toggleSwitch}
 					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
+					isNavbarFilter={true}
+					toggleFilter={this.toggleFilter}
+					query={QUERY}
 				/>
 				<div className="container-fluid">
 					<div className="row">
@@ -418,7 +452,7 @@ class SearchResult extends React.Component {
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
-									<div className="row">
+									<div className="row d-none d-sm-block">
 										<div className="col-lg-12">
 											<div className="row">
 												<div className="col-lg-12">
@@ -434,17 +468,15 @@ class SearchResult extends React.Component {
 										</div>
 									</div>
 									<div className="row">
-										<div className="col-lg-12 mb-4">
+										<div className="col-lg-12 mb-2">
 											<div className="clerfix">
-												<div className="float-right">
+												<div className="float-right d-none d-sm-block">
 													<div className="filter" onClick={this.toggleFilter}>
 														<FontAwesomeIcon icon={faFilter} /> Filter
 													</div>
 												</div>
 												<div className="float-left">
-													<div className="section-title">
-														<h2 className="m-0 section-title">Search result: <span className="text-capitalize">{QUERY}</span></h2>
-													</div>
+													<div className="result-count">{result_count}</div>
 												</div>
 											</div>
 										</div>

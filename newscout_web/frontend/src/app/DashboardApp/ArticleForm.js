@@ -50,7 +50,8 @@ class ArticleForm extends React.Component {
             cover_image_name: "",
             cover_image_id: "",
             isSideOpen: true,
-            isChecked: false
+            isChecked: false,
+            username: USERNAME
 		};
     }
 
@@ -273,7 +274,7 @@ class ArticleForm extends React.Component {
     }
 
 	render(){
-        var { menus, isSideOpen } = this.state
+        var { menus, isSideOpen, username } = this.state
 
         if (this.state.active_page == "article-create"){
             var page_title = "Article Create"
@@ -292,7 +293,8 @@ class ArticleForm extends React.Component {
                         isSlider={true}
                         isSideBarToogle={this.isSideBarToogle}
                         isSideOpen={isSideOpen}
-                        domain="dashboard" />
+                        domain="dashboard"
+                        username={username} />
                     <div className="container-fluid">
                         <div className="row">
                             <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

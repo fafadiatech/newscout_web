@@ -41,6 +41,7 @@ nav.navbar {
   background-size: cover;
   width: 135px;
   height: 50px;
+  padding: 0px;
 }
 
 .menu-item {
@@ -332,6 +333,15 @@ nav.navbar {
   content: '←';
 }
 
+.p-5045 {
+  padding: 50px 45px 0px 45px;
+}
+
+.section-title.slider-header {
+  margin-left: -45px !important;
+  margin-right: -45px !important;
+}
+
 @media (max-width: 380px) {
 
   .slick-prev {
@@ -354,6 +364,15 @@ nav.navbar {
 
   .search {
     margin-left: 5px;
+  }
+
+  .p-5045 {
+    padding: 50px 0px 0px 0px !important;
+  }
+
+  .section-title.slider-header {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
   }
 
   /*.filter {
@@ -387,6 +406,21 @@ nav.navbar {
   
   .search {
     margin-left: 5px;
+  }
+
+  .p-5045 {
+    padding: 50px 0px 0px 0px !important;
+  }
+
+  .section-title.slider-header {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+
+  .main-content.col-lg-12,
+  .main-content.col-lg-10 {
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
   /*.filter {
@@ -474,11 +508,6 @@ nav.navbar {
 .list-group-item.active {
   background-color: transparent;
   border-color: transparent;
-}
-
-.section-title.slider-header {
-  margin-left: -45px !important;
-  margin-right: -45px !important;
 }
 
 .section-title {
@@ -587,7 +616,8 @@ ul.usr li {
 }
 
 .footer-area p a,
-.footer-area ul li a {
+.footer-area ul li a,
+.result-count {
   font-weight: 600;
 }
 
@@ -596,12 +626,8 @@ ul.usr li {
   color: #f0442c;
 }
 
-.bookmarked {
+.bookmarked, .result-count {
   color: #fc0a02c2;
-}
-
-.p-5045 {
-  padding: 50px 45px 0px 45px;
 }
 
 .trending-slider .slick-slider .slick-prev {
@@ -610,4 +636,41 @@ ul.usr li {
 
 .trending-slider .slick-slider .slick-next {
   right: 0px;
+}
+
+.navbar-filter {
+  z-index: 1;
+  top: 66px;
+  padding: 0px;
+  border-top: 1px solid #ddd;
+}
+
+.navbar-filter .inner {
+  width: 100%;
+}
+
+.filter-section {
+  background-color: #fff;
+  padding: 0px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.filter-section .filter {
+  color: #3b5265;
+  text-transform: capitalize;
+}
+
+.related-queries-btn,
+.related-queries-btn:hover,
+.related-queries-btn:focus,
+.related-queries-btn.btn-secondary:not(:disabled):not(.disabled):active {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0px !important;
+  outline: 0 !important;
+  color: #3b5265 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
 }

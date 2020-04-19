@@ -36,7 +36,8 @@ class Advertisement extends React.Component {
 			q: "",
 			page: 0,
 			isSideOpen: true,
-			isChecked: false
+			isChecked: false,
+			username: USERNAME
 		};
 	}
 
@@ -56,7 +57,7 @@ class Advertisement extends React.Component {
 			errors["ad_url"] = required_msg;
 		} else if (!this.valid_url(fields["ad_url"])) {
 			formIsValid = false;
-			errors["ad_url"] = "Not a valid url eg: http://example.com";
+			errors["ad_url"] = "Not a valid url eg: https://example.com";
 		}
 
 		this.setState({ errors: errors });
@@ -64,7 +65,7 @@ class Advertisement extends React.Component {
 	}
 
 	valid_url = (url) => {
-		var regexp = /^(https:\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+		var regexp = /^(https:\/\/)|(http:\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
 		if (regexp.test(url)) {
 			return true;
 		} else {
@@ -278,7 +279,7 @@ class Advertisement extends React.Component {
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -292,7 +293,7 @@ class Advertisement extends React.Component {
 		this.getAdvertisements()
 		var group_type_url = GROUP_GROUPTYPE_URL;
 		getRequest(group_type_url, this.getGroupAndGroupType, authHeaders)
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
@@ -304,7 +305,7 @@ class Advertisement extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen } = this.state
+		var { menus, isSideOpen, username } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -431,7 +432,8 @@ class Advertisement extends React.Component {
 						isSlider={true}
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
-						domain="dashboard" />
+						domain="dashboard"
+						username={username} />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
@@ -486,12 +488,12 @@ class Advertisement extends React.Component {
 						<ModalBody>
 							<Form>
 								<FormGroup>
-									<Label for="adgroup">Select Group</Label>
-									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups} />
+									<Label for="adgroup">Campaign</Label>
+									<Select refs="adgroup" value={this.state.fields["adgroup"] ? this.state.fields["adgroup"] : ''} onChange={(e) => this.handleChange("adgroup", e)} options={this.state.groups.reverse()} />
 									<FormText color="danger">{this.state.errors["adgroup"]}</FormText>
 								</FormGroup>
 								<FormGroup>
-									<Label for="ad_type">Select Group Type</Label>
+									<Label for="ad_type">Bid Type</Label>
 									<Select refs="ad_type" value={this.state.fields["ad_type"] ? this.state.fields["ad_type"] : ''} onChange={(e) => this.handleChange("ad_type", e)} options={this.state.grouptypes} />
 									<FormText color="danger">{this.state.errors["ad_type"]}</FormText>
 								</FormGroup>
@@ -516,7 +518,7 @@ class Advertisement extends React.Component {
 							<div className="clearfix" style={{ width: "100%" }}>
 								<div className="float-left">
 									{this.state.formSuccess ?
-										<h6 className="text-success m-0">Form submitted successfully.</h6>
+										<h6 className="text-success m-0">Ad created successfully.</h6>
 										: ""}
 								</div>
 								<div className="float-right">

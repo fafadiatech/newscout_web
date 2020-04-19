@@ -5,7 +5,8 @@ from django.http import Http404
 from core.models import (Category, Article, Source, BaseUserProfile,
                          BookmarkArticle, ArticleLike, HashTag, Menu, Notification, Devices,
                          SocialAccount, Category, CategoryAssociation,
-                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment)
+                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment,
+                         Subscription)
 
 from rest_framework.authtoken.models import Token
 
@@ -16,7 +17,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
                           ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
-                          CommentListSerializer)
+                          CommentListSerializer, SubsMediaSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -32,7 +33,7 @@ from rest_framework.parsers import JSONParser
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from datetime import datetime, timedelta
-from django.db.models import Count
+from django.db.models import Count, Max, Min
 import pytz
 import uuid
 from core.utils import es, ingest_to_elastic, delete_from_elastic
@@ -89,10 +90,7 @@ class SignUpAPIView(APIView):
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
-            return Response(create_response(
-                {"Msg": "sign up successfully",
-
-                 }))
+            return Response(create_response({"Msg": "sign up successfully"}))
         else:
             return Response(
                 create_serializer_error_response(user_serializer.errors),
@@ -288,8 +286,27 @@ class ArticleDetailAPIView(APIView):
 
         user = self.request.user
         article = Article.objects.filter(slug=slug).first()
+        has_subscribed = False
+        if not self.request.user.is_anonymous and \
+            Subscription.objects.filter(
+            user=self.request.user).exlcude(subs_type='Basic').exists():
+            has_subscribed = True
+        
+        try:
+            next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
+        except Exception as error:
+            print(error)
+            next_article = Article.objects.aggregate(Min("id"))['id__min']
+
+        try:
+            prev_article = Article.objects.filter(id__gt=article.id).order_by("-id")[0:1].get().slug
+        except Exception as error:
+            print(error)
+            prev_article = Article.objects.aggregate(Max("id"))['id__max']
+
         if article:
-            response_data = ArticleSerializer(article, context={"hash_tags_list": True}).data
+            response_data = ArticleSerializer(article, context={
+                "hash_tags_list": True, 'has_subscribed': has_subscribed}).data
             if not user.is_anonymous:
                 book_mark_article = BookmarkArticle.objects.filter(
                     user=user, article=article).first()
@@ -307,7 +324,7 @@ class ArticleDetailAPIView(APIView):
                     response_data["isLike"] = 2
 
             return Response(create_response({
-                "article": response_data}))
+                "article": response_data, "next_article": next_article, "prev_article": prev_article}))
         raise NoarticleFound
 
     def post(self, request, *args, **kwargs):
@@ -455,39 +472,45 @@ class ChangePasswordAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        password = self.request.POST.get("password", "")
-        old_password = self.request.POST.get("old_password", "")
-        confirm_password = self.request.POST.get("confirm_password", "")
+        if request.data:
+            password = request.data["password"]
+            old_password = request.data["old_password"]
+            confirm_password = request.data["confirm_password"]
+        else:
+            password = self.request.POST.get("password", "")
+            old_password = self.request.POST.get("old_password", "")
+            confirm_password = self.request.POST.get("confirm_password", "")
+            
         user = self.request.user
         if old_password:
             if not user.check_password(old_password):
                 msg = "Old Password Does Not Match With User"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "old_password"
                 }))
             if confirm_password != password:
                 msg = "Password and Confirm Password does not match"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "confirm_password"
                 }))
             if old_password == password:
                 msg = "New password should not same as Old password"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "password"
                 }))
             if user and password:
                 user.set_password(password)
                 user.save()
                 return Response(create_response({
-                    "Msg": "Password changed successfully"
+                    "Msg": "Password changed successfully", "field": "confirm_password"
                 }))
             else:
                 return Response(create_error_response({
-                    "Msg": "Password field is required"
+                    "Msg": "Password field is required", "field": "password"
                 }))
         else:
             return Response(create_error_response({
-                "Msg": "Old Password field is required"
+                "Msg": "Old Password field is required", "field": "old_password"
             }))
 
 
@@ -533,7 +556,7 @@ class HashTagAPIView(ListAPIView):
 
         if weekly:
             weekly = int(weekly)
-            start = end - timedelta(days=7*weekly)
+            start = end - timedelta(days=7 * weekly)
             hash_tags = articles.filter(published_on__range=(start, end)).values(
                 'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
@@ -542,7 +565,7 @@ class HashTagAPIView(ListAPIView):
 
         if monthly:
             monthly = int(monthly)
-            start = end - timedelta(days=30*monthly)
+            start = end - timedelta(days=30 * monthly)
             hash_tags = articles.filter(published_on__range=(start, end)).values(
                 'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
             for hashtag in hash_tags:
@@ -634,18 +657,25 @@ class ArticleSearchAPI(APIView):
         if not domain:
             return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
 
+        # mort like this for related queries
+        mlt_fields = ["has_tags"]
+        if source:
+            mlt_fields = ["has_tags", "source", "domain"]
+        mlt = Search(using=es,  index="article").query("more_like_this", fields=mlt_fields, like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt.execute()
         sr = Search(using=es, index="article")
 
         # highlight title and blurb containing query
         sr = sr.highlight("title", "blurb", fragment_size=20000)
 
         # generate elastic search query
-        must_query = [{"wildcard": { "cover_image": "*"}}]
+        must_query = [{"wildcard": {"cover_image": "*"}}]
         should_query = []
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query, "fields": ["title", "blurb"]}})
+            must_query.append({"multi_match": {"query": query, 
+            "fields": ["title", "blurb"], 'type': 'phrase'}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
@@ -940,7 +970,6 @@ class SocialLoginView(generics.GenericAPIView):
         data["breaking_news"] = notification.data[0]['breaking_news']
         data["daily_edition"] = notification.data[0]['daily_edition']
         data["personalized"] = notification.data[0]['personalized']
-
         return data
 
     def post(self, request, *args, **kwargs):
@@ -1166,17 +1195,14 @@ class ChangeArticleStatusView(APIView, SocailMediaPublishing):
 
     def post(self, request):
         _id = request.data.get("id")
-        active_status = request.data.get("activate")
         article = Article.objects.filter(id=_id).first()
         if not article:
             return Response(create_error_response({"error": "Article does not exists"}), status=400)
-        article.active = active_status
+        article.active = request.data.get("activate")
         article.save()
         self.publish(article)
         return Response(create_response({
-            "id": article.id,
-            "active": article.active
-        }))
+            "id": article.id, "active": article.active}))
 
 
 class CategoryBulkUpdate(APIView):
@@ -1225,15 +1251,11 @@ class GetDailyDigestView(ListAPIView):
 
     def get_queryset(self):
         device_id = self.request.GET.get("device_id", "")
-        queryset = Devices.objects.filter(device_id=device_id).first()
-        if not queryset:
-            return queryset
-
-        dd = DailyDigest.objects.filter(device=queryset).first()
-        if not dd:
-            return queryset
-
-        return dd.articles.all().order_by("-published_on")
+        queryset = Devices.objects.filter(device_id=device_id)
+        dd = DailyDigest.objects.filter(device__in=queryset)
+        if not queryset.exists() or not dd.exists():
+            return []
+        return dd.first().articles.all().order_by("-published_on")
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -1385,13 +1407,13 @@ class CaptchaCommentApiView(APIView):
             to_json_response['status'] = 1
             to_json_response['new_captch_key'] = captcha[0].hashkey
             to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
-            return Response(create_response({"result": json.dumps(to_json_response)}))
+            return Response(create_response({"result": to_json_response}))
         else:
             to_json_response = dict()
             to_json_response['status'] = 1
             to_json_response['new_captch_key'] = CaptchaStore.generate_key()
             to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
-            return Response(create_response({"result": json.dumps(to_json_response)}))
+            return Response(create_response({"result": to_json_response}))
 
 
 class AutoCompleteAPIView(generics.GenericAPIView):
@@ -1406,7 +1428,10 @@ class AutoCompleteAPIView(generics.GenericAPIView):
 
     def get(self, request):
         result_list = []
-        query = request.GET.get("q", "")
+        if request.data:
+            query = request.data["q"]
+        else:
+            query = request.GET.get("q", "")
         if query:
             results = es.search(
                 index="auto_suggestions",
@@ -1430,3 +1455,41 @@ class AutoCompleteAPIView(generics.GenericAPIView):
                     )
                 return Response(create_response({"result": result_list}))
         return Response(create_response({"result": []}))
+
+
+class SubsAPIView(ListAPIView):
+    serializer_class = SubsMediaSerializer
+    permission_classes = (AllowAny,)
+    pagination_class = PostpageNumberPagination
+
+    def get(self, request):
+        q = self.request.GET.get("q", None)
+        subs = Subscription.objects.all()
+        if q:
+            subs = subs.filter(user__email__icontains=q)
+        source = SubsMediaSerializer(subs, many=True)
+        return Response(create_response({"results": source.data}))
+
+
+class UpdateSubsAPIView(APIView):
+    serializer_class = SubsMediaSerializer
+    permission_classes = (AllowAny,)
+
+    def get(self, request, pk):
+        source = SubsMediaSerializer(Subscription.objects.get(id=pk))
+        return Response(create_response({"results": source.data}))
+
+    def post(self, request, *args, **kwargs):
+        subs_id = self.request.POST.get('id')
+        subs = Subscription.objects.filter(id=subs_id)
+        if subs.exists():
+            subs = subs.first()
+            subs.subs_type = self.request.POST.get('subs_type')
+            auto_renew = self.request.POST.get('auto_renew')
+            if auto_renew == 'No':
+                subs.auto_renew = False
+            else:
+                subs.auto_renew = True
+            subs.save()
+            return Response(create_response({"results": "success"}))
+        return Response(create_response({"results": "error"}))

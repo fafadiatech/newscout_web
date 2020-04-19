@@ -1,7 +1,6 @@
-// export const BASE_URL = "http://www.newscout.in";
-export const BASE_URL = "http://localhost:8000";
+export const BASE_URL = "http://www.newscout.in";
 
-export const RED_COLOR = "#ff4263";
+export const RED_COLOR = "#f04138";
 export const GREEN_COLOR = "#63ff42";
 export const BLUE_COLOR = "#4263ff";
 
@@ -21,6 +20,7 @@ export const ARTICLE_CREATE_URL = ARTICLE_API_URL + "article/create-update/";
 export const ARTICLE_DETAIL_URL = ARTICLE_API_URL + "articles/";
 export const ARTICLE_STATUS_URL = ARTICLE_API_URL + "article/status/";
 export const ARTICLE_DRAFTIMAGE_URL = ARTICLE_API_URL + "article/draft-image/";
+export const CHANGE_PASSWORD_URL = ARTICLE_API_URL + "change-password/";
 
 export const ANALYTICS_ALLARTICLESOPEN_URL = BASE_URL + "/analytics/all-articles-open/"
 export const ANALYTICS_ARTICLESPERPLATFORM_URL = BASE_URL + "/analytics/articles-per-platform/"
@@ -42,3 +42,7 @@ export const ARTICLE_POSTS = ARTICLE_API_URL + "article/search/";
 export const CAPTCHA_URL = ARTICLE_API_URL + "comment-captcha/";
 export const ARTICLE_BOOKMARK = ARTICLE_API_URL + "articles/bookmark/";
 export const ALL_ARTICLE_BOOKMARK = ARTICLE_API_URL + "bookmark-articles/bookmark-news-list/";
+export const SUGGESTIONS = ARTICLE_API_URL + "suggest/";
+
+// export const SUBSCRIPTION_URL = ARTICLE_API_URL + "subscription/";
+export const SUBSCRIPTION_URL =  "/api/v1/subscription/";

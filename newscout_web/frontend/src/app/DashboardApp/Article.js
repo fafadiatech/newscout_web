@@ -6,7 +6,7 @@ import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import {ARTICLE_LIST_URL, ARTICLE_STATUS_URL} from '../../utils/Constants';
+import { ARTICLE_LIST_URL, ARTICLE_STATUS_URL } from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
 import { getRequest, postRequest, authHeaders } from '../../utils/Utils';
@@ -25,14 +25,15 @@ class Article extends React.Component {
 		super(props);
 		this.state = {
 			results: [],
-			page : 0,
+			page: 0,
 			next: null,
 			previous: null,
 			loading: false,
 			q: "",
 			articleUpdateId: "",
 			isSideOpen: true,
-			isChecked: false
+			isChecked: false,
+			username: USERNAME
 		};
 	}
 
@@ -44,13 +45,13 @@ class Article extends React.Component {
 	getNext = () => {
 		this.setState({
 			loading: true,
-			page : this.state.page + 1
+			page: this.state.page + 1
 		})
 		getRequest(this.state.next, this.setArticleData, authHeaders);
 	}
 
 	setArticleData = (data) => {
-		if (!data.errors){
+		if (!data.errors) {
 			var results = [
 				...this.state.results,
 				...data.body.results
@@ -76,7 +77,7 @@ class Article extends React.Component {
 
 	handleScroll = () => {
 		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-			if (!this.state.loading && this.state.next){
+			if (!this.state.loading && this.state.next) {
 				this.getNext();
 			}
 		}
@@ -103,14 +104,14 @@ class Article extends React.Component {
 	articleStatus = (event) => {
 		var _id = event.currentTarget.dataset.id;
 		var status = event.currentTarget.dataset.status;
-		if (status === "activate"){
+		if (status === "activate") {
 			var active = true;
 		} else {
 			var active = false;
 		}
-		var post_data = {"id": _id, "activate": active}
+		var post_data = { "id": _id, "activate": active }
 		var body = JSON.stringify(post_data)
-        postRequest(ARTICLE_STATUS_URL, body, this.handleArticleStatus, "POST", authHeaders);
+		postRequest(ARTICLE_STATUS_URL, body, this.handleArticleStatus, "POST", authHeaders);
 	}
 
 	handleArticleStatus = (data) => {
@@ -128,13 +129,13 @@ class Article extends React.Component {
 		});
 		setTimeout(() => {
 			this.setState({
-                articleUpdateId: ""
-            });
-        }, 3000);
+				articleUpdateId: ""
+			});
+		}, 3000);
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -146,7 +147,7 @@ class Article extends React.Component {
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getArticles();
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
@@ -157,17 +158,17 @@ class Article extends React.Component {
 		window.removeEventListener('scroll', this.handleScroll)
 	}
 
-	render(){
-		var { menus, isSideOpen } = this.state
+	render() {
+		var { menus, isSideOpen, isChecked, username } = this.state
 
 		let result_array = this.state.results
 		let results = []
-		
+
 		result_array.map((el, index) => {
 			var published_on = moment(el.published_on).format('YYYY-MM-DD m:ss A');
 
 			var data = <tr key={index} data-row={el.id}>
-				<th scope="row">{index+1}</th>
+				<th scope="row">{index + 1}</th>
 
 				<td>
 					<span>{el.title}</span>
@@ -177,8 +178,8 @@ class Article extends React.Component {
 				</td>
 				{el.active ?
 					<td className="text-success">Active</td>
-				:
-				<td className="text-danger">Not Active</td>
+					:
+					<td className="text-danger">Not Active</td>
 				}
 				<td>
 					<ul className="list-inline m-0">
@@ -187,8 +188,8 @@ class Article extends React.Component {
 							{
 								el.active ?
 									<li className="list-inline-item btn btn-sm btn-danger" data-id={el.id} data-status=
-									"deactivate" onClick={this.articleStatus}>Deactivate</li>
-								:
+										"deactivate" onClick={this.articleStatus}>Deactivate</li>
+									:
 									<li className="list-inline-item btn btn-sm btn-success" data-id={el.id} onClick={this.articleStatus} data-status="activate">Activate</li>
 							}
 							{
@@ -196,7 +197,7 @@ class Article extends React.Component {
 									<div>
 										<p className="text-success mt-2">Article Updated successfully</p>
 									</div>
-								:
+									:
 									""
 							}
 						</React.Fragment>
@@ -206,7 +207,7 @@ class Article extends React.Component {
 			results.push(data);
 		})
 
-		return(
+		return (
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
@@ -217,7 +218,8 @@ class Article extends React.Component {
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
 						domain="dashboard"
-						isChecked={isChecked} />
+						isChecked={isChecked}
+						username={username} />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
@@ -230,22 +232,22 @@ class Article extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
 											</Form>
 										</div>
 									</div>
 								</div>
-								<hr/>
+								<hr />
 								<div className="my-5">
 									<h5 className="text-info">Total {this.state.results.length} Articles</h5>
 									<Table striped id="campaign-table">
 										<thead>
 											<tr>
-												<th style={{width:"5%"}}>#</th>
-												<th style={{width:"17%"}}>Title</th>
-												<th style={{width:"12%"}}>Published On</th>
-												<th style={{width:"12%"}}>Is Active</th>
-												<th style={{width:"10%"}}></th>
+												<th style={{ width: "5%" }}>#</th>
+												<th style={{ width: "17%" }}>Title</th>
+												<th style={{ width: "12%" }}>Published On</th>
+												<th style={{ width: "12%" }}>Is Active</th>
+												<th style={{ width: "10%" }}></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -254,10 +256,10 @@ class Article extends React.Component {
 									</Table>
 									{
 										this.state.loading ?
-										<React.Fragment>
-											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
-										</React.Fragment>
-										: ""
+											<React.Fragment>
+												<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+											</React.Fragment>
+											: ""
 									}
 								</div>
 							</div>
