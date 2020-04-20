@@ -357,7 +357,9 @@ class ArticleDetail extends React.Component {
 		getRequest(ARTICLE_DETAIL_URL + SLUG + "?" + this.state.domain, this.getArticleDetail);
 		getRequest(ARTICLE_COMMENT + "?article_id=" + ARTICLEID, this.getArticleComment);
 		if (cookies.get('full_name')) {
-			this.fetchCaptcha();
+			if (CAPTCHA_ENABLED) {
+				this.fetchCaptcha();
+			}
 			this.setState({ is_loggedin: true, is_captcha: false })
 			var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
 			getRequest(ALL_ARTICLE_BOOKMARK + "?" + this.state.domain, this.getBookmarksArticles, headers);
