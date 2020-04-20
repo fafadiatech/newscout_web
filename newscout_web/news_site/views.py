@@ -124,4 +124,22 @@ class BookmarkView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BookmarkView, self).get_context_data(**kwargs)
         context['domain'] = self.request.GET.get('domain', 'newscout')
-        return context    
+        return context
+
+
+class UserChangePasswordView(TemplateView):
+    template_name = "user-change-password.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserChangePasswordView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
+        return context
+
+
+class UserProfileView(TemplateView):
+    template_name = "user-profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
+        return context
