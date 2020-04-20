@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}NewScout{% endblock title %}
+{% block title %}NewScout - RSS{% endblock title %}
 
+{% block metatags %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+{% endblock metatags %}
 
 {% block content %}
     <div id="rss"></div>
