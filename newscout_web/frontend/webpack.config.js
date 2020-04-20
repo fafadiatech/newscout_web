@@ -23,6 +23,8 @@ module.exports = {
     dashboardSubscription: './src/app/DashboardApp/Subscription.js',
     dashboardSubscriptionDetails: './src/app/DashboardApp/SubscriptionDetails.js',
     dashboardChangePassword: './src/app/DashboardApp/changePassword.js',
+    userChangePassword: './src/app/NewsApp/UserChangePassword.js',
+    userProfile: './src/app/NewsApp/UserProfile.js',
   },
   output: {
     path: path.resolve(__dirname, "..", "static", "js", "react"),

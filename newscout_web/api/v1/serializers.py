@@ -407,3 +407,9 @@ class SubsMediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = '__all__'
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseUserProfile
+        fields = ('id', 'first_name', 'last_name', 'email')

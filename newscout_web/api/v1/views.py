@@ -17,7 +17,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
                           ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
-                          CommentListSerializer, SubsMediaSerializer)
+                          CommentListSerializer, SubsMediaSerializer, UserProfileSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -1493,3 +1493,28 @@ class UpdateSubsAPIView(APIView):
             subs.save()
             return Response(create_response({"results": "success"}))
         return Response(create_response({"results": "error"}))
+
+
+class UserProfileAPIView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, *args, **kwargs):
+        user = BaseUserProfile.objects.filter(id=self.request.user.id).first()
+        serializer = UserProfileSerializer(user)
+        data = serializer.data
+        response_data = create_response({"user": data})
+        return Response(response_data)
+
+    def put(self, request, format=None):
+        if request.user.is_authenticated:
+            if request.data:
+                _id = request.data["id"]
+            else:
+                _id = self.request.POST.get('id')
+            user = BaseUserProfile.objects.get(id=_id)
+            serializer = UserProfileSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response({"result":serializer.data, "Msg":"Profile updated successfully."}))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
