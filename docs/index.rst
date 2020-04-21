@@ -15,6 +15,7 @@ Technical Design
 
    design/architecture
    design/analytics
+   design/advertising
 
 
 Developer

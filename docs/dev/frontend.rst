@@ -31,7 +31,7 @@ Following are steps that explain the workflow of creating and integrating ReactA
 
 
 Component Library Packing & Installation
-``````````````````````````````
+`````````````````````````````````````````
 
 Following are steps on how you build & install `newscout-react-component`
 
