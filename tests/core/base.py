@@ -12,7 +12,7 @@ BASE_URL = "http://Newscout.in/"
 # credentials.json
 
 CWD = os.path.abspath(os.getcwd())
-CREDS = json.loads(open(os.path.join(CWD, "credentials.json")).read())
+CREDS = json.loads(open(os.path.join(CWD, "core", "credentials.json")).read())
 
 
 class NSE2ETestBase():
