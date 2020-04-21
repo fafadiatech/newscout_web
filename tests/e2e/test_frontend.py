@@ -1,7 +1,7 @@
 import time
 import pytest
 
-from .base import BASE_URL, CREDS, NSE2ETestBase
+from ..core.base import BASE_URL, CREDS, NSE2ETestBase
 
 @pytest.mark.usefixtures("setup")
 class TestFrontend(NSE2ETestBase):
