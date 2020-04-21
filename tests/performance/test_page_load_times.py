@@ -20,6 +20,8 @@ class TestPageLoadTime(NSE2ETestBase):
 
         for current in self.urls:
             start = datetime.now()
-            driver.get(f"{BASE_URL}{current}")
+            URL = f"{BASE_URL}{current}"
+            print(f"Checking URL: {URL}")
+            driver.get(URL)
             end = datetime.now()
             assert (end - start).seconds < self.MAX_THRESHOLD
