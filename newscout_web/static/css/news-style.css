@@ -674,3 +674,24 @@ ul.usr li {
   font-weight: 600 !important;
   box-shadow: none !important;
 }
+
+.subcategory-menu {
+  height: 44px;
+  overflow: hidden;
+}
+
+.subcategory-menu ul {
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.subcategory-menu ul li {
+  background: #fff;
+  padding: 8px 15px;
+  margin-right: 0 !important;
+  border-right: 1px solid #ddd;
+}
+
+.subcategory-menu ul li.list-inline-item(:last-child) {
+  border-right: none;
+}

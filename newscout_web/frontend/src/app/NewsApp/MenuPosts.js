@@ -39,35 +39,36 @@ const settings = {
 				infinite: false,
 				dots: false
 			}
-        },
-        {
+		},
+		{
 			breakpoint: 600,
 			settings: {
 				slidesToShow: 2,
 				slidesToScroll: 2,
 				initialSlide: 2
 			}
-        },
-        {
+		},
+		{
 			breakpoint: 480,
-				settings: {
+			settings: {
 				slidesToShow: 1,
 				slidesToScroll: 1
 			}
-        }
-    ]
+		}
+	]
 };
 
 class MenuPosts extends React.Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
 			category: CATEGORY,
 			newsPosts: [],
+			subCategories: [],
 			menus: [],
 			isSideOpen: true,
-			domain: "domain="+DOMAIN,
+			domain: "domain=" + DOMAIN,
 			isLoading: true,
 			modal: false,
 			is_loggedin: false,
@@ -93,14 +94,14 @@ class MenuPosts extends React.Component {
 	}
 
 	toggleSwitch = (data) => {
-		if(data === true){
-			if(document.getElementById("dark_style")){
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style'
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
@@ -109,7 +110,7 @@ class MenuPosts extends React.Component {
 			this.setState({ isChecked: true })
 			cookies.set('isChecked', true, { path: '/' });
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 			this.setState({ isChecked: false })
@@ -118,21 +119,21 @@ class MenuPosts extends React.Component {
 	}
 
 	getTheme = () => {
-		if(cookies.get('isChecked')){
-			if(document.getElementById("dark_style")){
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style';
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
 				head.appendChild(link);
 			}
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 		}
@@ -141,10 +142,10 @@ class MenuPosts extends React.Component {
 	getMenu = (data) => {
 		var menus_array = []
 		data.body.results.map((item, index) => {
-			if(item.heading){
+			if (item.heading) {
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase()
+				heading_dict['itemurl'] = "news/" + item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
@@ -157,19 +158,20 @@ class MenuPosts extends React.Component {
 
 	getNewsData = (data) => {
 		data.body.results.map((item, index) => {
-			if(item.heading){
+			if (item.heading) {
 				var heading = item.heading.name.replace(" ", "-").toLowerCase()
-				if(heading === CATEGORY){
-					this.getPosts(item.heading.name, item.heading.category_id, item.heading.submenu)
+				if (heading === CATEGORY) {
+					item.heading.submenu.map((item, index) => {
+						submenu_array.push(item)
+						var final_data = submenu_array.sort(function (a, b) {
+							return a.category_id - b.category_id
+						})
+						this.setState({
+							subCategories: final_data
+						})
+					})
 				}
 			}
-		})
-	}
-
-	getPosts = (cat_name, cat_id, submenu) => {
-		submenu.map((item, index) => {
-			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
-			getRequest(url, this.newsData, false, item)
 		})
 	}
 
@@ -177,20 +179,20 @@ class MenuPosts extends React.Component {
 		var news_dict = {}
 		var news_array = []
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
-				article_dict['src_xs'] = "http://images.newscout.in/unsafe/300x200/left/top/"+decodeURIComponent(item.cover_image)
-				if(news_array.length <= 9){
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/" + decodeURIComponent(item.cover_image)
+				article_dict['src_xs'] = "http://images.newscout.in/unsafe/300x200/left/top/" + decodeURIComponent(item.cover_image)
+				if (news_array.length <= 9) {
 					news_array.push(article_dict)
 				}
 			}
@@ -199,19 +201,19 @@ class MenuPosts extends React.Component {
 		news_dict['menuid'] = extra_data.category_id
 		news_dict['posts'] = news_array
 		submenu_array.push(news_dict)
-		var final_data = submenu_array.sort(function(a, b){
+		var final_data = submenu_array.sort(function (a, b) {
 			return a.menuid - b.menuid
 		})
 		this.setState({
 			newsPosts: final_data
 		})
-		setTimeout(() => { 
-			this.setState({isLoading: false})
+		setTimeout(() => {
+			this.setState({ isLoading: false })
 		}, 3000)
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -221,22 +223,22 @@ class MenuPosts extends React.Component {
 	}
 
 	handleLogout = () => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
-    }
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+	}
 
-    authLogoutResponse = (data) => {
-    	cookies.remove('token', { path: '/' })
-    	cookies.remove('full_name', { path: '/' })
-        this.setState({
+	authLogoutResponse = (data) => {
+		cookies.remove('token', { path: '/' })
+		cookies.remove('full_name', { path: '/' })
+		this.setState({
 			is_loggedin: false,
 			is_captcha: true,
 			bookmark_ids: []
 		})
-    }
+	}
 
-    handleSearch = (query) => {
-		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+	handleSearch = (query) => {
+		var url = SUGGESTIONS + "?q=" + query + "&" + this.state.domain
 		getRequest(url, this.getSuggestionsResponse)
 	}
 
@@ -252,17 +254,17 @@ class MenuPosts extends React.Component {
 	}
 
 	componentDidMount() {
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
-		if(cookies.get('full_name')){
-			this.setState({is_loggedin:true})
+		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
+		getRequest(MENUS + "?" + this.state.domain, this.getNewsData);
+		if (cookies.get('full_name')) {
+			this.setState({ is_loggedin: true })
 		}
-		if(cookies.get('isChecked')){
+		if (cookies.get('isChecked')) {
 			this.setState({ isChecked: true })
 		} else {
 			this.setState({ isChecked: false })
 		}
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
@@ -271,8 +273,16 @@ class MenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options } = this.state;
-		
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options, subCategories } = this.state;
+
+		var subcategories = subCategories.map((item, index) => {
+			return (
+				<React.Fragment key={index}>
+					<li className="list-inline-item">{item.name}</li>
+				</React.Fragment>
+			)
+		})
+
 		var result = newsPosts.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
@@ -291,8 +301,8 @@ class MenuPosts extends React.Component {
 										<React.Fragment key={sub_index}>
 											{isLoading ?
 												<Skeleton height={200} />
-											:
-												<ImageOverlay 
+												:
+												<ImageOverlay
 													image={sub_item.src}
 													image_xs={sub_item.src_xs}
 													title={sub_item.header}
@@ -319,7 +329,7 @@ class MenuPosts extends React.Component {
 			)
 		})
 
-		return(
+		return (
 			<React.Fragment>
 				<Menu
 					navitems={menus}
@@ -340,13 +350,17 @@ class MenuPosts extends React.Component {
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
-							<div className="p-70 pb-5">{result}</div>
+							<div className="pt-50 pb-5">
+								<div className="subcategory-menu mb-5 text-center">
+									<ul className="list-inline m-0">{subcategories}</ul>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
-				
+
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
