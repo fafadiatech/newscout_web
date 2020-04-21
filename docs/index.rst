@@ -25,6 +25,7 @@ Developer
    :caption: Contents:
 
    dev/contributing
+   dev/frontend
 
 Indices and tables
 ==================
