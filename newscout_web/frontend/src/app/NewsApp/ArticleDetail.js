@@ -12,7 +12,7 @@ import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, Mo
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, SUGGESTIONS } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, SUGGESTIONS, EVENT_TRACK_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -324,6 +324,14 @@ class ArticleDetail extends React.Component {
 		}
 	}
 
+	setEventTracker = () => {
+		console.log("data")
+	}
+
+	getEventTracker = (article) => {
+		getRequest(EVENT_TRACK_URL + "?domain=newscout&action=article_detail&platform=web&type=ENGAGE_VIEW&category=" + article.category_id + "&category_name=" + article.category, this.setEventTracker);
+	}
+
 	handleNextArticle = () => {
 		this.setState({ isLoading: true })
 		var new_url = BASE_URL + "/news/article/" + this.state.next_article;
@@ -393,6 +401,7 @@ class ArticleDetail extends React.Component {
 			source_url = "";
 			description = article.caption
 		}
+		this.getEventTracker(article);
 
 		return (
 			<React.Fragment>
