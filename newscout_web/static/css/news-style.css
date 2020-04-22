@@ -674,3 +674,36 @@ ul.usr li {
   font-weight: 600 !important;
   box-shadow: none !important;
 }
+
+.subcategory-menu {
+  height: 37px;
+  overflow: hidden;
+}
+
+.subcategory-menu ul {
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.subcategory-menu ul li {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 15px;
+  background: #ffffff;
+  margin-right: 0 !important;
+  border-right: 1px solid #ddd;
+}
+
+.subcategory-menu ul li:hover {
+  background: #ddd;
+}
+
+.subcategory-menu ul li.active {
+  background: #f04336 !important;
+  color: #fff !important;
+}
+
+.subcategory-menu ul li.list-inline-item:last-child {
+  border-right: none;
+}
