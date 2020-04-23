@@ -17,9 +17,12 @@ class ArticlesPerSessionGraph extends PureComponent {
     }
 
     componentWillReceiveProps(newProps) {
-        var final_data = newProps.data.data.sort(function (a, b) {
-            return a.dateStr - b.dateStr
-        })
+        var final_data = ""
+        if (newProps.data.data !== undefined) {
+            final_data = newProps.data.data.sort(function (a, b) {
+                return new Date(a.dateStr.split('-').reverse()) - new Date(b.dateStr.split('-').reverse())
+            })
+        }
         this.setState({
             data: final_data,
             loading: newProps.loading,
