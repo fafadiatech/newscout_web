@@ -15,7 +15,7 @@ class ArticlesPerPlatformGraph extends PureComponent {
 
     componentWillReceiveProps(newProps) {
         var final_data = ""
-        if (newProps.data !== undefined) {
+        if (newProps.data !== undefined && newProps.data.dateStr !== null) {
             final_data = newProps.data.sort(function (a, b) {
                 return new Date(a.dateStr.split('-').reverse()) - new Date(b.dateStr.split('-').reverse())
             })
