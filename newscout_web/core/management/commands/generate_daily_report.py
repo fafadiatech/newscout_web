@@ -115,16 +115,16 @@ class Command(BaseCommand):
                 end_date = datetime.combine(end_date, time.max)
                 return start_date, end_date, ""
 
-            # elif date_range == "30days":
-            #     return self.get_default_date_range()
+            elif date_range == "30days":
+                return self.get_default_date_range()
 
-            elif date_range == "last_month":
-                date = datetime.now().date()
-                y, m = calendar.prevmonth(date.year, date.month)
-                start_date = datetime(y, m, 1)
-                end_date = datetime(y, m, calendar.monthlen(y, m))
-                end_date = datetime.combine(end_date, time.max)
-                return start_date, end_date, ""
+            # elif date_range == "last_month":
+            #     date = datetime.now().date()
+            #     y, m = calendar.prevmonth(date.year, date.month)
+            #     start_date = datetime(y, m, 1)
+            #     end_date = datetime(y, m, calendar.monthlen(y, m))
+            #     end_date = datetime.combine(end_date, time.max)
+            #     return start_date, end_date, ""
 
             else:
                 try:
@@ -517,14 +517,14 @@ class Command(BaseCommand):
         data = list(self.events.collection.aggregate(pipeline))
         if data:
             res = []
-            if "author" in data:
+            try:
                 for key, values in groupby(data, itemgetter("author")):
                     d = {"author": key}
                     for v in values:
                         d[v["action"]] = v["count"]
                     res.append(d)
                 avg = self.interactions_per_author_avg(start_date, end_date)
-            else:
+            except:
                 avg = {"avg_count": 0}
             no_data = False
         else:
