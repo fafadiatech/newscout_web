@@ -75,6 +75,7 @@ class App extends React.Component {
 			ArticlesPerSessionAvgCount: 0,
 			InteractionsPerSessionAvgCount: 0,
 			isSideOpen: true,
+			username: USERNAME,
 		};
 	}
 
@@ -294,10 +295,9 @@ class App extends React.Component {
 			this.setState({ isSideOpen: false })
 		}
 	}
-
-	render() {
-		var { menus, isSideOpen } = this.state
-		return (
+	render(){
+		var { menus, isSideOpen, username } = this.state
+		return(
 			<div className="App">
 				<Menu
 					logo={logo}
@@ -305,7 +305,8 @@ class App extends React.Component {
 					isSlider={true}
 					isSideBarToogle={this.isSideBarToogle}
 					isSideOpen={isSideOpen}
-					domain="dashboard" />
+					domain="dashboard"
+					username={username} />
 				<div className="container-fluid">
 					<div className="row">
 						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

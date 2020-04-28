@@ -36,7 +36,8 @@ class Advertisement extends React.Component {
 			q: "",
 			page: 0,
 			isSideOpen: true,
-			isChecked: false
+			isChecked: false,
+			username: USERNAME
 		};
 	}
 
@@ -304,7 +305,7 @@ class Advertisement extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen } = this.state
+		var { menus, isSideOpen, username } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -431,7 +432,8 @@ class Advertisement extends React.Component {
 						isSlider={true}
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
-						domain="dashboard" />
+						domain="dashboard"
+						username={username} />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

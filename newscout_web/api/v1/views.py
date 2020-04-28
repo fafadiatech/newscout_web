@@ -17,7 +17,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
                           ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
-                          CommentListSerializer, SubsMediaSerializer)
+                          CommentListSerializer, SubsMediaSerializer, UserProfileSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -285,7 +285,7 @@ class ArticleDetailAPIView(APIView):
         slug = self.kwargs.get("slug", "")
 
         user = self.request.user
-        article = Article.objects.first()
+        article = Article.objects.filter(slug=slug).first()
         has_subscribed = False
         if not self.request.user.is_anonymous and \
             Subscription.objects.filter(
@@ -472,39 +472,45 @@ class ChangePasswordAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        password = self.request.POST.get("password", "")
-        old_password = self.request.POST.get("old_password", "")
-        confirm_password = self.request.POST.get("confirm_password", "")
+        if request.data:
+            password = request.data["password"]
+            old_password = request.data["old_password"]
+            confirm_password = request.data["confirm_password"]
+        else:
+            password = self.request.POST.get("password", "")
+            old_password = self.request.POST.get("old_password", "")
+            confirm_password = self.request.POST.get("confirm_password", "")
+            
         user = self.request.user
         if old_password:
             if not user.check_password(old_password):
                 msg = "Old Password Does Not Match With User"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "old_password"
                 }))
             if confirm_password != password:
                 msg = "Password and Confirm Password does not match"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "confirm_password"
                 }))
             if old_password == password:
                 msg = "New password should not same as Old password"
                 return Response(create_error_response({
-                    "Msg": msg
+                    "Msg": msg, "field": "password"
                 }))
             if user and password:
                 user.set_password(password)
                 user.save()
                 return Response(create_response({
-                    "Msg": "Password changed successfully"
+                    "Msg": "Password changed successfully", "field": "confirm_password"
                 }))
             else:
                 return Response(create_error_response({
-                    "Msg": "Password field is required"
+                    "Msg": "Password field is required", "field": "password"
                 }))
         else:
             return Response(create_error_response({
-                "Msg": "Old Password field is required"
+                "Msg": "Old Password field is required", "field": "old_password"
             }))
 
 
@@ -651,6 +657,12 @@ class ArticleSearchAPI(APIView):
         if not domain:
             return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
 
+        # mort like this for related queries
+        mlt_fields = ["has_tags"]
+        if source:
+            mlt_fields = ["has_tags", "source", "domain"]
+        mlt = Search(using=es,  index="article").query("more_like_this", fields=mlt_fields, like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt.execute()
         sr = Search(using=es, index="article")
 
         # highlight title and blurb containing query
@@ -662,7 +674,8 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query, "fields": ["title", "blurb"]}})
+            must_query.append({"multi_match": {"query": query, 
+            "fields": ["title", "blurb"], 'type': 'phrase'}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
@@ -1238,15 +1251,11 @@ class GetDailyDigestView(ListAPIView):
 
     def get_queryset(self):
         device_id = self.request.GET.get("device_id", "")
-        queryset = Devices.objects.filter(device_id=device_id).first()
-        if not queryset:
-            return queryset
-
-        dd = DailyDigest.objects.filter(device=queryset).first()
-        if not dd:
-            return queryset
-
-        return dd.articles.all().order_by("-published_on")
+        queryset = Devices.objects.filter(device_id=device_id)
+        dd = DailyDigest.objects.filter(device__in=queryset)
+        if not queryset.exists() or not dd.exists():
+            return []
+        return dd.first().articles.all().order_by("-published_on")
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -1484,3 +1493,28 @@ class UpdateSubsAPIView(APIView):
             subs.save()
             return Response(create_response({"results": "success"}))
         return Response(create_response({"results": "error"}))
+
+
+class UserProfileAPIView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, *args, **kwargs):
+        user = BaseUserProfile.objects.filter(id=self.request.user.id).first()
+        serializer = UserProfileSerializer(user)
+        data = serializer.data
+        response_data = create_response({"user": data})
+        return Response(response_data)
+
+    def put(self, request, format=None):
+        if request.user.is_authenticated:
+            if request.data:
+                _id = request.data["id"]
+            else:
+                _id = self.request.POST.get('id')
+            user = BaseUserProfile.objects.get(id=_id)
+            serializer = UserProfileSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response({"result":serializer.data, "Msg":"Profile updated successfully."}))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
