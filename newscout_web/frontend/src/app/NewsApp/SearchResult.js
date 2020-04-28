@@ -9,7 +9,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS, EVENT_TRACK_URL, ACCESS_SESSION } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -269,16 +269,16 @@ class SearchResult extends React.Component {
 			next: data.body.next,
 			previous: data.body.previous,
 			loadingPagination: false,
-			result_count: result_count.toLocaleString()+" results found."
+			result_count: result_count.toLocaleString() + " results found."
 		})
-		setTimeout(() => { 
-			this.setState({isLoading: false})
+		setTimeout(() => {
+			this.setState({ isLoading: false })
 		}, 3000)
 	}
 
 	queryFilter = (data, checked) => {
 		var data_array = []
-		if(data.toString() === data_array.toString()){
+		if (data.toString() === data_array.toString()) {
 			var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?q=" + QUERY;
 			window.history.pushState({}, '', newurl);
 			getRequest(ARTICLE_POSTS + "?" + this.state.domain + "&q=" + QUERY, this.getSearchResult);
@@ -343,7 +343,7 @@ class SearchResult extends React.Component {
 	}
 
 	handleSearch = (query) => {
-		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+		var url = SUGGESTIONS + "?q=" + query + "&" + this.state.domain
 		getRequest(url, this.getSuggestionsResponse)
 	}
 
@@ -358,7 +358,24 @@ class SearchResult extends React.Component {
 		})
 	}
 
+	getSessionId = (data) => {
+		cookies.set('sessionID', data.body.results, { path: '/' });
+		setTimeout(() => {
+			cookies.remove('sessionID', { path: '/' })
+		}, 900000);
+	}
+
+	setEventTracker = () => {
+		console.log("data")
+	}
+
 	componentDidMount() {
+		if (cookies.get("sessionID")) {
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=article_search_details&platform=web&type=ENGAGE_VIEW&sid=" + cookies.get("sessionID"), this.setEventTracker);
+		}
+		else {
+			getRequest(ACCESS_SESSION, this.getSessionId);
+		}
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
 		if (this.state.final_query) {

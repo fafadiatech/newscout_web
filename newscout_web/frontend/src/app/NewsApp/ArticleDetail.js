@@ -12,7 +12,10 @@ import { Button, Form, FormGroup, Label, Input, FormText, Modal, ModalHeader, Mo
 import Auth from './Auth';
 import Comments from './Comments'
 
-import { BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, SUGGESTIONS, EVENT_TRACK_URL } from '../../utils/Constants';
+import {
+	BASE_URL, MENUS, ARTICLE_DETAIL_URL, ARTICLE_LOGOUT, ARTICLE_COMMENT, CAPTCHA_URL, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, SUGGESTIONS, EVENT_TRACK_URL,
+	ACCESS_SESSION
+} from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -153,6 +156,12 @@ class ArticleDetail extends React.Component {
 	}
 
 	articleBookmarkResponse = (data) => {
+		if (cookies.get("sessionID")) {
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=bookmark_article&platform=web&type=ENGAGE_VIEW&sid=" + cookies.get("sessionID"), this.setEventTracker);
+		}
+		else {
+			getRequest(ACCESS_SESSION, this.getSessionId);
+		}
 		var bookmark_obj = data.body.bookmark_article
 		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
 
@@ -324,12 +333,25 @@ class ArticleDetail extends React.Component {
 		}
 	}
 
+	getSessionId = (data) => {
+		cookies.set('sessionID', data.body.results, { path: '/' });
+		setTimeout(() => {
+			cookies.remove('sessionID', { path: '/' })
+		}, 900000);
+	}
+
 	setEventTracker = () => {
 		console.log("data")
 	}
 
 	getEventTracker = (article) => {
-		getRequest(EVENT_TRACK_URL + "?domain=newscout&action=article_detail&platform=web&type=ENGAGE_VIEW&category=" + article.category_id + "&category_name=" + article.category, this.setEventTracker);
+		if (cookies.get("sessionID")) {
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=article_detail&platform=web&type=ENGAGE_VIEW&category=" + article.category_id + "&category_name=" + article.category + "sid=" + cookies.get("sessionID"), this.setEventTracker);
+		}
+		else {
+			getRequest(ACCESS_SESSION, this.getSessionId);
+		}
+
 	}
 
 	handleNextArticle = () => {

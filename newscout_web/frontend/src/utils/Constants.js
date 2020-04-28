@@ -47,3 +47,4 @@ export const SUGGESTIONS = ARTICLE_API_URL + "suggest/";
 // export const SUBSCRIPTION_URL = ARTICLE_API_URL + "subscription/";
 export const SUBSCRIPTION_URL = "/api/v1/subscription/";
 export const EVENT_TRACK_URL = BASE_URL + "/event/track/";
+export const ACCESS_SESSION = ARTICLE_API_URL + "access-session/";
