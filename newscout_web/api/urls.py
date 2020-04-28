@@ -1,4 +1,4 @@
-from django.conf.urls import *
+from django.conf.urls import url, include
 
 app_name = 'api'
 
