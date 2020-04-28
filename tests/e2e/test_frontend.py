@@ -1,7 +1,7 @@
 import time
 import pytest
 
-from .base import BASE_URL, CREDS, NSE2ETestBase
+from ..core.base import BASE_URL, CREDS, NSE2ETestBase
 
 @pytest.mark.usefixtures("setup")
 class TestFrontend(NSE2ETestBase):
@@ -34,6 +34,39 @@ class TestFrontend(NSE2ETestBase):
             for j in range(len(titles)):
                 if i != j:
                     assert(titles[i] != titles[j])
+
+    def calc_percentage_less_than(self, value, items):
+        valid_items = [current for current in items if current <= value]
+
+        if len(valid_items) == 0:
+            return 0
+        else:
+            return round(len(valid_items) / float(len(items)), 2)
+
+    def test_trending_freshness(self):
+        driver = self.driver
+        driver.get(f"{BASE_URL}news/trending/")
+
+        time.sleep(3)
+
+        hours = []
+
+        for i in range(1,31):
+            element_xpath = f"/html/body/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[{i}]/div/div[1]/div/div/div[2]/ul/li"
+            element = driver.find_element_by_xpath(element_xpath)
+            hours.append(element.text)
+
+        doesnt_have_min_ts = lambda x: x.find("minutes") == -1
+        doesnt_have_days_ts = lambda x: x.find("days") == -1 and x.find("day") == -1
+        cleanup_hours_ts = lambda x: 1 if x[:x.find("hour")].strip() == "an" else int(x[:x.find("hour")].strip())
+        hour_ts = list(map(cleanup_hours_ts, list(filter(doesnt_have_days_ts, list(filter(doesnt_have_min_ts, hours))))))
+        hour_ts.sort()
+
+        # ensure latest item is at least 3 hours old
+        assert len(hour_ts) > 0 and hour_ts[0] <= 3
+
+        # ensure 30% of items are less than 3 hours old
+        assert self.calc_percentage_less_than(3, hour_ts) > 0.30
 
     def test_search(self):
         self.check_item_exists_on_page("news/search/?q=mumbai", "/html/body/div[1]/div[2]/div/div[2]/div/div/div[3]/div[1]/div/div[2]/div[1]/a")

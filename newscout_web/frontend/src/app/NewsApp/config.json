@@ -29,11 +29,6 @@
 			"itemurl": "dashboard/subscription",
 			"itemtext": "Subscription",
 			"item_icon": "/static/icons/article.png"
-		},
-		{
-			"itemurl": "logout",
-			"itemtext": "Logout",
-			"item_icon": "/static/icons/logout.png"
 		}
 	] 
 }

@@ -35,6 +35,7 @@ class Campaign extends React.Component {
 			q: "",
 			page : 0,
 			isSideOpen: true,
+			username: USERNAME
 		};
 	}
 
@@ -282,7 +283,7 @@ class Campaign extends React.Component {
 	}
 
 	render(){
-		var { menus, isSideOpen } = this.state
+		var { menus, isSideOpen, username } = this.state
 		
 		let result_array = this.state.results
 		let results = []
@@ -378,7 +379,8 @@ class Campaign extends React.Component {
 						isSlider={true}
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
-						domain="dashboard" />
+						domain="dashboard"
+						username={username} />
 					<div className="container-fluid">
 						<div className="row">
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />

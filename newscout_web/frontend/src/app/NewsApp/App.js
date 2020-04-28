@@ -660,6 +660,7 @@ class App extends React.Component {
 					isChecked={isChecked}
 					handleSearch={this.handleSearch}
 					options={options}
+					isNavbarFilter={false}
 				/>
 				<div className="container-fluid">
 					<div className="row">
