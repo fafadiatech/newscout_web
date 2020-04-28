@@ -247,7 +247,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
             past_avg = {"avg_count": 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class ArticlesPerPlatform(APIView, ParseDateRange):
@@ -361,7 +361,7 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
             past_avg = {"avg_count": 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, 
-            "diff": avg["avg_count"] - past_avg["avg_count"],
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2),
             "avg_count": avg["avg_count"]}))
 
 
@@ -441,7 +441,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class InteractionsPerCategory(APIView, ParseDateRange):
@@ -520,7 +520,7 @@ class InteractionsPerCategory(APIView, ParseDateRange):
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class ArticlesPerAuthor(APIView, ParseDateRange):
@@ -591,7 +591,7 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class InteractionsPerAuthor(APIView, ParseDateRange):
@@ -681,7 +681,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
             past_avg = {'avg_count': 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class ArticlesPerSession(APIView, ParseDateRange):
@@ -803,7 +803,7 @@ class ArticlesPerSession(APIView, ParseDateRange):
             past_avg = {"avg_count": 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class InteractionsPerSession(APIView, ParseDateRange):
@@ -917,4 +917,4 @@ class InteractionsPerSession(APIView, ParseDateRange):
         return Response(create_response(
             {"result": data, "no_data": no_data,
             "avg_count": avg["avg_count"],
-            "diff": avg["avg_count"] - past_avg["avg_count"]}))
+            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))

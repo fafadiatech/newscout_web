@@ -85,48 +85,56 @@ class App extends React.Component {
 			var NoDataKey = "AllArticlesOpenNoData";
 			var AvgCountKey = "AllArticlesOpenAvgCount";
 			var DiffKey = "AllArticleOpenDiff";
+			var DiffColor = "AllArticleColor";
 		} else if (extraData.loading == "ArticlesPerPlatformLoading") {
 			var key = "ArticlesPerPlatformLoading";
 			var DataKey = "ArticlesPerPlatformData";
 			var NoDataKey = "ArticlesPerPlatformNoData";
 			var AvgCountKey = "ArticlesPerPlatformAvgCount";
 			var DiffKey = "ArticlesPerPlatformOpenDiff";
+			var DiffColor = "ArticlesPerPlatformColor";
 		} else if (extraData.loading == "ArticlesPerCategoryLoading") {
 			var key = "ArticlesPerCategoryLoading";
 			var DataKey = "ArticlesPerCategoryData";
 			var NoDataKey = "ArticlesPerCategoryNoData";
 			var AvgCountKey = "ArticlesPerCategoryAvgCount";
 			var DiffKey = "ArticlesPerCategoryOpenDiff";
+			var DiffColor = "ArticlesPerCategoryColor";
 		} else if (extraData.loading == "InteractionsPerCategoryLoading") {
 			var key = "InteractionsPerCategoryLoading";
 			var DataKey = "InteractionsPerCategoryData";
 			var NoDataKey = "InteractionsPerCategoryNoData";
 			var AvgCountKey = "InteractionsPerCategoryAvgCount";
 			var DiffKey = "InteractionsPerCategoryOpenDiff";
+			var DiffColor = "InteractionsPerCategoryColor";
 		} else if (extraData.loading == "ArticlesPerAuthorLoading") {
 			var key = "ArticlesPerAuthorLoading";
 			var DataKey = "ArticlesPerAuthorData";
 			var NoDataKey = "ArticlesPerAuthorNoData";
 			var AvgCountKey = "ArticlesPerAuthorAvgCount";
 			var DiffKey = "ArticlesPerAuthorOpenDiff";
+			var DiffColor = "ArticlesPerAuthorColor";
 		} else if (extraData.loading == "InteractionsPerAuthorLoading") {
 			var key = "InteractionsPerAuthorLoading";
 			var DataKey = "InteractionsPerAuthorData";
 			var NoDataKey = "InteractionsPerAuthorNoData";
 			var AvgCountKey = "InteractionsPerAuthorAvgCount";
 			var DiffKey = "InteractionsPerAuthorOpenDiff";
+			var DiffColor = "InteractionsPerAuthorColor";
 		} else if (extraData.loading == "ArticlesPerSessionLoading") {
 			var key = "ArticlesPerSessionLoading";
 			var DataKey = "ArticlesPerSessionData";
 			var NoDataKey = "ArticlesPerSessionNoData";
 			var AvgCountKey = "ArticlesPerSessionAvgCount";
 			var DiffKey = "ArticlesPerSessionOpenDiff";
+			var DiffColor = "ArticlesPerSessionColor";
 		} else if (extraData.loading == "InteractionsPerSessionLoading") {
 			var key = "InteractionsPerSessionLoading";
 			var DataKey = "InteractionsPerSessionData";
 			var NoDataKey = "InteractionsPerSessionNoData";
 			var AvgCountKey = "InteractionsPerSessionAvgCount";
 			var DiffKey = "InteractionsPerSessionOpenDiff";
+			var DiffColor = "InteractionsPerSessionColor";
 		}
 		var state = this.state;
 		state[key] = false
@@ -134,6 +142,11 @@ class App extends React.Component {
 		state[NoDataKey] = data.body.no_data;
 		state[AvgCountKey] = data.body.avg_count;
 		state[DiffKey] = data.body.diff;
+		if (data.body.diff > 0) {
+			state[DiffColor] = "text-success";
+		} else if (data.body.diff < 0) {
+			state[DiffColor] = "text-danger";
+		}
 		this.setState(state);
 	}
 
@@ -348,7 +361,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;|{this.state.AllArticleOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.AllArticleOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -361,7 +374,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;|{this.state.ArticlesPerPlatformOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerPlatformOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -374,7 +387,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;|{this.state.ArticlesPerCategoryOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerCategoryOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -387,7 +400,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;|{this.state.InteractionsPerCategoryOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerCategoryOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -402,7 +415,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;|{this.state.ArticlesPerAuthorOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerAuthorOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -415,7 +428,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;|{this.state.InteractionsPerAuthorOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerAuthorOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -428,7 +441,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;|{this.state.ArticlesPerSessionOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerSessionOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -441,7 +454,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;|{this.state.InteractionsPerSessionOpenDiff}</h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerSessionOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
