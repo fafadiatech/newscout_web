@@ -308,9 +308,9 @@ class App extends React.Component {
 			this.setState({ isSideOpen: false })
 		}
 	}
-	render(){
+	render() {
 		var { menus, isSideOpen, username } = this.state
-		return(
+		return (
 			<div className="App">
 				<Menu
 					logo={logo}
@@ -362,7 +362,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.AllArticleOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.AllArticleOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -375,7 +375,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerPlatformOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerPlatformOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -388,7 +388,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerCategoryOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerCategoryOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -401,7 +401,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerCategoryOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerCategoryOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -416,7 +416,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerAuthorOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerAuthorOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -429,7 +429,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerAuthorOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerAuthorOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -442,7 +442,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerSessionOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.ArticlesPerSessionOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -455,7 +455,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;|<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerSessionOpenDiff}</span></h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;<span className="sm-data" style={{ fontSize: '40%' }}>{this.state.InteractionsPerSessionOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
