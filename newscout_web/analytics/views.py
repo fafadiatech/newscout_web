@@ -48,7 +48,7 @@ class ParseDateRange():
         # end_date_obj = end_aware.astimezone(pytz.UTC)
         return start_date, end_date, ""
     
-    def get_past_date(self, date_range):
+    def get_past_range(self, date_range):
         if date_range:
             if date_range == "today":
                 date = datetime.now().date() - timedelta(days=1)
