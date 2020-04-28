@@ -47,6 +47,56 @@ class ParseDateRange():
         # start_date_obj = start_aware.astimezone(pytz.UTC)
         # end_date_obj = end_aware.astimezone(pytz.UTC)
         return start_date, end_date, ""
+    
+    def get_past_date(self, date_range):
+        if date_range:
+            if date_range == "today":
+                date = datetime.now().date() - timedelta(days=1)
+                start_date = datetime.combine(date, time.min)
+                end_date = datetime.combine(date, time.max)
+                return start_date, end_date, ""
+
+            elif date_range == "yesterday":
+                date = datetime.now().date() - timedelta(days=2)
+                start_date = datetime.combine(date, time.min)
+                end_date = datetime.combine(date, time.max)
+                return start_date, end_date, ""
+
+            elif date_range == "7days":
+                date = datetime.now().date()
+                start_date = date - timedelta(days=13)
+                end_date = date - timedelta(days=6)
+                start_date = datetime.combine(start_date, time.min)
+                end_date = datetime.combine(end_date, time.max)
+                return start_date, end_date, ""
+
+            elif date_range == "30days":
+                date = datetime.now().date()
+                start_date = date - timedelta(days=60)
+                end_date = date - timedelta(days=30)
+                start_date = datetime.combine(start_date, time.min)
+                end_date = datetime.combine(end_date, time.max)
+                return start_date, end_date, ""
+
+            elif date_range == "last_month":
+                date = datetime.now().date()
+                date = date - timedelta(days=60)
+                y, m = calendar.prevmonth(date.year, date.month)
+                start_date = datetime(y, m, 1)
+                end_date = datetime(y, m, calendar.monthlen(y, m))
+                end_date = datetime.combine(end_date, time.max)
+                return start_date, end_date, ""
+
+            else:
+                try:
+                    start_date, end_date = self.parse_datetime(date_range)
+                    return start_date, end_date, ""
+                except Exception as e:
+                    return "", "", create_error_response(
+                        {"Msg": "Invalid date range"})
+        else:
+            start_date, end_date, error = self.get_default_date_range()
+            return start_date, end_date, error
 
     def get_date_range(self, date_range):
         if date_range:
@@ -126,6 +176,28 @@ class AllArticlesOpen(APIView, ParseDateRange):
         if not data:
             return {"avg_count": 0}
         return data[0]
+    
+    def pipeline(self, start_date, end_date, domain_id):
+        return [
+            {"$match": {"$and": [
+                {"ts": {"$gte": start_date, "$lte": end_date}},
+                {"domain": domain_id}]}},
+            {"$match": {"$or": [
+                {"action": "article_detail"},
+                {"action": "article_search_details"}
+            ]}},
+            {"$project": {"_id": 0, "datePartDay": {
+                "$concat": [
+                    {"$substr": [
+                        {"$dayOfMonth": "$ts"}, 0, 2]}, "-",
+                    {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
+                    {"$substr": [{"$year": "$ts"}, 0, 4]}]},
+                "platform": "$platform"}},
+            {"$group": {"_id": "$datePartDay", "count": {"$sum": 1}}},
+            {"$project": {
+                "_id": 0, "dateStr": "$_id", "dateObj": {"$dateFromString": {"dateString": "$_id"}},
+                "count": "$count"}},
+            {"$sort": {"dateObj": 1}}]
 
     def get(self, request):
         date_range = request.GET.get("date_range")
@@ -148,33 +220,15 @@ class AllArticlesOpen(APIView, ParseDateRange):
                     "no_data": no_data,
                     "avg_count": avg["avg_count"]}))
 
+        past_start_date, past_end_date, error = self.get_past_range(date_range)
         domain_id = request.user.domain.domain_id
-        pipeline = [
-            {"$match": {"$and": [
-                {"ts": {"$gte": start_date, "$lte": end_date}},
-                {"domain": domain_id}]}},
-            {"$match": {"$or": [
-                {"action": "article_detail"},
-                {"action": "article_search_details"}
-            ]}},
-            {"$project": {"_id": 0, "datePartDay": {
-                "$concat": [
-                    {"$substr": [
-                        {"$dayOfMonth": "$ts"}, 0, 2]}, "-",
-                    {"$substr": [{"$month": "$ts"}, 0, 2]}, "-",
-                    {"$substr": [{"$year": "$ts"}, 0, 4]}]},
-                "platform": "$platform"}},
-            {"$group": {"_id": "$datePartDay", "count": {"$sum": 1}}},
-            {"$project": {
-                "_id": 0, "dateStr": "$_id", "dateObj": {"$dateFromString": {"dateString": "$_id"}},
-                "count": "$count"}},
-            {"$sort": {"dateObj": 1}}]
-
+        pipeline = self.pipeline(start_date, end_date, domain_id)
         data = list(self.events.collection.aggregate(pipeline))
         if data:
             def max_func(x): return x["count"]
             max_values = max(data, key=max_func)
             avg = self.get_avg(start_date, end_date, domain_id)
+            past_avg = self.get_avg(past_start_date, past_end_date, domain_id)
             res = {
                 "data": data,
                 "max": {"count": max_values["count"],
@@ -190,8 +244,10 @@ class AllArticlesOpen(APIView, ParseDateRange):
             }
             no_data = True
             avg = {"avg_count": 0}
+            past_avg = {"avg_count": 0}
         return Response(create_response(
-            {"result": res, "no_data": no_data, "avg_count": avg["avg_count"]}))
+            {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
+            "diff": avg["avg_count"] - past_avg["avg_count"]}))
 
 
 class ArticlesPerPlatform(APIView, ParseDateRange):
