@@ -281,7 +281,10 @@ class ArticleDetail extends React.Component {
 
 	fetchCaptcha = () => {
 		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
-		getRequest(CAPTCHA_URL, this.setCaptcha, headers);
+		if (CAPTCHA_ENABLED === "True") {
+			console.log(typeof CAPTCHA_ENABLED)
+			getRequest(CAPTCHA_URL, this.setCaptcha, headers);
+		}
 	}
 
 	commentSubmitResponse = (data) => {
