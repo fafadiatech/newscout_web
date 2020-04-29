@@ -1,0 +1,24 @@
+{% extends 'dashboard-base.html' %}
+{% load static %}
+
+{% block title %}NewScout: Dashboard{% endblock title %}
+
+{% block content %}
+<div id="root"></div>
+{% endblock content %}
+
+{% block js %}
+<script type="text/javascript">
+	var ACTIVE_PAGE = '{{active_page|safe}}'
+	var USERNAME = '{{request.user.first_name}} {{request.user.last_name}}'
+</script>
+{% if pk %}
+<script>
+	var ID = '{{pk}}';
+	console.log(ID)
+</script>
+<script src="{% static "js/react/dashboardSubscriptionDetails.js" %}"></script>
+{% else %}
+<script src="{% static "js/react/dashboardSubscription.js" %}"></script>
+{% endif %}
+{% endblock js %}

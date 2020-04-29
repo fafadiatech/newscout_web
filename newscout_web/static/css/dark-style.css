@@ -1,0 +1,158 @@
+body,
+.search-box .form-control,
+.search-box .input-group-append span {
+	background: #121212;
+    color: #7f7f7f;
+}
+
+.navbar-brand {
+  background-image: url('/static/images/logo/logo-sm-white.png') !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 135px;
+  height: 50px;
+}
+
+nav.fixed-top.navbar.navbar-expand-md,
+.sidebar,
+.sidebar ul a.list-group-item,
+.footer-area,
+.filter-container {
+	background: #212020 !important
+}
+
+nav.fixed-top.navbar.navbar-expand-md {
+	border-bottom: 1px solid rgb(45, 45, 45) !important
+}
+
+.sidebar {
+    border-right: 1px solid rgb(45, 45, 45) !important;
+    border-top: 1px solid rgb(45, 45, 45) !important;
+}
+
+.sidebar-btn {
+    color: #b0b7c7 !important;
+}
+
+.search-box .form-control,
+.search-box .input-group-append span {
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar ul.list-group a.list-group-item,
+.navbar-expand-md .navbar-nav .nav-link,
+.footer-area p,
+.footer-area ul li a,
+.filter-container h6,
+.closefilter {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+hr {
+	border-top: 1px solid rgb(45, 45, 45) !important
+}
+
+.featurepost {
+	background: rgb(33, 32, 32) !important;
+    box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+}
+
+.featurepost-content h3,
+.featurepost-content p,
+.article-detail .card-body .card-title h3,
+.sidebox .heading h3,
+.sidebox .media .media-heading,
+.comment h6,
+.card-post .card-body .card-title,
+.search-box .form-control,
+.toogle-card .card-header h3,
+.toogle-card .card-body ul li h4,
+.filter,
+.fltr-section > div {
+	color: rgba(255,255,255,0.8) !important;
+}
+
+.card-post, .sidebox {
+	background-color: #212020 !important;
+    box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+    border: 0px solid rgb(255,255,255,0.1) !important;
+}
+
+.card-post .card-body,
+.sidebox,
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus,
+.view-all {
+    border: 1px solid rgb(45, 45, 45) !important;
+}
+
+.article-breadcrumb .breadcrumb,
+.subcategory-menu ul li {
+	background-color: #212020 !important;
+    box-shadow: 0 0 3px rgb(29, 27, 45) !important;
+    border: 0px solid rgb(255,255,255,0.1) !important;
+    color: #7f7f7f !important;
+}
+
+.article-detail .card-body ul.hash-tags li,
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus {
+	background: #121212 !important;
+}
+
+.article-detail .card-body ul.hash-tags li,
+.article-detail .card-body ul.hash-tags li,
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus {
+	color: #f04138 !important;
+}
+
+.comment-post textarea,
+.captcha-caption,
+.comment-post textarea.form-control:focus,
+.captcha-caption.form-control:focus,
+.article-detail .card-body .card-text.card-desc,
+.comment p,
+.card-post .card-body p.card-desc a {
+	color: rgba(255,255,255,0.8) !important;
+}
+
+.card-post .card-body p.card-text:not(.card-desc) a {
+    font-size: 15px;
+    color: #7f7f7f;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card.toogle-card {
+	background-color: #212020 !important;
+    box-shadow: 0 0 1px rgb(45, 45, 45) !important;
+    border: 1px solid rgb(45, 45, 45) !important;
+}
+
+.filter-container {
+	border-left: 1px solid rgb(45, 45, 45) !important;
+}
+
+.view-all {
+	box-shadow: none;
+}
+
+.card-link, .fa-redo {
+    color: #7f7f7f;
+}
+
+.filter-container {
+    top: 67px;
+    height: calc(100vh - 67px);
+}

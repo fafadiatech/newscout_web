@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from core.models import Domain, Menu, Article, Subscription
 
 from django.shortcuts import render
-from core.models import Domain, Menu
 from django.views.generic import TemplateView
+from newscout_web.settings import CAPTCHA_ENABLED
+
 
 
 class IndexView(TemplateView):
@@ -59,9 +61,22 @@ class ArticleDetailView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ArticleDetailView, self).get_context_data(**kwargs)
         context['domain'] = self.request.GET.get('domain', 'newscout')
-        context['slug'] = self.kwargs['slug']
-        article_id = context['slug'].split("-")[-1]
+        slug = self.kwargs['slug']
+        context['slug'] = slug
+        context['has_subscribed'] = False
+        if not self.request.user.is_anonymous and \
+            Subscription.objects.filter(
+                user=self.request.user).exclude(subs_type='Basic').exists():
+            context['has_subscribed'] = True
+        article_id = slug.split("-")[-1]
         context['articleId'] = article_id
+        context["captcha_enabled"] = CAPTCHA_ENABLED
+        article = Article.objects.filter(slug=slug).first()
+        if article:
+            context['article_title'] = article.title
+            context['article_desc'] = article.blurb
+            context['article_url'] = article.source_url
+            context['article_image'] = article.cover_image
         return context
 
 
@@ -87,9 +102,8 @@ class ArticleRSSView(TemplateView):
     template_name = "rss.html"
 
     def get_context_data(self, **kwargs):
-        data = {}
         context = super(ArticleRSSView, self).get_context_data(**kwargs)
-        domain = self.request.GET.get('domain')
+        domain = self.request.GET.get('domain', 'newscout')
         domain_obj = Domain.objects.filter(domain_id=domain).first()
         if domain_obj:
             context['domain'] = domain_obj.domain_name
@@ -97,9 +111,37 @@ class ArticleRSSView(TemplateView):
             for menu in menus:
                 all_categories = menu.submenu.all()
                 for category in all_categories:
-                    data[category.name.name] = "/article/rss/?domain="+domain+"&category="+category.name.name
+                    data[category.name.name] = "/article/rss/?domain=" + domain + "&category=" + category.name.name
         else:
             data = {}
 
         context['category'] = data
+        context["domain"] = domain
+        return context
+
+
+class BookmarkView(TemplateView):
+    template_name = "bookmark.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(BookmarkView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
+        return context
+
+
+class UserChangePasswordView(TemplateView):
+    template_name = "user-change-password.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserChangePasswordView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
+        return context
+
+
+class UserProfileView(TemplateView):
+    template_name = "user-profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
         return context

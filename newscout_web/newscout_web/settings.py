@@ -27,7 +27,7 @@ SECRET_KEY = '_am!u5!_zzqh*tmls(jctl_3j186fuh5r7*p*t0*czpvu&i%+x'
 DEBUG = True
 
 # Enble sqlite database quick mode (by default disabled)
-QUICK_MODE = True
+QUICK_MODE = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -102,7 +102,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'newscout',
+            'NAME': 'newscout_web',
             'USER': 'postgres',
             'PASSWORD': 'ftech#123',
             'HOST': 'localhost',
@@ -188,8 +188,8 @@ EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
 EMAIL_FROM = ''
 
-ELASTIC_SERVER_IP="localhost"
-ELASTIC_SERVER_PORT="9200"
+ELASTIC_SERVER_IP = "167.71.238.145"
+ELASTIC_SERVER_PORT = "9200"
 
 DBNAME = 'newscout_analytics'
 client = MongoClient()
@@ -201,3 +201,5 @@ TWITTER_CONSUMER_KEY = ""
 TWITTER_CONSUMER_SECRET = ""
 TWITTER_ACCESS_TOKEN = ""
 TWITTER_ACCESS_TOKEN_SECRET = ""
+
+CAPTCHA_ENABLED = True

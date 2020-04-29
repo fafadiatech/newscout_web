@@ -1,0 +1,5 @@
+{ 
+    "host": "https://api.github.com", 
+    "repo": "fafadiatech/newscout_web",
+    "token": "token <token>"
+}

@@ -3,32 +3,32 @@
 		{
 			"itemurl": "dashboard",
 			"itemtext": "Dashboard",
-			"item_icon": "static/icons/dashboard.png"
+			"item_icon": "/static/icons/dashboard.png"
 		},
 		{
 			"itemurl": "dashboard/campaigns",
 			"itemtext": "Campaign",
-			"item_icon": "static/icons/campaign.png"
+			"item_icon": "/static/icons/campaign.png"
 		},
 		{
 			"itemurl": "dashboard/groups",
 			"itemtext": "Group",
-			"item_icon": "static/icons/group.png"
+			"item_icon": "/static/icons/group.png"
 		},
 		{
 			"itemurl": "dashboard/advertisements",
 			"itemtext": "Advertisement",
-			"item_icon": "static/icons/advrtisement.png"
+			"item_icon": "/static/icons/advrtisement.png"
 		},
 		{
 			"itemurl": "dashboard/articles",
 			"itemtext": "Articles",
-			"item_icon": "static/icons/article.png"
+			"item_icon": "/static/icons/article.png"
 		},
 		{
-			"itemurl": "logout",
-			"itemtext": "Logout",
-			"item_icon": "static/icons/logout.png"
+			"itemurl": "dashboard/subscription",
+			"itemtext": "Subscription",
+			"item_icon": "/static/icons/article.png"
 		}
 	] 
 }

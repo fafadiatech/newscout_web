@@ -12,6 +12,7 @@
         var ACTIVE_PAGE = '{{active_page|safe}}'
         var ARTICLE_ID = null
 		var ARTICLE_SLUG = null
+		var USERNAME = '{{request.user.first_name}} {{request.user.last_name}}'
 	</script>
 	<script src="{% static "js/react/dashboardArticleForm.js" %}"></script>
 {% endblock js %}

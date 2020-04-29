@@ -3,19 +3,26 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
 import Datetime from 'react-datetime';
+import logo from '../NewsApp/logo.png';
+import Cookies from 'universal-cookie';
 import { ToastContainer } from 'react-toastify';
+import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
 import {ARTICLE_SOURCE_LIST_URL, ARTICLE_CATEGORY_LIST_URL,
     ARTICLE_CREATE_URL, ARTICLE_DETAIL_URL,
     ARTICLE_DRAFTIMAGE_URL} from '../../utils/Constants';
-import DashboardMenu from '../../components/DashboardMenu';
-import DashboardHeader from '../../components/DashboardHeader';
 import { getRequest, postRequest, putRequest, fileUploadHeaders,
     deleteRequest } from '../../utils/Utils';
 import { Button, Form, FormGroup, Label, FormText, Row, Col } from 'reactstrap';
 import Summernote from '../../components/Summernote';
 
 import './index.css';
+import config_data from '../NewsApp/config.json';
+
+import 'newscout/assets/Menu.css'
+import 'newscout/assets/Sidebar.css'
+
+const cookies = new Cookies();
 
 class ArticleForm extends React.Component {
 	constructor(props) {
@@ -41,7 +48,10 @@ class ArticleForm extends React.Component {
             article_id: "",
             cover_image: "",
             cover_image_name: "",
-            cover_image_id: ""
+            cover_image_id: "",
+            isSideOpen: true,
+            isChecked: false,
+            username: USERNAME
 		};
     }
 
@@ -240,15 +250,32 @@ class ArticleForm extends React.Component {
         }
     }
 
+    isSideBarToogle = (data) => {
+        if(data === true){
+            this.setState({ isSideOpen: true })
+            cookies.set('isSideOpen', true, { path: '/' });
+        } else {
+            this.setState({ isSideOpen: false })
+            cookies.remove('isSideOpen', { path: '/' });
+        }
+    }
+
     componentDidMount() {
         if (this.state.article_slug) {
             this.getArticleDetails()
         }
         this.getSources()
         this.getCategories()
+        if(cookies.get('isSideOpen')){
+            this.setState({ isSideOpen: true })
+        } else {
+            this.setState({ isSideOpen: false })
+        }
     }
 
 	render(){
+        var { menus, isSideOpen, username } = this.state
+
         if (this.state.active_page == "article-create"){
             var page_title = "Article Create"
             var method = "post"
@@ -260,12 +287,19 @@ class ArticleForm extends React.Component {
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
-					<DashboardHeader />
+					<Menu
+                        logo={logo}
+                        navitems={config_data.dashboardmenu}
+                        isSlider={true}
+                        isSideBarToogle={this.isSideBarToogle}
+                        isSideOpen={isSideOpen}
+                        domain="dashboard"
+                        username={username} />
                     <div className="container-fluid">
-						<div className="row">
-							<DashboardMenu />
-							<main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
-								<div className="mb-3">
+                        <div className="row">
+                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+                            <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
+                                <div className="pt-50 mb-3">
 									<h1 className="h2">{page_title}</h1>
                                     <Form>
                                         <Row>
@@ -364,10 +398,11 @@ class ArticleForm extends React.Component {
                                         </Row>
                                     </Form>
                                 </div>
-                            </main>
+                            </div>
                         </div>
                     </div>
 				</div>
+                <Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
 	}

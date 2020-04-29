@@ -1,12 +1,13 @@
-from rest_framework import serializers
-from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
-                         ArtilcleLike, HashTag, ArticleMedia, Menu, SubMenu,
-                         Devices, Notification, TrendingArticle, DraftMedia, Comment,
-                         CategoryAssociation)
+from rest_framework import (exceptions, serializers)
+
 from django.contrib.auth import authenticate
-from rest_framework import exceptions
 from rest_framework.validators import UniqueValidator
 from rest_framework.authtoken.models import Token
+
+from core.models import (Category, Article, BaseUserProfile, Source, BookmarkArticle,
+                         ArticleLike, HashTag, ArticleMedia, Menu, SubMenu,
+                         Devices, Notification, TrendingArticle, DraftMedia, Comment,
+                         CategoryAssociation, Subscription)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -55,11 +56,17 @@ class ArticleSerializer(serializers.ModelSerializer):
     root_category_id = serializers.SerializerMethodField()
     hash_tags = HashTagSerializer(many=True)
     author = serializers.SerializerMethodField()
+    blurb = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(ArticleSerializer, self).__init__(*args, **kwargs)
         if self.context.get("hash_tags_list"):
             self.fields["hash_tags"] = serializers.SerializerMethodField()
+
+    def get_blurb(self, instance):
+        if not self.context.get("hash_subscribed"):
+            return instance.blurb[:1000] + '...'
+        return instance.blurb
 
     def get_hash_tags(self, instance):
         return list(instance.hash_tags.all().values_list("name", flat=True))
@@ -96,6 +103,7 @@ class UserSerializer(serializers.Serializer):
         user.set_password(validated_data["password"])
         user.username = validated_data["email"]
         user.save()
+        Subscription.objects.get_or_create(user=user, subs_type="Basic", payement_mode="Basic")
         token, _ = Token.objects.get_or_create(user=user)
         return user
 
@@ -121,15 +129,16 @@ class BaseUserProfileSerializer(serializers.ModelSerializer):
 
 class BookmarkArticleSerializer(serializers.ModelSerializer):
     status = serializers.IntegerField(default=1)
+    article = ArticleSerializer()
 
     class Meta:
         model = BookmarkArticle
         fields = ('id', 'article', 'status')
 
 
-class ArtilcleLikeSerializer(serializers.ModelSerializer):
+class ArticleLikeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ArtilcleLike
+        model = ArticleLike
         fields = ('id', 'article', 'user', 'is_like')
 
     def create(self, validated_data):
@@ -139,11 +148,11 @@ class ArtilcleLikeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Article does not exist")
         if not user:
             raise serializers.ValidationError("User not logged in")
-        article_like = ArtilcleLike.objects.filter(article=article_obj, user=user)
+        article_like = ArticleLike.objects.filter(article=article_obj, user=user)
         if not article_like:
-            like_obj = ArtilcleLike.objects.create(article=article_obj, user=user)
+            like_obj = ArticleLike.objects.create(article=article_obj, user=user)
             return like_obj
-        ArtilcleLike.objects.filter(article=article_obj, user=user).delete()
+        ArticleLike.objects.filter(article=article_obj, user=user).delete()
         return {"article": article_obj, "user": user}
 
 
@@ -386,3 +395,21 @@ class CommentListSerializer(serializers.ModelSerializer):
         for reply in comment_reply:
             replies.append(CommentListSerializer(reply).data)
         return replies
+
+
+class SubsMediaSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format="%a, %d %B")
+
+    def get_email(self, instance):
+        return instance.user.email
+
+    class Meta:
+        model = Subscription
+        fields = '__all__'
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseUserProfile
+        fields = ('id', 'first_name', 'last_name', 'email')

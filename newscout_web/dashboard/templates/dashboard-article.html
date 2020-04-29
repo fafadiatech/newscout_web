@@ -10,6 +10,7 @@
 {% block js %}
 	<script type="text/javascript">
 		var ACTIVE_PAGE = '{{active_page|safe}}'
+		var USERNAME = '{{request.user.first_name}} {{request.user.last_name}}'
 	</script>
 	<script src="{% static "js/react/dashboardArticle.js" %}"></script>
 {% endblock js %}

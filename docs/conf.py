@@ -51,5 +51,9 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_theme_options = {
+    'logo': 'images/logo.png',
+}
+
 def setup(app):
     app.add_stylesheet('css/custom.css')

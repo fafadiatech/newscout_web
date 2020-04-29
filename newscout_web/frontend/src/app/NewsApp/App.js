@@ -1,17 +1,14 @@
 import React from 'react';
 import moment from 'moment';
-import logo from './logo.png';
 import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
 import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import Auth from './Auth';
 
-import { MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS, ACCESS_SESSION, EVENT_TRACK_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import 'newscout/assets/Menu.css'
@@ -29,7 +26,7 @@ const cookies = new Cookies();
 const settings = {
 	dots: false,
 	infinite: false,
-	speed: 500,
+	speed: 1500,
 	slidesToShow: 3,
 	slidesToScroll: 3,
 	initialSlide: 0,
@@ -42,23 +39,59 @@ const settings = {
 				infinite: false,
 				dots: false
 			}
-        },
-        {
+		},
+		{
 			breakpoint: 600,
 			settings: {
 				slidesToShow: 2,
 				slidesToScroll: 2,
 				initialSlide: 2
 			}
-        },
-        {
+		},
+		{
 			breakpoint: 480,
-				settings: {
+			settings: {
 				slidesToShow: 1,
 				slidesToScroll: 1
 			}
-        }
-    ]
+		}
+	]
+};
+
+const settingsTrending = {
+	dots: false,
+	infinite: true,
+	speed: 1500,
+	autoplay: true,
+	slidesToShow: 1,
+	slidesToScroll: 1,
+	initialSlide: 0,
+	responsive: [
+		{
+			breakpoint: 1024,
+			settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				infinite: true,
+				dots: false
+			}
+		},
+		{
+			breakpoint: 600,
+			settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				initialSlide: 1
+			}
+		},
+		{
+			breakpoint: 480,
+			settings: {
+				slidesToShow: 1,
+				slidesToScroll: 1
+			}
+		}
+	]
 };
 
 class App extends React.Component {
@@ -73,14 +106,16 @@ class App extends React.Component {
 			finance: [],
 			economics: [],
 			misc: [],
-			domain: "domain="+DOMAIN,
+			domain: "domain=" + DOMAIN,
 			isLoading: false,
 			isSideOpen: true,
 			modal: false,
 			is_loggedin: false,
 			is_loggedin_validation: false,
 			username: cookies.get('full_name'),
-			bookmark_ids: []
+			bookmark_ids: [],
+			isChecked: false,
+			options: []
 		}
 	}
 
@@ -97,24 +132,70 @@ class App extends React.Component {
 		})
 	}
 
+	toggleSwitch = (data) => {
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style'
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+			this.setState({ isChecked: true })
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+			cookies.remove('isChecked', { path: '/' });
+		}
+	}
+
+	getTheme = () => {
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style';
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+		}
+	}
+
 	fetchArticleBookmark = (articleId) => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
-		var body = JSON.stringify({article_id: articleId})
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		var url = ARTICLE_BOOKMARK + "?" + this.state.domain;
+		var body = JSON.stringify({ article_id: articleId })
 		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
 	}
 
 	articleBookmarkResponse = (data) => {
-		var bookmark_obj = data.body.bookmark_article
-		if(bookmark_obj.status === 1){
+		var bookmark_obj = data.body.bookmark_article;
+		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
+
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
-		} else {
-			var index = article_array.indexOf(bookmark_obj.article);
-			if (index > -1) {
-				article_array.splice(index, 1);
-			}
 		}
-		console.log(article_array)
+
+		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
 		this.setState({
 			bookmark_ids: article_array
 		})
@@ -123,14 +204,14 @@ class App extends React.Component {
 	getMenu = (data) => {
 		var menus_array = []
 		data.body.results.map((item, index) => {
-			if(item.heading){
+			if (item.heading) {
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase()
+				heading_dict['itemurl'] = "news/" + item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
-				// this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
+				this.getPosts(heading_dict['itemtext'], heading_dict['item_id'])
 			}
 		})
 		this.setState({
@@ -141,30 +222,21 @@ class App extends React.Component {
 	getTrending = (data) => {
 		var trending_array = []
 		data.body.results.map((item, index) => {
-			var articles = item.articles;
-			if(articles.length < 3){
-				for (var ele = 0; ele < articles.length; ele++) {
-					if(articles[ele].cover_image){
-						var article_dict = {}
-						article_dict['id'] = articles[ele].id
-						article_dict['header'] = articles[ele].title
-						article_dict['altText'] = articles[ele].title
-						article_dict['caption'] = articles[ele].blurb
-						article_dict['source'] = articles[ele].source
-						article_dict['category'] = articles[ele].category
-						article_dict['slug'] = "/news/article/"+articles[ele].slug
-						article_dict['source_url'] = articles[ele].source_url
-						article_dict['src'] = "http://images.newscout.in/unsafe/870x550/left/top/"+decodeURIComponent(articles[ele].cover_image)
-						for(var j = 0; j < this.state.bookmark_ids.length; j++) {
-							if(articles[ele].id === this.state.bookmark_ids[j]) {
-								article_dict['is_bookmarked'] = true
-							} else {
-								article_dict['is_bookmarked'] = false
-							}
-						}
-						trending_array.push(article_dict)
-					}
-					break;
+			if (index <= 5) {
+				var articles = item.articles[0];
+				if (articles.cover_image) {
+					var article_dict = {}
+					article_dict['id'] = articles.id
+					article_dict['header'] = articles.title
+					article_dict['altText'] = articles.title
+					article_dict['caption'] = articles.blurb
+					article_dict['source'] = articles.source
+					article_dict['category'] = articles.category
+					article_dict['slug'] = "/news/article/" + articles.slug
+					article_dict['source_url'] = articles.source_url
+					article_dict['src'] = "http://images.newscout.in/unsafe/1175x500/center/" + decodeURIComponent(articles.cover_image)
+					article_dict['src_xs'] = "http://images.newscout.in/unsafe/350x325/center/" + decodeURIComponent(articles.cover_image)
+					trending_array.push(article_dict)
 				}
 			}
 		})
@@ -175,30 +247,30 @@ class App extends React.Component {
 	}
 
 	getPosts = (cat_name, cat_id) => {
-		var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+cat_name
-		if(cat_name == "Uncategorised"){
-			this.setState({isLoading: true})
+		var url = ARTICLE_POSTS + "?" + this.state.domain + "&category=" + cat_name
+		if (cat_name == "Uncategorised") {
+			this.setState({ isLoading: true })
 			getRequest(url, this.latestNewsPosts)
-		} else if(cat_name == "Finance") {
-			this.setState({isLoading: true})
+		} else if (cat_name == "Finance") {
+			this.setState({ isLoading: true })
 			getRequest(url, this.financePosts)
-		} else if(cat_name == "Economics") {
-			this.setState({isLoading: true})
+		} else if (cat_name == "Economics") {
+			this.setState({ isLoading: true })
 			getRequest(url, this.economicPosts)
-		} else if(cat_name == "Misc") {
-			this.setState({isLoading: true})
+		} else if (cat_name == "Misc") {
+			this.setState({ isLoading: true })
 			getRequest(url, this.miscPosts)
-		} else if(cat_name == "Sector Updates") {
-			this.setState({isLoading: true})
+		} else if (cat_name == "Sector Updates") {
+			this.setState({ isLoading: true })
 			getRequest(url, this.sectorUpdatePosts)
-		} else if(cat_name == "Regional Updates") {
-			this.setState({isLoading: true})
+		} else if (cat_name == "Regional Updates") {
+			this.setState({ isLoading: true })
 			getRequest(url, this.regionalUpdatePosts)
 		}
 	}
 
 	getArticleId = (articleId) => {
-		if(cookies.get('full_name')){
+		if (cookies.get('full_name')) {
 			this.fetchArticleBookmark(articleId)
 		} else {
 			this.toggle()
@@ -208,19 +280,19 @@ class App extends React.Component {
 	sectorUpdatePosts = (data) => {
 		var sectorupdateposts_array = []
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/"+decodeURIComponent(item.cover_image)
-				if(sectorupdateposts_array.length < 3){
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x276/left/top/" + decodeURIComponent(item.cover_image)
+				if (sectorupdateposts_array.length < 3) {
 					sectorupdateposts_array.push(article_dict)
 				}
 			}
@@ -233,19 +305,19 @@ class App extends React.Component {
 	regionalUpdatePosts = (data) => {
 		var regionalupdateposts_array = []
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
-				if(regionalupdateposts_array.length < 4){
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x490/center/" + decodeURIComponent(item.cover_image)
+				if (regionalupdateposts_array.length < 4) {
 					regionalupdateposts_array.push(article_dict)
 				}
 			}
@@ -258,19 +330,20 @@ class App extends React.Component {
 	financePosts = (data) => {
 		var financeposts_array = []
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
-				if(financeposts_array.length < 8){
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/" + decodeURIComponent(item.cover_image)
+				article_dict['src_xs'] = "http://images.newscout.in/unsafe/325x200/left/top/" + decodeURIComponent(item.cover_image)
+				if (financeposts_array.length < 8) {
 					financeposts_array.push(article_dict)
 				}
 			}
@@ -283,19 +356,19 @@ class App extends React.Component {
 	economicPosts = (data) => {
 		var economicposts_array = []
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
-				if(economicposts_array.length < 4){
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x490/center/" + decodeURIComponent(item.cover_image)
+				if (economicposts_array.length < 4) {
 					economicposts_array.push(article_dict)
 				}
 			}
@@ -308,19 +381,19 @@ class App extends React.Component {
 	miscPosts = (data) => {
 		var miscposts_array = []
 		data.body.results.map((item, index) => {
-			if(item.cover_image){
+			if (item.cover_image) {
 				var article_dict = {}
 				article_dict['id'] = item.id
 				article_dict['header'] = item.title
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
+				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
 				article_dict['published_on'] = moment(item.published_on).format('D MMMM YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/"+decodeURIComponent(item.cover_image)
-				if(miscposts_array.length < 3){
+				article_dict['src'] = "http://images.newscout.in/unsafe/368x322/left/top/" + decodeURIComponent(item.cover_image)
+				if (miscposts_array.length < 3) {
 					miscposts_array.push(article_dict)
 				}
 			}
@@ -330,17 +403,20 @@ class App extends React.Component {
 		})
 	}
 
-	isSideOpen = (data) => {
-		this.setState({
-			isSideOpen: data
-		})
+	isSideBarToogle = (data) => {
+		if (data === true) {
+			this.setState({ isSideOpen: true })
+			cookies.set('isSideOpen', true, { path: '/' });
+		} else {
+			this.setState({ isSideOpen: false })
+			cookies.remove('isSideOpen', { path: '/' });
+		}
 	}
 
 	getBookmarksArticles = (data) => {
-		var article_array = []
 		var article_ids = data.body.results;
-		for(var i = 0; i < article_ids.length; i++){
-			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+		for (var i = 0; i < article_ids.length; i++) {
+			if (this.state.bookmark_ids.indexOf(article_ids[i].article) === -1) {
 				article_array.push(article_ids[i].article)
 				this.setState({
 					bookmark_ids: article_array
@@ -349,21 +425,84 @@ class App extends React.Component {
 		}
 	}
 
+	getSessionId = (data) => {
+		cookies.set('sessionID', data.body.results, { path: '/' });
+		setTimeout(() => {
+			cookies.remove('sessionID', { path: '/' })
+		}, 900000);
+	}
+
+	handleLogout = () => {
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+	}
+
+	authLogoutResponse = (data) => {
+		cookies.remove('token', { path: '/' })
+		cookies.remove('full_name', { path: '/' })
+		this.setState({
+			is_loggedin: false,
+			bookmark_ids: []
+		})
+	}
+
+	handleSearch = (query) => {
+		var url = SUGGESTIONS + "?q=" + query + "&" + this.state.domain
+		getRequest(url, this.getSuggestionsResponse)
+	}
+
+	getSuggestionsResponse = (data) => {
+		var options_array = []
+		var results = data.body.result;
+		results.map((item, indx) => {
+			options_array.push(item.value)
+		})
+		this.setState({
+			options: options_array
+		})
+	}
+	setEventTracker = () => {
+		console.log("data")
+	}
+
 	componentDidMount() {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		if (cookies.get("sessionID")) {
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&platform=web&type=ENGAGE_VIEW&sid=" + cookies.get("sessionID"), this.setEventTracker);
+		}
+		else {
+			getRequest(ACCESS_SESSION, this.getSessionId);
+		}
+		getRequest(TRENDING_NEWS + "?" + this.state.domain, this.getTrending);
+		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
+		if (cookies.get('full_name')) {
+			this.setState({ is_loggedin: true })
+			var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+			getRequest(ALL_ARTICLE_BOOKMARK + "?" + this.state.domain, this.getBookmarksArticles, headers);
+		}
+		if (cookies.get('isChecked')) {
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		if (cookies.get('isSideOpen')) {
+			this.setState({ isSideOpen: true })
+		} else {
+			this.setState({ isSideOpen: false })
+		}
+		this.getTheme();
+
+		document.addEventListener('click', this.handleDocumentClick, true);
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state
+
 		var sector_update = sector_update.map((item, index) => {
-			return(
-				<div className="col-lg-4 mb-4">
+			return (
+				<div className="col-lg-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
-					:
+						:
 						<VerticleCardItem
 							id={item.id}
 							image={item.src}
@@ -379,19 +518,47 @@ class App extends React.Component {
 							toggle={this.toggle}
 							is_open={modal}
 							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
 			)
 		})
 
+		var trendingSlider = trending.map((item, index) => {
+			if (index !== 5) {
+				return (
+					<ImageOverlay
+						id={item.id}
+						image={item.src}
+						image_xs={item.src_xs}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.slug}
+						slug_url={item.slug}
+						category={item.category}
+						is_loggedin={is_loggedin}
+						toggle={this.toggle}
+						is_open={modal}
+						getArticleId={this.getArticleId}
+						bookmark_ids={bookmark_ids}
+						base_url={BASE_URL}
+						key={index}
+					/>
+				)
+			}
+		})
+
 		var regional_update = regional_update.map((item, index) => {
-			return(
-				<div className="col-lg-6 mb-4">
+			return (
+				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={250} />
-					:
+						:
 						<HorizontalCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -401,6 +568,12 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -409,12 +582,13 @@ class App extends React.Component {
 
 		var finance = finance.map((item, index) => {
 			return (
-				<React.Fragment>
+				<React.Fragment key={index}>
 					{isLoading ?
 						<Skeleton height={230} />
-					:
-						<ImageOverlay 
+						:
+						<ImageOverlay
 							image={item.src}
+							image_xs={item.src_xs}
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
@@ -429,12 +603,13 @@ class App extends React.Component {
 		})
 
 		var economics = economics.map((item, index) => {
-			return(
-				<div className="col-lg-6 mb-4">
+			return (
+				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={230} />
-					:
+						:
 						<HorizontalCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -444,6 +619,12 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -451,12 +632,13 @@ class App extends React.Component {
 		})
 
 		var misc = misc.map((item, index) => {
-			return(
-				<div className="col-lg-4 mb-4">
+			return (
+				<div className="col-lg-4 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={525} />
-					:
+						:
 						<VerticleCardItem
+							id={item.id}
 							image={item.src}
 							title={item.header}
 							description={item.caption}
@@ -466,6 +648,12 @@ class App extends React.Component {
 							category={item.category}
 							hash_tags={item.hash_tags}
 							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
 						/>
 					}
 				</div>
@@ -474,68 +662,35 @@ class App extends React.Component {
 
 		return (
 			<React.Fragment>
-				<Menu logo={logo} navitems={menus} url={URL} isSlider={true} isSideOpen={this.isSideOpen} />
-				<div className="container-fluid pb-50">
+				<Menu
+					navitems={menus}
+					url={URL}
+					isSlider={true}
+					isSideBarToogle={this.isSideBarToogle}
+					isSideOpen={isSideOpen}
+					toggle={this.toggle}
+					is_loggedin={is_loggedin}
+					username={username}
+					handleLogout={this.handleLogout}
+					toggleSwitch={this.toggleSwitch}
+					isChecked={isChecked}
+					handleSearch={this.handleSearch}
+					options={options}
+					isNavbarFilter={false}
+				/>
+				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} class={isSideOpen} />
-						<div className={`main-content ${isSideOpen ? 'col-lg-10' : 'col-lg-12'}`}>
+						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
+						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
 									<div className="row">
-										<div className="col-lg-7 col-12 mb-4">
-											<React.Fragment>
-												{isLoading ?
-													<Skeleton height={500} />
+										<div className="col-lg-12 col-12 mb-4 trending-slider">
+											{isLoading ?
+												<Skeleton height={500} />
 												:
-													<React.Fragment>
-														{trending.length > 0 ?
-															<ImageOverlay
-																id={trending[0].id} 
-																image={trending[0].src}
-																title={trending[0].header}
-																description={trending[0].caption}
-																uploaded_by={trending[0].source}
-																source_url={trending[0].slug}
-																slug_url={trending[0].slug}
-																category={trending[0].category}
-																is_loggedin={is_loggedin}
-																toggle={this.toggle}
-																is_open={modal}
-																getArticleId={this.getArticleId}
-																is_bookmarked={trending[0].is_bookmarked}
-															/>
-														: ''
-														}
-													</React.Fragment>
-												}
-											</React.Fragment>
-										</div>
-										<div className="col-lg-5 col-12 mb-4">
-											<React.Fragment>
-												{isLoading ?
-													<Skeleton height={500} />
-												:
-													<React.Fragment>
-														{trending.length > 0 ?
-															<ContentOverlay
-																id={trending[1].id} 
-																title={trending[1].header}
-																description={trending[1].caption}
-																uploaded_by={trending[1].source}
-																source_url={trending[1].slug}
-																slug_url={trending[1].slug}
-																category={trending[1].category}
-																is_loggedin={is_loggedin}
-																toggle={this.toggle}
-																is_open={modal}
-																getArticleId={this.getArticleId}
-																is_bookmarked={trending[1].is_bookmarked}
-															/>
-														: ""
-														}
-													</React.Fragment>
-												}
-											</React.Fragment>
+												<Slider {...settingsTrending}>{trendingSlider}</Slider>
+											}
 										</div>
 									</div>
 								</div>
@@ -562,10 +717,10 @@ class App extends React.Component {
 									<div className="row">{regional_update}</div>
 								</div>
 
-								<div className="pt-50">
+								<div className="p-5045">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
-											<div className="section-title">
+											<div className="section-title slider-header">
 												<h2 className="m-0 section-title">Finance</h2>
 											</div>
 										</div>
@@ -588,7 +743,7 @@ class App extends React.Component {
 									<div className="row">{economics}</div>
 								</div>
 
-								<div className="pt-50">
+								<div className="pt-50 pb-5">
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
@@ -604,7 +759,7 @@ class App extends React.Component {
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
-				
+
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);

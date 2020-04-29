@@ -1,3 +1,14 @@
+from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
+                    LoginAPIView, LogoutAPIView, SourceListAPIView,
+                    ArticleDetailAPIView, ArticleBookMarkAPIView,
+                    ArticleRecommendationsAPIView, ForgotPasswordAPIView,
+                    ChangePasswordAPIView, UserHashTagAPIView, BookmarkArticleAPIView,
+                    ArticleLikeAPIView, HashTagAPIView, ArticleSearchAPI, MenuAPIView,
+                    DevicesAPIView, NotificationAPIView, SocialLoginView,
+                    TrendingArticleAPIView, ArticleCreateUpdateView,
+                    CategoryBulkUpdate, GetDailyDigestView,
+                    ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet,
+                    LikeAPIView, CaptchaCommentApiView, SubsAPIView, AutoCompleteAPIView, UpdateSubsAPIView, UserProfileAPIView, AccessSession, RSSAPIView)
 from django.conf.urls import url, include
 
 from rest_framework.routers import DefaultRouter
@@ -6,17 +17,6 @@ from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title="Newscout API Documentation")
 
-from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
-                    LoginAPIView, LogoutAPIView, SourceListAPIView,
-                    ArticleDetailAPIView, ArticleBookMarkAPIView,
-                    ArticleRecommendationsAPIView, ForgotPasswordAPIView,
-                    ChangePasswordAPIView, UserHashTagAPIView, BookmarkArticleAPIView,
-                    ArtilcleLikeAPIView, HashTagAPIView, ArticleSearchAPI, MenuAPIView,
-                    DevicesAPIView, NotificationAPIView, SocialLoginView,
-                    TrendingArticleAPIView, ArticleCreateUpdateView,
-                    CategoryBulkUpdate, GetDailyDigestView,
-                    ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet, 
-                    LikeAPIView, CaptchaCommentApiView)
 
 url_router = DefaultRouter()
 url_router.register(r'article/draft-image', DraftMediaUploadViewSet, basename='draft-media')
@@ -33,7 +33,7 @@ urlpatterns = [
         name="category-list"),
     url(r'^articles/$', ArticleListAPIView.as_view(),
         name="articles-list"),
-    url(r'^articles/like-news-list/$', ArtilcleLikeAPIView.as_view(),
+    url(r'^articles/like-news-list/$', ArticleLikeAPIView.as_view(),
         name="users-articles-list"),
     url(r'^bookmark-articles/bookmark-news-list/$', BookmarkArticleAPIView.as_view(),
         name="user-bookmarks"),
@@ -75,7 +75,14 @@ urlpatterns = [
         name='article-create-update'),
     url(r'^article/status/$', ChangeArticleStatusView.as_view(),
         name='article-status'),
+    url(r'^suggest/$', AutoCompleteAPIView.as_view(),
+        name="suggest"),
     url(r'daily-digest/$', GetDailyDigestView.as_view(), name='daily-digest'),
     url(r'article-like/$', LikeAPIView.as_view(), name='article-like'),
-    url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha')
+    url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha'),
+    url(r'subscription/$', SubsAPIView.as_view(), name='subscriptions-api'),
+    url(r'subscription/(?P<pk>[\w-]+)/$', UpdateSubsAPIView.as_view(), name='update-subscriptions-api'),
+    url(r'userprofile/$', UserProfileAPIView.as_view(), name='userprofile'),
+    url(r'access-session/$', AccessSession.as_view(), name='access-session-api'),
+    url(r'rss/$', RSSAPIView.as_view(), name='rss-api'),
 ]
