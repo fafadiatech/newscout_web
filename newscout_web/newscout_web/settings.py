@@ -102,10 +102,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'newscoutweb',
+            'NAME': 'newscout_web',
             'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': '139.59.2.130',
+            'PASSWORD': 'ftech#123',
+            'HOST': 'localhost',
             'PORT': '5432',
         }
     }
@@ -201,3 +201,5 @@ TWITTER_CONSUMER_KEY = ""
 TWITTER_CONSUMER_SECRET = ""
 TWITTER_ACCESS_TOKEN = ""
 TWITTER_ACCESS_TOKEN_SECRET = ""
+
+CAPTCHA_ENABLED = True

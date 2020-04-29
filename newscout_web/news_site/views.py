@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from core.models import Domain, Menu, Article, Subscription
 
 from django.shortcuts import render
 from django.views.generic import TemplateView
+from newscout_web.settings import CAPTCHA_ENABLED
 
-from core.models import Domain, Menu, Article, Subscription
 
 class IndexView(TemplateView):
     template_name = "news-index.html"
@@ -68,7 +69,7 @@ class ArticleDetailView(TemplateView):
             context['has_subscribed'] = True
         article_id = slug.split("-")[-1]
         context['articleId'] = article_id
-
+        context["captcha_enabled"] = CAPTCHA_ENABLED
         article = Article.objects.filter(slug=slug).first()
         if article:
             context['article_title'] = article.title
@@ -110,7 +111,7 @@ class ArticleRSSView(TemplateView):
             for menu in menus:
                 all_categories = menu.submenu.all()
                 for category in all_categories:
-                    data[category.name.name] = "/article/rss/?domain="+domain+"&category="+category.name.name
+                    data[category.name.name] = "/article/rss/?domain=" + domain + "&category=" + category.name.name
         else:
             data = {}
 
