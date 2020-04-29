@@ -14,7 +14,7 @@ import 'newscout/assets/CardItem.css';
 import 'newscout/assets/ToogleCard.css'
 import 'newscout/assets/ImageOverlay.css';
 
-import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
+import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS, EVENT_TRACK_URL, ACCESS_SESSION } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import config_data from './config.json';
@@ -24,17 +24,17 @@ const URL = "/news/search/"
 const cookies = new Cookies();
 
 class Trending extends React.Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
-			page : 0,
+			page: 0,
 			menus: [],
 			next: null,
 			trending: [],
 			previous: null,
 			loadingPagination: false,
-			domain: "domain="+DOMAIN,
+			domain: "domain=" + DOMAIN,
 			isLoading: true,
 			isSideOpen: true,
 			modal: false,
@@ -61,14 +61,14 @@ class Trending extends React.Component {
 	}
 
 	toggleSwitch = (data) => {
-		if(data === true){
-			if(document.getElementById("dark_style")){
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style'
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
@@ -77,7 +77,7 @@ class Trending extends React.Component {
 			this.setState({ isChecked: true })
 			cookies.set('isChecked', true, { path: '/' });
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 			this.setState({ isChecked: false })
@@ -86,41 +86,41 @@ class Trending extends React.Component {
 	}
 
 	getTheme = () => {
-		if(cookies.get('isChecked')){
-			if(document.getElementById("dark_style")){
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style';
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
 				head.appendChild(link);
 			}
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 		}
 	}
 
 	fetchArticleBookmark = (articleId) => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-		var url = ARTICLE_BOOKMARK+"?"+this.state.domain;
-		var body = JSON.stringify({article_id: articleId})
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		var url = ARTICLE_BOOKMARK + "?" + this.state.domain;
+		var body = JSON.stringify({ article_id: articleId })
 		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
 	}
 
 	articleBookmarkResponse = (data) => {
 		var bookmark_obj = data.body.bookmark_article
 		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
-		
+
 		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
 			article_array.push(bookmark_obj.article)
 		}
-		
+
 		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
 			article_array.splice(index, 1);
 		}
@@ -132,14 +132,14 @@ class Trending extends React.Component {
 	getNext = () => {
 		this.setState({
 			loadingPagination: true,
-			page : this.state.page + 1
+			page: this.state.page + 1
 		})
 		getRequest(this.state.next, this.getTrending);
 	}
 
 	handleScroll = () => {
 		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.6) {
-			if (!this.state.loadingPagination && this.state.next){
+			if (!this.state.loadingPagination && this.state.next) {
 				this.getNext();
 			}
 		}
@@ -148,10 +148,10 @@ class Trending extends React.Component {
 	getMenu = (data) => {
 		var menus_array = []
 		data.body.results.map((item, index) => {
-			if(item.heading){
+			if (item.heading) {
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase()
+				heading_dict['itemurl'] = "news/" + item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
@@ -164,23 +164,23 @@ class Trending extends React.Component {
 
 	getTrending = (data) => {
 		var trending_data = []
-		var results = data.body.results.sort((a, b) => 
+		var results = data.body.results.sort((a, b) =>
 			new Date(a.created_at) - new Date(b.created_at)
 		)
-		
+
 		results.map((item, index) => {
-			if(item.articles) {
+			if (item.articles) {
 				var sorted_articles = item.articles.sort((a, b) =>
 					new Date(b.published_on) - new Date(a.published_on)
 				)
 				trending_data.push(sorted_articles)
 			}
 		})
-		
+
 		var final_results = [
 			...this.state.trending,
 			...trending_data
-		]		
+		]
 		this.setState({
 			trending: final_results,
 			next: data.body.next,
@@ -188,16 +188,16 @@ class Trending extends React.Component {
 			loadingPagination: false
 		})
 		setTimeout(() => {
-			this.setState({isLoading: false})
+			this.setState({ isLoading: false })
 		}, 2000)
 	}
 
 	getTrendingPosts = () => {
-		getRequest(TRENDING_NEWS+"?"+this.state.domain, this.getTrending);
+		getRequest(TRENDING_NEWS + "?" + this.state.domain, this.getTrending);
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -207,7 +207,7 @@ class Trending extends React.Component {
 	}
 
 	getArticleId = (articleId) => {
-		if(cookies.get('full_name')){
+		if (cookies.get('full_name')) {
 			this.fetchArticleBookmark(articleId)
 		} else {
 			this.toggle()
@@ -216,8 +216,8 @@ class Trending extends React.Component {
 
 	getBookmarksArticles = (data) => {
 		var article_ids = data.body.results;
-		for(var i = 0; i < article_ids.length; i++){
-			if(this.state.bookmark_ids.indexOf(article_ids[i].article) === -1){
+		for (var i = 0; i < article_ids.length; i++) {
+			if (this.state.bookmark_ids.indexOf(article_ids[i].article) === -1) {
 				article_array.push(article_ids[i].article)
 				this.setState({
 					bookmark_ids: article_array
@@ -227,21 +227,21 @@ class Trending extends React.Component {
 	}
 
 	handleLogout = () => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
-    }
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+	}
 
-    authLogoutResponse = (data) => {
-    	cookies.remove('token', { path: '/' })
-    	cookies.remove('full_name', { path: '/' })
-        this.setState({
+	authLogoutResponse = (data) => {
+		cookies.remove('token', { path: '/' })
+		cookies.remove('full_name', { path: '/' })
+		this.setState({
 			is_loggedin: false,
 			bookmark_ids: []
 		})
-    }
+	}
 
-    handleSearch = (query) => {
-		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+	handleSearch = (query) => {
+		var url = SUGGESTIONS + "?q=" + query + "&" + this.state.domain
 		getRequest(url, this.getSuggestionsResponse)
 	}
 
@@ -256,21 +256,38 @@ class Trending extends React.Component {
 		})
 	}
 
+	getSessionId = (data) => {
+		cookies.set('sessionID', data.body.results, { path: '/' });
+		setTimeout(() => {
+			cookies.remove('sessionID', { path: '/' })
+		}, 900000);
+	}
+
+	setEventTracker = () => {
+		console.log("data")
+	}
+
 	componentDidMount() {
+		if (cookies.get("sessionID")) {
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=trending_list_click&platform=web&type=ENGAGE_VIEW&sid=" + cookies.get("sessionID"), this.setEventTracker);
+		}
+		else {
+			getRequest(ACCESS_SESSION, this.getSessionId);
+		}
 		this.getTrendingPosts()
 		window.addEventListener('scroll', this.handleScroll, true);
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		if(cookies.get('full_name')){
-			this.setState({is_loggedin:true})
-			var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-			getRequest(ALL_ARTICLE_BOOKMARK+"?"+this.state.domain, this.getBookmarksArticles, headers);
+		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
+		if (cookies.get('full_name')) {
+			this.setState({ is_loggedin: true })
+			var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+			getRequest(ALL_ARTICLE_BOOKMARK + "?" + this.state.domain, this.getBookmarksArticles, headers);
 		}
-		if(cookies.get('isChecked')){
+		if (cookies.get('isChecked')) {
 			this.setState({ isChecked: true })
 		} else {
 			this.setState({ isChecked: false })
 		}
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
@@ -289,7 +306,7 @@ class Trending extends React.Component {
 				<div className="col-lg-6 mb-4" key={index}>
 					{isLoading ?
 						<Skeleton height={160} />
-					:
+						:
 						<ToogleCard
 							items={item}
 							is_loggedin={is_loggedin}
@@ -305,7 +322,7 @@ class Trending extends React.Component {
 			)
 		})
 
-		return(
+		return (
 			<React.Fragment>
 				<Menu
 					navitems={menus}
@@ -343,7 +360,7 @@ class Trending extends React.Component {
 													<React.Fragment>
 														<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
 													</React.Fragment>
-												: ""
+													: ""
 											}
 										</div>
 									</div>
@@ -354,7 +371,7 @@ class Trending extends React.Component {
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
-				
+
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)
