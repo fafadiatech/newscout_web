@@ -9,7 +9,8 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     CategoryBulkUpdate, GetDailyDigestView,
                     ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet,
                     LikeAPIView, CaptchaCommentApiView, SubsAPIView,
-                    AutoCompleteAPIView, UpdateSubsAPIView, UserProfileAPIView)
+                    AutoCompleteAPIView, UpdateSubsAPIView, UserProfileAPIView,
+                    AccessSession)
 from django.conf.urls import url, include
 
 from rest_framework.routers import DefaultRouter
@@ -84,5 +85,5 @@ urlpatterns = [
     url(r'subscription/$', SubsAPIView.as_view(), name='subscriptions-api'),
     url(r'subscription/(?P<pk>[\w-]+)/$', UpdateSubsAPIView.as_view(), name='update-subscriptions-api'),
     url(r'userprofile/$', UserProfileAPIView.as_view(), name='userprofile'),
-
+    url(r'access-session/$', AccessSession.as_view(), name='access-session-api'),
 ]

@@ -289,9 +289,9 @@ class ArticleDetailAPIView(APIView):
         has_subscribed = False
         if not self.request.user.is_anonymous and \
             Subscription.objects.filter(
-            user=self.request.user).exlcude(subs_type='Basic').exists():
+                user=self.request.user).exlcude(subs_type='Basic').exists():
             has_subscribed = True
-        
+
         try:
             next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
         except Exception as error:
@@ -480,7 +480,7 @@ class ChangePasswordAPIView(APIView):
             password = self.request.POST.get("password", "")
             old_password = self.request.POST.get("old_password", "")
             confirm_password = self.request.POST.get("confirm_password", "")
-            
+
         user = self.request.user
         if old_password:
             if not user.check_password(old_password):
@@ -661,7 +661,8 @@ class ArticleSearchAPI(APIView):
         mlt_fields = ["has_tags"]
         if source:
             mlt_fields = ["has_tags", "source", "domain"]
-        mlt = Search(using=es,  index="article").query("more_like_this", fields=mlt_fields, like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt = Search(using=es, index="article").query("more_like_this", fields=mlt_fields,
+                                                      like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
         mlt.execute()
         sr = Search(using=es, index="article")
 
@@ -674,8 +675,8 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query, 
-            "fields": ["title", "blurb"], 'type': 'phrase'}})
+            must_query.append({"multi_match": {"query": query,
+                                               "fields": ["title", "blurb"], 'type': 'phrase'}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
@@ -1518,3 +1519,12 @@ class UserProfileAPIView(APIView):
                 return Response(create_response({"result":serializer.data, "Msg":"Profile updated successfully."}))
             return Response(create_error_response(serializer.errors), status=400)
         raise Http404
+
+
+class AccessSession(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        print(request.META.items())
+        request.session["ip"] = request.META.get('REMOTE_ADDR')
+        return Response(create_response({"results": request.session._session_key}))
