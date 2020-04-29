@@ -1528,3 +1528,22 @@ class AccessSession(APIView):
         print(request.META.items())
         request.session["ip"] = request.META.get('REMOTE_ADDR')
         return Response(create_response({"results": request.session._session_key}))
+
+
+class RSSAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        data = {}
+        domain = request.GET.get("domain")
+        if domain:
+            domain_obj = Domain.objects.filter(domain_id=domain).first()
+            if domain_obj:
+                menus = Menu.objects.filter(domain=domain_obj)
+                for menu in menus:
+                    all_categories = menu.submenu.all()
+                    for category in all_categories:
+                        data[category.name.name] = "/article/rss/?domain=" + domain + "&category=" + category.name.name
+                return Response(create_response({"results": data}))
+            return Response(create_error_response({"error": "Domain do not exist."}))
+        return Response(create_error_response({"error": "Domain is required"}))

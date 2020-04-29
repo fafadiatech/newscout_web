@@ -7,6 +7,7 @@ from django.views.generic import TemplateView
 from newscout_web.settings import CAPTCHA_ENABLED
 
 
+
 class IndexView(TemplateView):
     template_name = "news-index.html"
 
@@ -101,9 +102,8 @@ class ArticleRSSView(TemplateView):
     template_name = "rss.html"
 
     def get_context_data(self, **kwargs):
-        data = {}
         context = super(ArticleRSSView, self).get_context_data(**kwargs)
-        domain = self.request.GET.get('domain')
+        domain = self.request.GET.get('domain', 'newscout')
         domain_obj = Domain.objects.filter(domain_id=domain).first()
         if domain_obj:
             context['domain'] = domain_obj.domain_name
@@ -116,6 +116,7 @@ class ArticleRSSView(TemplateView):
             data = {}
 
         context['category'] = data
+        context["domain"] = domain
         return context
 
 
