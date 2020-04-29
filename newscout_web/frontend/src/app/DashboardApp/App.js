@@ -14,13 +14,15 @@ import InteractionsPerCategoryGraph from '../../components/InteractionsPerCatego
 import InteractionsPerAuthorGraph from '../../components/InteractionsPerAuthorGraph';
 import ArticlesPerSessionGraph from '../../components/ArticlesPerSessionGraph';
 import InteractionsPerSessionGraph from '../../components/InteractionsPerSessionGraph';
-import { ANALYTICS_ALLARTICLESOPEN_URL,	ANALYTICS_ARTICLESPERPLATFORM_URL,
-		 ANALYTICS_ARTICLESPERCATEGORY_URL,
-		 ANALYTICS_INTERACTIONSPERCATEGORY_URL,
-		 ANALYTICS_ARTICLESPERAUTHOR_URL,
-		 ANALYTICS_INTERACTIONSPERAUTHOR_URL,
-		 ANALYTICS_ARTICLESPERSESSION_URL,
-		 ANALYTICS_INTERACTIONSPERSESSION_URL } from '../../utils/Constants';
+import {
+	ANALYTICS_ALLARTICLESOPEN_URL, ANALYTICS_ARTICLESPERPLATFORM_URL,
+	ANALYTICS_ARTICLESPERCATEGORY_URL,
+	ANALYTICS_INTERACTIONSPERCATEGORY_URL,
+	ANALYTICS_ARTICLESPERAUTHOR_URL,
+	ANALYTICS_INTERACTIONSPERAUTHOR_URL,
+	ANALYTICS_ARTICLESPERSESSION_URL,
+	ANALYTICS_INTERACTIONSPERSESSION_URL
+} from '../../utils/Constants';
 
 import config_data from '../NewsApp/config.json';
 
@@ -78,100 +80,122 @@ class App extends React.Component {
 	}
 
 	SetResponseData = (data, extraData) => {
-		if (extraData.loading == "AllArticlesOpenLoading"){
+		if (extraData.loading == "AllArticlesOpenLoading") {
 			var key = "AllArticlesOpenLoading";
 			var DataKey = "AllArticlesOpenData";
 			var NoDataKey = "AllArticlesOpenNoData";
 			var AvgCountKey = "AllArticlesOpenAvgCount";
-		} else if (extraData.loading == "ArticlesPerPlatformLoading"){
+			var DiffKey = "AllArticleOpenDiff";
+			var DiffColor = "AllArticleColor";
+		} else if (extraData.loading == "ArticlesPerPlatformLoading") {
 			var key = "ArticlesPerPlatformLoading";
 			var DataKey = "ArticlesPerPlatformData";
 			var NoDataKey = "ArticlesPerPlatformNoData";
 			var AvgCountKey = "ArticlesPerPlatformAvgCount";
-		} else if (extraData.loading == "ArticlesPerCategoryLoading"){
+			var DiffKey = "ArticlesPerPlatformOpenDiff";
+			var DiffColor = "ArticlesPerPlatformColor";
+		} else if (extraData.loading == "ArticlesPerCategoryLoading") {
 			var key = "ArticlesPerCategoryLoading";
 			var DataKey = "ArticlesPerCategoryData";
 			var NoDataKey = "ArticlesPerCategoryNoData";
 			var AvgCountKey = "ArticlesPerCategoryAvgCount";
-		} else if (extraData.loading == "InteractionsPerCategoryLoading"){
+			var DiffKey = "ArticlesPerCategoryOpenDiff";
+			var DiffColor = "ArticlesPerCategoryColor";
+		} else if (extraData.loading == "InteractionsPerCategoryLoading") {
 			var key = "InteractionsPerCategoryLoading";
 			var DataKey = "InteractionsPerCategoryData";
 			var NoDataKey = "InteractionsPerCategoryNoData";
 			var AvgCountKey = "InteractionsPerCategoryAvgCount";
-		} else if (extraData.loading == "ArticlesPerAuthorLoading"){
+			var DiffKey = "InteractionsPerCategoryOpenDiff";
+			var DiffColor = "InteractionsPerCategoryColor";
+		} else if (extraData.loading == "ArticlesPerAuthorLoading") {
 			var key = "ArticlesPerAuthorLoading";
 			var DataKey = "ArticlesPerAuthorData";
 			var NoDataKey = "ArticlesPerAuthorNoData";
 			var AvgCountKey = "ArticlesPerAuthorAvgCount";
-		} else if (extraData.loading == "InteractionsPerAuthorLoading"){
+			var DiffKey = "ArticlesPerAuthorOpenDiff";
+			var DiffColor = "ArticlesPerAuthorColor";
+		} else if (extraData.loading == "InteractionsPerAuthorLoading") {
 			var key = "InteractionsPerAuthorLoading";
 			var DataKey = "InteractionsPerAuthorData";
 			var NoDataKey = "InteractionsPerAuthorNoData";
 			var AvgCountKey = "InteractionsPerAuthorAvgCount";
-		} else if (extraData.loading == "ArticlesPerSessionLoading"){
+			var DiffKey = "InteractionsPerAuthorOpenDiff";
+			var DiffColor = "InteractionsPerAuthorColor";
+		} else if (extraData.loading == "ArticlesPerSessionLoading") {
 			var key = "ArticlesPerSessionLoading";
 			var DataKey = "ArticlesPerSessionData";
 			var NoDataKey = "ArticlesPerSessionNoData";
 			var AvgCountKey = "ArticlesPerSessionAvgCount";
-		} else if (extraData.loading == "InteractionsPerSessionLoading"){
+			var DiffKey = "ArticlesPerSessionOpenDiff";
+			var DiffColor = "ArticlesPerSessionColor";
+		} else if (extraData.loading == "InteractionsPerSessionLoading") {
 			var key = "InteractionsPerSessionLoading";
 			var DataKey = "InteractionsPerSessionData";
 			var NoDataKey = "InteractionsPerSessionNoData";
 			var AvgCountKey = "InteractionsPerSessionAvgCount";
+			var DiffKey = "InteractionsPerSessionOpenDiff";
+			var DiffColor = "InteractionsPerSessionColor";
 		}
 		var state = this.state;
 		state[key] = false
-		state[DataKey] = data.body.result
-		state[NoDataKey] = data.body.no_data
-		state[AvgCountKey] = data.body.avg_count
+		state[DataKey] = data.body.result;
+		state[NoDataKey] = data.body.no_data;
+		state[AvgCountKey] = data.body.avg_count;
+		state[DiffKey] = data.body.diff;
+		if (data.body.diff > 0) {
+			state[DiffColor] = "text-success";
+		} else if (data.body.diff < 0) {
+			state[DiffColor] = "text-danger";
+		}
 		this.setState(state);
 	}
 
 	GetAllArticlesOpenData = (url) => {
 		var URL = url || ANALYTICS_ALLARTICLESOPEN_URL;
-		var extraData = {"loading": "AllArticlesOpenLoading"}
+		var extraData = { "loading": "AllArticlesOpenLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerPlatformData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERPLATFORM_URL;
-		var extraData = {"loading": "ArticlesPerPlatformLoading"}
+		var extraData = { "loading": "ArticlesPerPlatformLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerCategoryData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERCATEGORY_URL;
-		var extraData = {"loading": "ArticlesPerCategoryLoading"}
+		var extraData = { "loading": "ArticlesPerCategoryLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerCategoryData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERCATEGORY_URL;
-		var extraData = {"loading": "InteractionsPerCategoryLoading"}
+		var extraData = { "loading": "InteractionsPerCategoryLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerAuthorData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERAUTHOR_URL;
-		var extraData = {"loading": "ArticlesPerAuthorLoading"}
+		var extraData = { "loading": "ArticlesPerAuthorLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerAuthorData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERAUTHOR_URL;
-		var extraData = {"loading": "InteractionsPerAuthorLoading"}
+		var extraData = { "loading": "InteractionsPerAuthorLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetArticlesPerSessionData = (url) => {
 		var URL = url || ANALYTICS_ARTICLESPERSESSION_URL;
-		var extraData = {"loading": "ArticlesPerSessionLoading"}
+		var extraData = { "loading": "ArticlesPerSessionLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
 	GetInteractionsPerSessionData = (url) => {
 		var URL = url || ANALYTICS_INTERACTIONSPERSESSION_URL;
-		var extraData = {"loading": "InteractionsPerSessionLoading"}
+		var extraData = { "loading": "InteractionsPerSessionLoading" }
 		getRequest(URL, this.SetResponseData, authHeaders, extraData);
 	}
 
@@ -186,7 +210,7 @@ class App extends React.Component {
 		var state = this.state;
 		state.selectedValue = selectedValue;
 		state.disabled = false;
-		if(selectedValue == "custom"){
+		if (selectedValue == "custom") {
 			state.custom = true
 		} else {
 			state.custom = false
@@ -206,7 +230,7 @@ class App extends React.Component {
 		state.ArticlesPerSessionLoading = true;
 		state.InteractionsPerSessionLoading = true;
 		this.setState(state);
-		if (state.selectedValue === "custom"){
+		if (state.selectedValue === "custom") {
 			var start_date = this.state.start_date.format('MM/DD/YYYY HH:mm:ss');
 			var end_date = this.state.end_date.format('MM/DD/YYYY HH:mm:ss');
 			var date_range = "?date_range=" + start_date + "-" + end_date;
@@ -234,22 +258,22 @@ class App extends React.Component {
 
 	isValidDate = (current) => {
 		var d = new Date();
-		if (current > d){
+		if (current > d) {
 			return false;
 		} return true;
 	}
 
 	onDateChange = (selected_date, date_str) => {
 		var state = this.state;
-		if (date_str === "start_date"){
+		if (date_str === "start_date") {
 			state.start_date = selected_date
 		} else {
 			state.end_date = selected_date
 		}
-		if(state.start_date && state.end_date && state.start_date > state.end_date){
+		if (state.start_date && state.end_date && state.start_date > state.end_date) {
 			state.date_err = "Invalid date selection"
 			state.disabled = true
-		} else if (state.start_date && state.end_date && state.end_date > new Date()){
+		} else if (state.start_date && state.end_date && state.end_date > new Date()) {
 			state.date_err = "Invalid date selection"
 			state.disabled = true
 		} else {
@@ -260,7 +284,7 @@ class App extends React.Component {
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -269,7 +293,7 @@ class App extends React.Component {
 		}
 	}
 
-	componentDidMount(){
+	componentDidMount() {
 		this.GetAllArticlesOpenData()
 		this.GetArticlesPerPlatformData()
 		this.GetArticlesPerCategoryData()
@@ -278,16 +302,15 @@ class App extends React.Component {
 		this.GetInteractionsPerAuthorData()
 		this.GetArticlesPerSessionData()
 		this.GetInteractionsPerSessionData()
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
 		}
 	}
-
-	render(){
+	render() {
 		var { menus, isSideOpen, username } = this.state
-		return(
+		return (
 			<div className="App">
 				<Menu
 					logo={logo}
@@ -327,7 +350,7 @@ class App extends React.Component {
 											<p className="text-danger">{this.state.date_err}</p>
 										</FormGroup>
 									</div>
-								:
+									:
 									""
 								}
 								<div className="col-md-4">
@@ -339,7 +362,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;<span className={`sm-data ${this.state.AllArticleColor}`} style={{ fontSize: '40%' }}>{this.state.AllArticleOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -352,7 +375,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerPlatformColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerPlatformOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -365,7 +388,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerCategoryColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerCategoryOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -378,7 +401,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerCategoryColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerCategoryOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -393,7 +416,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerAuthorColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerAuthorOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -406,7 +429,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerAuthorColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerAuthorOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -419,7 +442,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerSessionColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerSessionOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -432,7 +455,7 @@ class App extends React.Component {
 								<div className="col-lg-3">
 									<div className="card mb-4">
 										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}</h3>
+											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerSessionColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerSessionOpenDiff}</span></h3>
 										</div>
 										<div className="card-body">
 											<div className="text-center">
@@ -453,7 +476,7 @@ class App extends React.Component {
 							<div className="row">
 								<div className="col-lg-6">
 									<div className="graph-section">
-										<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData}/>
+										<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData} />
 									</div>
 								</div>
 								<div className="col-lg-6">
