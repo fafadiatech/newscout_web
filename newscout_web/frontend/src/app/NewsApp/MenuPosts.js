@@ -1,12 +1,11 @@
 import React from 'react';
 import moment from 'moment';
 import ReactDOM from 'react-dom';
-import Slider from "react-slick";
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
-import { CardItem, Menu, ImageOverlay, SideBar, Footer } from 'newscout';
+import { Menu, VerticleCardItem, SideBar, Footer, VerticleCardAd } from 'newscout';
 
-import { MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT, SUGGESTIONS } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT, SUGGESTIONS, SCHEDULES_URL, ALL_ARTICLE_BOOKMARK, ARTICLE_BOOKMARK } from '../../utils/Constants';
 import { getRequest } from '../../utils/Utils';
 
 import Auth from './Auth';
@@ -16,58 +15,26 @@ import 'newscout/assets/ImageOverlay.css'
 import 'newscout/assets/CardItem.css'
 import 'newscout/assets/Sidebar.css'
 
-import config_data from './config.json';
-
 var article_array = [];
 const submenu_array = [];
 const URL = "/news/search/"
 const cookies = new Cookies();
 
-const settings = {
-	dots: false,
-	infinite: false,
-	speed: 500,
-	slidesToShow: 4,
-	slidesToScroll: 4,
-	initialSlide: 0,
-	responsive: [
-		{
-			breakpoint: 1024,
-			settings: {
-				slidesToShow: 4,
-				slidesToScroll: 4,
-				infinite: false,
-				dots: false
-			}
-        },
-        {
-			breakpoint: 600,
-			settings: {
-				slidesToShow: 2,
-				slidesToScroll: 2,
-				initialSlide: 2
-			}
-        },
-        {
-			breakpoint: 480,
-				settings: {
-				slidesToShow: 1,
-				slidesToScroll: 1
-			}
-        }
-    ]
-};
-
 class MenuPosts extends React.Component {
-	
+
 	constructor(props) {
 		super(props);
 		this.state = {
 			category: CATEGORY,
 			newsPosts: [],
+			subCategories: [],
 			menus: [],
+			loadingPagination: false,
+			page: 0,
+			next: null,
+			previous: null,
 			isSideOpen: true,
-			domain: "domain="+DOMAIN,
+			domain: "domain=" + DOMAIN,
 			isLoading: true,
 			modal: false,
 			is_loggedin: false,
@@ -75,7 +42,15 @@ class MenuPosts extends React.Component {
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
 			isChecked: false,
-			options: []
+			options: [],
+			cat_name: "",
+			ads_article: {
+				id: 0,
+				description: '',
+				source_url: '',
+				image: ''
+			},
+			bookmark_ids: [],
 		};
 	}
 
@@ -93,14 +68,14 @@ class MenuPosts extends React.Component {
 	}
 
 	toggleSwitch = (data) => {
-		if(data === true){
-			if(document.getElementById("dark_style")){
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style'
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
@@ -109,7 +84,7 @@ class MenuPosts extends React.Component {
 			this.setState({ isChecked: true })
 			cookies.set('isChecked', true, { path: '/' });
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 			this.setState({ isChecked: false })
@@ -118,21 +93,21 @@ class MenuPosts extends React.Component {
 	}
 
 	getTheme = () => {
-		if(cookies.get('isChecked')){
-			if(document.getElementById("dark_style")){
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = false;
 			} else {
-				var head  = document.getElementsByTagName('head')[0];
-				var link  = document.createElement('link');
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
 				link.id = 'dark_style';
-				link.rel  = 'stylesheet';
+				link.rel = 'stylesheet';
 				link.type = 'text/css';
 				link.href = '/static/css/dark-style.css';
 				link.media = 'all';
 				head.appendChild(link);
 			}
 		} else {
-			if(document.getElementById("dark_style")){
+			if (document.getElementById("dark_style")) {
 				document.getElementById("dark_style").disabled = true;
 			}
 		}
@@ -141,10 +116,10 @@ class MenuPosts extends React.Component {
 	getMenu = (data) => {
 		var menus_array = []
 		data.body.results.map((item, index) => {
-			if(item.heading){
+			if (item.heading) {
 				var heading_dict = {}
 				heading_dict['itemtext'] = item.heading.name
-				heading_dict['itemurl'] = "news/"+item.heading.name.replace(" ", "-").toLowerCase()
+				heading_dict['itemurl'] = "news/" + item.heading.name.replace(" ", "-").toLowerCase()
 				heading_dict['item_id'] = item.heading.category_id
 				heading_dict['item_icon'] = item.heading.icon
 				menus_array.push(heading_dict)
@@ -157,61 +132,77 @@ class MenuPosts extends React.Component {
 
 	getNewsData = (data) => {
 		data.body.results.map((item, index) => {
-			if(item.heading){
-				var heading = item.heading.name.replace(" ", "-").toLowerCase()
-				if(heading === CATEGORY){
-					this.getPosts(item.heading.name, item.heading.category_id, item.heading.submenu)
+			if (item.heading) {
+				var heading = item.heading.name.replace(" ", "-").toLowerCase();
+				if (heading === CATEGORY) {
+					item.heading.submenu.map((item, index) => {
+						submenu_array.push(item);
+						var final_data = submenu_array.sort(function (a, b) {
+							return a.category_id - b.category_id
+						})
+						this.setState({
+							subCategories: final_data
+						})
+						// console.log(final_data[0])
+						// if (final_data.length === 1) {
+						this.getPosts(final_data[0].name)
+						// }
+					})
 				}
 			}
 		})
 	}
 
-	getPosts = (cat_name, cat_id, submenu) => {
-		submenu.map((item, index) => {
-			var url = ARTICLE_POSTS+"?"+this.state.domain+"&category="+item.name
-			getRequest(url, this.newsData, false, item)
-		})
+	getPosts = (cat_name) => {
+		var url = ARTICLE_POSTS + "?" + this.state.domain + "&category=" + cat_name
+		this.setState({ cat_name: cat_name })
+		getRequest(url, this.newsData)
 	}
 
-	newsData = (data, extra_data) => {
-		var news_dict = {}
+	handleCategories = (e) => {
+		var selected_category = e.target.innerText;
+		this.setState({ newsPosts: [], isLoading: true })
+		this.getPosts(selected_category)
+	}
+
+	newsData = (data) => {
 		var news_array = []
-		data.body.results.map((item, index) => {
-			if(item.cover_image){
-				var article_dict = {}
-				article_dict['id'] = item.id
-				article_dict['header'] = item.title
-				article_dict['altText'] = item.title
-				article_dict['caption'] = item.blurb
-				article_dict['source'] = item.source
-				article_dict['slug'] = "/news/article/"+item.slug
-				article_dict['category'] = item.category
-				article_dict['hash_tags'] = item.hash_tags
-				article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
-				article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/"+decodeURIComponent(item.cover_image)
-				article_dict['src_xs'] = "http://images.newscout.in/unsafe/300x200/left/top/"+decodeURIComponent(item.cover_image)
-				if(news_array.length <= 9){
+		if (data.body.results !== undefined && data.body.results != "") {
+			data.body.results.map((item, index) => {
+				if (item.cover_image) {
+					var article_dict = {}
+					article_dict['id'] = item.id
+					article_dict['header'] = item.title
+					article_dict['altText'] = item.title
+					article_dict['caption'] = item.blurb
+					article_dict['source'] = item.source
+					article_dict['slug'] = "/news/article/" + item.slug
+					article_dict['category'] = item.category
+					article_dict['hash_tags'] = item.hash_tags
+					article_dict['published_on'] = moment(item.published_on).format('MMMM D, YYYY')
+					article_dict['src'] = "http://images.newscout.in/unsafe/368x200/left/top/" + decodeURIComponent(item.cover_image)
+					article_dict['src_xs'] = "http://images.newscout.in/unsafe/300x200/left/top/" + decodeURIComponent(item.cover_image)
 					news_array.push(article_dict)
 				}
-			}
-		})
-		news_dict['menuname'] = extra_data.name
-		news_dict['menuid'] = extra_data.category_id
-		news_dict['posts'] = news_array
-		submenu_array.push(news_dict)
-		var final_data = submenu_array.sort(function(a, b){
-			return a.menuid - b.menuid
-		})
-		this.setState({
-			newsPosts: final_data
-		})
-		setTimeout(() => { 
-			this.setState({isLoading: false})
-		}, 3000)
+			})
+			var results = [
+				...this.state.newsPosts,
+				...news_array
+			]
+			this.setState({
+				newsPosts: results,
+				next: data.body.next,
+				previous: data.body.previous,
+				loadingPagination: false
+			})
+			setTimeout(() => {
+				this.setState({ isLoading: false })
+			}, 3000)
+		}
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -220,23 +211,66 @@ class MenuPosts extends React.Component {
 		}
 	}
 
-	handleLogout = () => {
-		var headers = {"Authorization": "Token "+cookies.get('token'), "Content-Type": "application/json"}
-        getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
-    }
+	getArticleId = (articleId) => {
+		if (cookies.get('full_name')) {
+			this.fetchArticleBookmark(articleId)
+		} else {
+			this.toggle()
+		}
+	}
 
-    authLogoutResponse = (data) => {
-    	cookies.remove('token', { path: '/' })
-    	cookies.remove('full_name', { path: '/' })
-        this.setState({
+	fetchArticleBookmark = (articleId) => {
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		var url = ARTICLE_BOOKMARK + "?" + this.state.domain;
+		var body = JSON.stringify({ article_id: articleId })
+		postRequest(url, body, this.articleBookmarkResponse, "POST", headers)
+	}
+
+	articleBookmarkResponse = (data) => {
+		var bookmark_obj = data.body.bookmark_article;
+		var index = article_array.findIndex(i => i.id === bookmark_obj.article.id);
+
+		if (article_array.includes(bookmark_obj.article) === false && bookmark_obj.status === 1) {
+			article_array.push(bookmark_obj.article)
+		}
+
+		if (article_array.some(item => item.id === bookmark_obj.article.id) && bookmark_obj.status === 0) {
+			article_array.splice(index, 1);
+		}
+		this.setState({
+			bookmark_ids: article_array
+		})
+	}
+
+	getBookmarksArticles = (data) => {
+		var article_ids = data.body.results;
+		for (var i = 0; i < article_ids.length; i++) {
+			if (this.state.bookmark_ids.indexOf(article_ids[i].article) === -1) {
+				article_array.push(article_ids[i].article)
+				this.setState({
+					bookmark_ids: article_array
+				})
+			}
+		}
+	}
+
+	handleLogout = () => {
+		var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+		getRequest(ARTICLE_LOGOUT, this.authLogoutResponse, headers);
+	}
+
+	authLogoutResponse = (data) => {
+		cookies.remove('token', { path: '/' })
+		cookies.remove('full_name', { path: '/' })
+		this.setState({
 			is_loggedin: false,
 			is_captcha: true,
 			bookmark_ids: []
 		})
-    }
+	}
 
-    handleSearch = (query) => {
-		var url = SUGGESTIONS+"?q="+query+"&"+this.state.domain
+	handleSearch = (query) => {
+		var url = SUGGESTIONS + "?q=" + query + "&" + this.state.domain
 		getRequest(url, this.getSuggestionsResponse)
 	}
 
@@ -251,18 +285,55 @@ class MenuPosts extends React.Component {
 		})
 	}
 
-	componentDidMount() {
-		getRequest(MENUS+"?"+this.state.domain, this.getMenu);
-		getRequest(MENUS+"?"+this.state.domain, this.getNewsData);
-		if(cookies.get('full_name')){
-			this.setState({is_loggedin:true})
+	fetchAds = () => {
+		var url = SCHEDULES_URL + "?" + this.state.domain + "&category=" + this.state.cat_name
+		getRequest(url, this.fetchAdsResponse)
+	}
+
+	fetchAdsResponse = (data) => {
+		var result = data.body
+		this.setState({
+			ads_article: {
+				id: result.id,
+				description: result.ad_text,
+				source_url: result.ad_url,
+				image: "http://images.newscout.in/unsafe/368x276/left/top/" + result.media,
+			}
+		})
+	}
+
+	getNext = () => {
+		this.setState({
+			loadingPagination: true,
+			page: this.state.page + 1
+		})
+		getRequest(this.state.next, this.newsData);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.3) {
+			if (!this.state.loadingPagination && this.state.next) {
+				this.getNext();
+				this.fetchAds()
+			}
 		}
-		if(cookies.get('isChecked')){
+	}
+
+	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
+		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
+		getRequest(MENUS + "?" + this.state.domain, this.getNewsData);
+		if (cookies.get('full_name')) {
+			this.setState({ is_loggedin: true })
+			var headers = { "Authorization": "Token " + cookies.get('token'), "Content-Type": "application/json" }
+			getRequest(ALL_ARTICLE_BOOKMARK + "?" + this.state.domain, this.getBookmarksArticles, headers);
+		}
+		if (cookies.get('isChecked')) {
 			this.setState({ isChecked: true })
 		} else {
 			this.setState({ isChecked: false })
 		}
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
@@ -270,56 +341,68 @@ class MenuPosts extends React.Component {
 		this.getTheme()
 	}
 
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
+	}
+
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options } = this.state;
-		
-		var result = newsPosts.map((item, index) => {
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options, subCategories, bookmark_ids, ads_article, cat_name } = this.state;
+
+		var subcategories = subCategories.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
-					<div className="row">
-						<div className="col-lg-12 col-12 mb-2">
-							<div className="section-title">
-								<h2 className="m-0 section-title">{item.menuname}</h2>
-							</div>
-						</div>
-					</div>
-					<div className="row">
-						<div className="col-lg-12 mb-5">
-							<Slider {...settings}>
-								{item.posts.map((sub_item, sub_index) => {
-									return (
-										<React.Fragment key={sub_index}>
-											{isLoading ?
-												<Skeleton height={200} />
-											:
-												<ImageOverlay 
-													image={sub_item.src}
-													image_xs={sub_item.src_xs}
-													title={sub_item.header}
-													description={sub_item.caption}
-													uploaded_by={sub_item.source}
-													source_url={sub_item.source_url}
-													slug_url={sub_item.slug}
-													category={sub_item.category}
-													size="sm"
-												/>
-											}
-										</React.Fragment>
-									)
-								})}
-								<div className="card-container">
-									<div className="view-all">
-										<a href={`/news/${CATEGORY}/${item.menuname.replace(" ", "-").toLowerCase()}/`}>View All +</a>
-									</div>
-								</div>
-							</Slider>
-						</div>
-					</div>
+					<li className={`list-inline-item ${cat_name === item.name ? 'active' : ''}`} onClick={this.handleCategories}>{item.name}</li>
 				</React.Fragment>
 			)
 		})
 
-		return(
+		var items = newsPosts.map((item, index) => {
+			return (
+				<div className="col-lg-4 col-md-4 mb-4" key={index + "-news"}>
+					{isLoading ?
+						<Skeleton height={525} />
+						:
+						<VerticleCardItem
+							id={item.id}
+							image={item.src}
+							title={item.header}
+							description={item.caption}
+							uploaded_by={item.source}
+							source_url={item.slug}
+							slug_url={item.slug}
+							category={item.category}
+							hash_tags={item.hash_tags}
+							uploaded_on={item.published_on}
+							is_loggedin={is_loggedin}
+							toggle={this.toggle}
+							is_open={modal}
+							getArticleId={this.getArticleId}
+							bookmark_ids={bookmark_ids}
+							base_url={BASE_URL}
+						/>
+					}
+				</div>
+			)
+		})
+
+		var resultsRender = [];
+		for (var i = 0; i < items.length; i++) {
+			resultsRender.push(items[i]);
+			if ((i + 1) % 25 === 0) {
+				resultsRender.push(
+					<div className="col-lg-4 col-md-4 mb-4" key={i}>
+						<VerticleCardAd
+							id={ads_article.id}
+							image={ads_article.image}
+							description={ads_article.description}
+							source_url={ads_article.source_url}
+						/>
+					</div>
+				);
+			}
+		}
+
+		return (
 			<React.Fragment>
 				<Menu
 					navitems={menus}
@@ -340,13 +423,37 @@ class MenuPosts extends React.Component {
 					<div className="row">
 						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
-							<div className="p-70 pb-5">{result}</div>
+							<div className="container">
+								<div className="pt-50">
+									<div className="row">
+										<div className="col-lg-12">
+											<div className="subcategory-menu mb-5 text-center">
+												<ul className="list-inline m-0">{subcategories}</ul>
+											</div>
+										</div>
+									</div>
+									<div className="row">
+										<div className="col-lg-12">
+											<div className="row">
+												{
+													this.state.loadingPagination ?
+														<React.Fragment>
+															<div className="lds-ring text-center"><div></div><div></div><div></div><div></div></div>
+														</React.Fragment>
+														: ""
+												}
+												{resultsRender}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
-				
+
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		)

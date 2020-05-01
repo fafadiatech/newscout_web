@@ -88,7 +88,8 @@ hr {
     border: 1px solid rgb(45, 45, 45) !important;
 }
 
-.article-breadcrumb .breadcrumb {
+.article-breadcrumb .breadcrumb,
+.subcategory-menu ul li {
 	background-color: #212020 !important;
     box-shadow: 0 0 3px rgb(29, 27, 45) !important;
     border: 0px solid rgb(255,255,255,0.1) !important;
@@ -154,4 +155,8 @@ hr {
 .filter-container {
     top: 67px;
     height: calc(100vh - 67px);
+}
+
+.login.dropdown-toggle {
+    color:#7f7f7f;
 }

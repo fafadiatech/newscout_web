@@ -17,7 +17,7 @@ from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
                           BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
                           MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
                           ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
-                          CommentListSerializer, SubsMediaSerializer)
+                          CommentListSerializer, SubsMediaSerializer, UserProfileSerializer)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -289,9 +289,9 @@ class ArticleDetailAPIView(APIView):
         has_subscribed = False
         if not self.request.user.is_anonymous and \
             Subscription.objects.filter(
-            user=self.request.user).exlcude(subs_type='Basic').exists():
+                user=self.request.user).exlcude(subs_type='Basic').exists():
             has_subscribed = True
-        
+
         try:
             next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
         except Exception as error:
@@ -480,7 +480,7 @@ class ChangePasswordAPIView(APIView):
             password = self.request.POST.get("password", "")
             old_password = self.request.POST.get("old_password", "")
             confirm_password = self.request.POST.get("confirm_password", "")
-            
+
         user = self.request.user
         if old_password:
             if not user.check_password(old_password):
@@ -661,7 +661,8 @@ class ArticleSearchAPI(APIView):
         mlt_fields = ["has_tags"]
         if source:
             mlt_fields = ["has_tags", "source", "domain"]
-        mlt = Search(using=es,  index="article").query("more_like_this", fields=mlt_fields, like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt = Search(using=es, index="article").query("more_like_this", fields=mlt_fields,
+                                                      like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
         mlt.execute()
         sr = Search(using=es, index="article")
 
@@ -674,8 +675,8 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query, 
-            "fields": ["title", "blurb"], 'type': 'phrase'}})
+            must_query.append({"multi_match": {"query": query,
+                                               "fields": ["title", "blurb"], 'type': 'phrase'}})
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
@@ -1493,3 +1494,56 @@ class UpdateSubsAPIView(APIView):
             subs.save()
             return Response(create_response({"results": "success"}))
         return Response(create_response({"results": "error"}))
+
+
+class UserProfileAPIView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, *args, **kwargs):
+        user = BaseUserProfile.objects.filter(id=self.request.user.id).first()
+        serializer = UserProfileSerializer(user)
+        data = serializer.data
+        response_data = create_response({"user": data})
+        return Response(response_data)
+
+    def put(self, request, format=None):
+        if request.user.is_authenticated:
+            if request.data:
+                _id = request.data["id"]
+            else:
+                _id = self.request.POST.get('id')
+            user = BaseUserProfile.objects.get(id=_id)
+            serializer = UserProfileSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(create_response({"result":serializer.data, "Msg":"Profile updated successfully."}))
+            return Response(create_error_response(serializer.errors), status=400)
+        raise Http404
+
+
+class AccessSession(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        print(request.META.items())
+        request.session["ip"] = request.META.get('REMOTE_ADDR')
+        return Response(create_response({"results": request.session._session_key}))
+
+
+class RSSAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        data = {}
+        domain = request.GET.get("domain")
+        if domain:
+            domain_obj = Domain.objects.filter(domain_id=domain).first()
+            if domain_obj:
+                menus = Menu.objects.filter(domain=domain_obj)
+                for menu in menus:
+                    all_categories = menu.submenu.all()
+                    for category in all_categories:
+                        data[category.name.name] = "/article/rss/?domain=" + domain + "&category=" + category.name.name
+                return Response(create_response({"results": data}))
+            return Response(create_error_response({"error": "Domain do not exist."}))
+        return Response(create_error_response({"error": "Domain is required"}))

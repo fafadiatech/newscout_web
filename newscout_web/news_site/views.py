@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from core.models import Domain, Menu, Article, Subscription
 
 from django.shortcuts import render
 from django.views.generic import TemplateView
+from newscout_web.settings import CAPTCHA_ENABLED
 
-from core.models import Domain, Menu, Article, Subscription
 
 class IndexView(TemplateView):
     template_name = "news-index.html"
@@ -68,7 +69,7 @@ class ArticleDetailView(TemplateView):
             context['has_subscribed'] = True
         article_id = slug.split("-")[-1]
         context['articleId'] = article_id
-
+        context["captcha_enabled"] = CAPTCHA_ENABLED
         article = Article.objects.filter(slug=slug).first()
         if article:
             context['article_title'] = article.title
@@ -100,21 +101,8 @@ class ArticleRSSView(TemplateView):
     template_name = "rss.html"
 
     def get_context_data(self, **kwargs):
-        data = {}
         context = super(ArticleRSSView, self).get_context_data(**kwargs)
-        domain = self.request.GET.get('domain')
-        domain_obj = Domain.objects.filter(domain_id=domain).first()
-        if domain_obj:
-            context['domain'] = domain_obj.domain_name
-            menus = Menu.objects.filter(domain=domain_obj)
-            for menu in menus:
-                all_categories = menu.submenu.all()
-                for category in all_categories:
-                    data[category.name.name] = "/article/rss/?domain="+domain+"&category="+category.name.name
-        else:
-            data = {}
-
-        context['category'] = data
+        context["domain"] = self.request.GET.get('domain', 'newscout')
         return context
 
 
@@ -124,4 +112,22 @@ class BookmarkView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(BookmarkView, self).get_context_data(**kwargs)
         context['domain'] = self.request.GET.get('domain', 'newscout')
-        return context    
+        return context
+
+
+class UserChangePasswordView(TemplateView):
+    template_name = "user-change-password.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserChangePasswordView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
+        return context
+
+
+class UserProfileView(TemplateView):
+    template_name = "user-profile.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        context['domain'] = self.request.GET.get('domain', 'newscout')
+        return context

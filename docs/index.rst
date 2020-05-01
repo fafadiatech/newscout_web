@@ -15,6 +15,7 @@ Technical Design
 
    design/architecture
    design/analytics
+   design/advertising
 
 
 Developer
@@ -25,6 +26,7 @@ Developer
    :caption: Contents:
 
    dev/contributing
+   dev/frontend
 
 Indices and tables
 ==================

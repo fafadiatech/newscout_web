@@ -8,8 +8,7 @@ from .views import (CategoryListAPIView, ArticleListAPIView, SignUpAPIView,
                     TrendingArticleAPIView, ArticleCreateUpdateView,
                     CategoryBulkUpdate, GetDailyDigestView,
                     ChangeArticleStatusView, DraftMediaUploadViewSet, CommentViewSet,
-                    LikeAPIView, CaptchaCommentApiView, SubsAPIView,
-                    AutoCompleteAPIView, UpdateSubsAPIView)
+                    LikeAPIView, CaptchaCommentApiView, SubsAPIView, AutoCompleteAPIView, UpdateSubsAPIView, UserProfileAPIView, AccessSession, RSSAPIView)
 from django.conf.urls import url, include
 
 from rest_framework.routers import DefaultRouter
@@ -83,4 +82,7 @@ urlpatterns = [
     url(r'comment-captcha/$', CaptchaCommentApiView.as_view(), name='comment-captcha'),
     url(r'subscription/$', SubsAPIView.as_view(), name='subscriptions-api'),
     url(r'subscription/(?P<pk>[\w-]+)/$', UpdateSubsAPIView.as_view(), name='update-subscriptions-api'),
+    url(r'userprofile/$', UserProfileAPIView.as_view(), name='userprofile'),
+    url(r'access-session/$', AccessSession.as_view(), name='access-session-api'),
+    url(r'rss/$', RSSAPIView.as_view(), name='rss-api'),
 ]
