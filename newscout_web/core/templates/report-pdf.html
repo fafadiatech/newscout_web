@@ -1,0 +1,290 @@
+<html>
+
+<head>
+    <title>Test</title>
+    <style>
+        .section-data {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .section-title {
+            position: relative;
+        }
+
+        .section-title h2 {
+            display: inline-block;
+            background-color: #dfdfdf;
+            padding: 5px 10px;
+            color: #262626;
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: capitalize;
+            margin: 0px;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 100%;
+            border-bottom: 2px solid #e6e6e6;
+            position: absolute;
+            bottom: 19px;
+            right: 0;
+            z-index: -1;
+            left: 0;
+        }
+
+        .section-middle p {
+            color: #3b5265;
+            font-weight: 600;
+        }
+
+        .section-middle p span {
+            color: #f0442c;
+        }
+
+        .section-table table {
+            border-collapse: collapse;
+        }
+
+        .section-table table,
+        th,
+        td {
+            border: 1px solid rgba(0, 0, 0, .125);
+            background-color: #fff;
+            padding: 15px;
+        }
+
+        thead td {
+            color: #3b5265;
+        }
+
+        tbody th,
+        tbody td {
+            background-color: rgb(240, 240, 240);
+            font-weight: 400;
+            text-align: center;
+        }
+
+        tbody td:last-child {
+            text-shadow: 3px 3px 3px #d7cfcf;
+            color: #ec1f25;
+            font-weight: 500;
+        }
+
+        @media print {
+            .section-table {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% for i in final_result %}
+    {% if i.report_name == "Average Articles Open" %}
+    <div class="section-data">
+        <div class="section-title">
+            <h2>{{i.report_name}}</h2>
+        </div>
+        <div class="section-middle">
+            <p>Avg Count: <span>{{i.report_result.avg_count}}</span></p>
+        </div>
+        <div class="section-table" style="clear:both; position:relative;">
+            <table border="0" style="position:absolute; left:0pt; width:45%;">
+                <thead>
+                    <tr>
+                        <td>Date / Category</td>
+                        <td>Count</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result.data|slice:":15" %}
+                    <tr>
+                        <td>{{data.dateStr}}</td>
+                        <td>{{data.count}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if i.report_result.result.data|length >= 16 %}
+            <table border="0" style="margin-left:50%;">
+                <thead>
+                    <tr>
+                        <td>Date / Category</td>
+                        <td>Count</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result.data|slice:"16:" %}
+                    <tr>
+                        <td>{{data.dateStr}}</td>
+                        <td>{{data.count}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+
+    {% elif i.report_name == "Average Articles Per Platform" %}
+    <div class="section-data">
+        <div class="section-title">
+            <h2>{{i.report_name}}</h2>
+        </div>
+        <div class="section-middle">
+            <p>Avg Count: <span>{{i.report_result.avg_count}}</span></p>
+        </div>
+        <div class="section-table" style="clear:both; position:relative;">
+            <table border="0" style="position:absolute; left:0pt; width:45%;">
+                <thead>
+                    <tr>
+                        <td rowspan="2">Date / Category</td>
+                        <td colspan="3">Count</td>
+                    </tr>
+                    <tr>
+                        <td>web</td>
+                        <td>android</td>
+                        <td>ios</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result|slice:":15" %}
+                    <tr>
+                        <td>{{data.dateStr}}</td>
+                        <td>{{data.web}}</td>
+                        <td>{{data.android}}</td>
+                        <td>{{data.ios}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if i.report_result.result|length >= 16 %}
+            <table border="0" style="margin-left:50%;">
+                <thead>
+                    <tr>
+                        <td rowspan="2">Date / Category</td>
+                        <td colspan="3">Count</td>
+                    </tr>
+                    <tr>
+                        <td>web</td>
+                        <td>android</td>
+                        <td>ios</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result|slice:"16:" %}
+                    <tr>
+                        <td>{{data.dateStr}}</td>
+                        <td>{{data.web}}</td>
+                        <td>{{data.android}}</td>
+                        <td>{{data.ios}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+
+    {% elif i.report_name == 'Average Articles Per Category' %}
+    <div class="section-data">
+        <div class="section-title">
+            <h2>{{i.report_name}}</h2>
+        </div>
+        <div class="section-middle">
+            <p>Avg Count: <span>{{i.report_result.avg_count}}</span></p>
+        </div>
+        <div class="section-table" style="clear:both; position:relative;">
+            <table border="0" style="position:absolute; left:0pt; width:45%;">
+                <thead>
+                    <tr>
+                        <td>Category</td>
+                        <td>Count</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result|slice:":15" %}
+                    <tr>
+                        <td>{{data.category_name}}</td>
+                        <td>{{data.count}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if i.report_result.result|length >= 16 %}
+            <table border="0" style="margin-left:50%;">
+                <thead>
+                    <tr>
+                        <td>Category</td>
+                        <td>Count</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result|slice:"16:" %}
+                    <tr>
+                        <td>{{data.category_name}}</td>
+                        <td>{{data.count}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+
+    {% elif i.report_name == 'Average Interactions Per Category' %}
+    <div class="section-data">
+        <div class="section-title">
+            <h2>{{i.report_name}}</h2>
+        </div>
+        <div class="section-middle">
+            <p>Avg Count: <span>{{i.report_result.avg_count}}</span></p>
+        </div>
+        <div class="section-table" style="clear:both; position:relative;">
+            <table border="0" style="position:absolute; left:0pt; width:45%;">
+                <thead>
+                    <tr>
+                        <td>Category</td>
+                        <td>Total Interactions</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result|slice:":15" %}
+                    <tr>
+                        <td>{{data.category_name}}</td>
+                        <td>{{data.total_interactions}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if i.report_result.result|length >= 16 %}
+            <table border="0" style="margin-left:50%;">
+                <thead>
+                    <tr>
+                        <td>Category</td>
+                        <td>Total Interactions</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in i.report_result.result|slice:"16:" %}
+                    <tr>
+                        <td>{{data.category_name}}</td>
+                        <td>{{data.total_interactions}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    {% endif %}
+    {% endfor %}
+</body>
+
+</html>

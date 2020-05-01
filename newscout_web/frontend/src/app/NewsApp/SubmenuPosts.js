@@ -7,7 +7,7 @@ import { CardItem, Menu, SectionTitle, SideBar, VerticleCardItem, Footer, Vertic
 
 import Auth from './Auth';
 
-import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL, SUGGESTIONS } from '../../utils/Constants';
+import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SCHEDULES_URL, SUGGESTIONS, EVENT_TRACK_URL, ACCESS_SESSION } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
 import './style.css';
@@ -307,7 +307,24 @@ class SubmenuPosts extends React.Component {
 		})
 	}
 
+	getSessionId = (data) => {
+		cookies.set('sessionID', data.body.results, { path: '/' });
+		setTimeout(() => {
+			cookies.remove('sessionID', { path: '/' })
+		}, 900000);
+	}
+
+	setEventTracker = () => {
+		console.log("data")
+	}
+
 	componentDidMount() {
+		if (cookies.get("sessionID")) {
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=parent_category_change&platform=web&type=ENGAGE_VIEW&category_name=" + SUBCATEGORY + "&sid=" + cookies.get("sessionID"), this.setEventTracker);
+		}
+		else {
+			getRequest(ACCESS_SESSION, this.getSessionId);
+		}
 		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
 		getRequest(MENUS + "?" + this.state.domain, this.getNewsData);

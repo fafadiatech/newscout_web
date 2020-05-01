@@ -156,3 +156,7 @@ hr {
     top: 67px;
     height: calc(100vh - 67px);
 }
+
+.login.dropdown-toggle {
+    color:#7f7f7f;
+}
