@@ -47,7 +47,7 @@ class ParseDateRange():
         # start_date_obj = start_aware.astimezone(pytz.UTC)
         # end_date_obj = end_aware.astimezone(pytz.UTC)
         return start_date, end_date, ""
-    
+
     def get_past_range(self, date_range):
         if date_range:
             if date_range == "today":
@@ -176,7 +176,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
         if not data:
             return {"avg_count": 0}
         return data[0]
-    
+
     def pipeline(self, start_date, end_date, domain_id):
         return [
             {"$match": {"$and": [
@@ -247,7 +247,7 @@ class AllArticlesOpen(APIView, ParseDateRange):
             past_avg = {"avg_count": 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class ArticlesPerPlatform(APIView, ParseDateRange):
@@ -360,9 +360,9 @@ class ArticlesPerPlatform(APIView, ParseDateRange):
             avg = {"avg_count": 0}
             past_avg = {"avg_count": 0}
         return Response(create_response(
-            {"result": res, "no_data": no_data, 
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2),
-            "avg_count": avg["avg_count"]}))
+            {"result": res, "no_data": no_data,
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2),
+             "avg_count": avg["avg_count"]}))
 
 
 class ArticlesPerCategory(APIView, ParseDateRange):
@@ -441,7 +441,7 @@ class ArticlesPerCategory(APIView, ParseDateRange):
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class InteractionsPerCategory(APIView, ParseDateRange):
@@ -513,14 +513,14 @@ class InteractionsPerCategory(APIView, ParseDateRange):
                 "total_transactions": 0}]
             no_data = True
             avg = {"avg_count": 0}
-            past_avg = {"avg_count":0}
+            past_avg = {"avg_count": 0}
         else:
             past_start_date, past_end_date, error = self.get_past_range(date_range)
             past_avg = self.get_avg(past_start_date, past_end_date, domain_id)
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class ArticlesPerAuthor(APIView, ParseDateRange):
@@ -584,14 +584,14 @@ class ArticlesPerAuthor(APIView, ParseDateRange):
             data = [{"name": None, "article_count": 0}]
             no_data = True
             avg = {"avg_count": 0}
-            past_avg = {"avg_count" : 0}
+            past_avg = {"avg_count": 0}
         else:
             past_start_date, past_end_date, error = self.get_past_range(date_range)
             past_avg = self.get_avg(past_start_date, past_end_date, domain_id)
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class InteractionsPerAuthor(APIView, ParseDateRange):
@@ -654,7 +654,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
                 "action": "$action",
                 "author_name": "$author_name"}, "count": {"$sum": 1}}},
             {"$project": {
-                "_id": 0, "author": "$_id.author_name",
+                "_id": 0, "author": "",
                 "action": "$_id.action", "count": "$count"}},
             {"$sort": {"author": 1}}
         ]
@@ -681,7 +681,7 @@ class InteractionsPerAuthor(APIView, ParseDateRange):
             past_avg = {'avg_count': 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class ArticlesPerSession(APIView, ParseDateRange):
@@ -803,7 +803,7 @@ class ArticlesPerSession(APIView, ParseDateRange):
             past_avg = {"avg_count": 0}
         return Response(create_response(
             {"result": res, "no_data": no_data, "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
 
 
 class InteractionsPerSession(APIView, ParseDateRange):
@@ -916,5 +916,5 @@ class InteractionsPerSession(APIView, ParseDateRange):
             avg = self.get_avg(start_date, end_date, domain_id)
         return Response(create_response(
             {"result": data, "no_data": no_data,
-            "avg_count": avg["avg_count"],
-            "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
+             "avg_count": avg["avg_count"],
+             "diff": round(avg["avg_count"] - past_avg["avg_count"], 2)}))
