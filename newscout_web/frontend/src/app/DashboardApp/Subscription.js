@@ -324,13 +324,7 @@ class Subscription extends React.Component {
 					<span>Active</span>
 				</td>
 				<td>
-					<ul className="list-inline m-0">
-						<React.Fragment>
-							<li className="list-inline-item btn btn-sm btn-success" data-index={el.id}>
-								<a href={`/dashboard/subscription/${el.id}`}>Edit</a>
-							</li>
-						</React.Fragment>
-					</ul>
+					<a href={`/dashboard/subscription/${el.id}`} className="btn btn-sm btn-success">Edit</a>
 				</td>
 			</tr>
 			results.push(data);
