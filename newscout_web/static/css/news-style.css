@@ -203,7 +203,10 @@ nav.navbar {
   display: block;
 }
 
-.slick-slide.slick-loading img {
+.slick-slide.slick-loading img,
+.slick-arrow.slick-hidden,
+.note-image-popover,
+.note-link-popover {
   display: none;
 }
 
@@ -223,10 +226,6 @@ nav.navbar {
   display: block;
   height: auto;
   border: 1px solid transparent;
-}
-
-.slick-arrow.slick-hidden {
- display: none;
 }
 
 @charset 'UTF-8';

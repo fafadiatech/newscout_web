@@ -160,3 +160,54 @@ hr {
 .login.dropdown-toggle {
     color:#7f7f7f;
 }
+
+label {
+    font-weight: 600;
+}
+
+.form-control,
+.form-control:active,
+.form-control:focus,
+.css-yk16xz-control,
+.css-26l3qy-menu,
+.note-editor.note-frame .note-editing-area .note-editable {
+    background-color: #212020;
+    border: 1px solid rgb(45, 45, 45);
+    color: rgba(255,255,255,0.8);
+}
+
+.modal-dialog {
+    border: 1px solid rgb(45, 45, 45);
+}
+
+.modal-header,
+.table thead th {
+    border-bottom: 1px solid rgb(45, 45, 45);
+}
+
+.modal-footer,
+.table td, .table th {
+    border-top: 1px solid rgb(45, 45, 45);
+}
+
+.modal-content {
+    background-color: #111010;
+}
+
+.note-editor.note-frame {
+    border: none;
+}
+
+.note-editor.note-frame .note-statusbar,
+.card {
+    background-color: #212020;
+}
+
+.skewed-bg {
+    color: #968d8d;
+    background: rgb(45, 44, 44);
+}
+
+.skewed-bg h3 {
+    text-shadow: 3px 3px 3px #212020;
+}

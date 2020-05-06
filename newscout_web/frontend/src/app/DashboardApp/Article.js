@@ -33,7 +33,8 @@ class Article extends React.Component {
 			articleUpdateId: "",
 			isSideOpen: true,
 			isChecked: false,
-			username: USERNAME
+			username: USERNAME,
+			isChecked: false,
 		};
 	}
 
@@ -144,6 +145,52 @@ class Article extends React.Component {
 		}
 	}
 
+	toggleSwitch = (data) => {
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style'
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+			this.setState({ isChecked: true })
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+			cookies.remove('isChecked', { path: '/' });
+		}
+	}
+
+	getTheme = () => {
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style';
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+		}
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getArticles();
@@ -152,6 +199,12 @@ class Article extends React.Component {
 		} else {
 			this.setState({ isSideOpen: false })
 		}
+		if (cookies.get('isChecked')) {
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		this.getTheme();
 	}
 
 	componentWillUnmount = () => {
@@ -159,7 +212,7 @@ class Article extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen, isChecked, username } = this.state
+		var { menus, isSideOpen, isChecked, username, isChecked } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -219,10 +272,12 @@ class Article extends React.Component {
 						isSideOpen={isSideOpen}
 						domain="dashboard"
 						isChecked={isChecked}
-						username={username} />
+						username={username}
+						toggleSwitch={this.toggleSwitch}
+						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
-							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
 									<h1 className="h2">Articles</h1>
