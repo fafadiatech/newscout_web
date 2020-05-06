@@ -29,8 +29,55 @@ class SubscriptionDetail extends React.Component {
             autoRenew: 'Yes',
             payement_mode: 'Basic',
             createdOn: '',
-            username: USERNAME
+            username: USERNAME,
+            isChecked: false,
         };
+    }
+
+    toggleSwitch = (data) => {
+        if (data === true) {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = false;
+            } else {
+                var head = document.getElementsByTagName('head')[0];
+                var link = document.createElement('link');
+                link.id = 'dark_style'
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = '/static/css/dark-style.css';
+                link.media = 'all';
+                head.appendChild(link);
+            }
+            this.setState({ isChecked: true })
+            cookies.set('isChecked', true, { path: '/' });
+        } else {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = true;
+            }
+            this.setState({ isChecked: false })
+            cookies.remove('isChecked', { path: '/' });
+        }
+    }
+
+    getTheme = () => {
+        if (cookies.get('isChecked')) {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = false;
+            } else {
+                var head = document.getElementsByTagName('head')[0];
+                var link = document.createElement('link');
+                link.id = 'dark_style';
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = '/static/css/dark-style.css';
+                link.media = 'all';
+                head.appendChild(link);
+            }
+        } else {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = true;
+            }
+        }
     }
 
     componentDidMount() {
@@ -40,6 +87,7 @@ class SubscriptionDetail extends React.Component {
         } else {
             this.setState({ isSideOpen: false })
         }
+        this.getTheme();
     }
 
     getSubs = (data) => {
@@ -100,7 +148,7 @@ class SubscriptionDetail extends React.Component {
     }
 
     render() {
-        var {isSideOpen, username} = this.state;
+        var { isSideOpen, username, isChecked } = this.state;
         return (
             <React.Fragment>
                 <ToastContainer />
@@ -112,54 +160,44 @@ class SubscriptionDetail extends React.Component {
                         isSideBarToogle={this.isSideBarToogle}
                         isSideOpen={isSideOpen}
                         domain="dashboard"
-                        username={username} />
+                        username={username}
+                        toggleSwitch={this.toggleSwitch}
+                        isChecked={isChecked} />
                     <div className="container-fluid">
                         <div className="row">
-                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
                             <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
                                 <div className="pt-50 mb-3">
                                     <h1 className="h2">Update Subscription</h1>
                                 </div>
                                 <hr />
                                 <div className="my-5">
-                                    <div class="form-group">
-                                        <label for="exampleFormControlInput1">Email address:</label>
-                                        <span>&nbsp;{this.state.email}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlInput1">Subs Type:</label>
-                                        <div className="col-6">
-                                            <Select refs="adgroup"
-                                                value={{ value: this.state.subs_type, label: this.state.subs_type }}
-                                                onChange={(e) => this.handleChange(e)}
-                                                options={[{ value: 'Basic', label: 'Basic' },
-                                                { value: 'Monthly', label: 'Monthly' }, { value: 'Yearly', label: 'Yearly' }]} />
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Email address:</label>
+                                                <h4>{this.state.email}</h4>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Subs Type:</label>
+                                                <Select refs="adgroup" value={{ value: this.state.subs_type, label: this.state.subs_type }} onChange={(e) => this.handleChange(e)} options={[{ value: 'Basic', label: 'Basic' }, { value: 'Monthly', label: 'Monthly' }, { value: 'Yearly', label: 'Yearly' }]} />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Created On:</label>
+                                                <h4>{this.state.createdOn}</h4>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Auto Renew:</label>
+                                                <Select refs="adgroup" value={{ value: this.state.autoRenew, label: this.state.autoRenew }} onChange={(e) => this.handleRenewChange(e)} options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="exampleFormControlInput1">Payment Mode:</label>
+                                                <h4>&nbsp;{this.state.payement_mode}</h4>
+                                            </div>
+                                            <div class="form-group">
+                                                <button className="list-inline-item btn btn-sm btn-success" onClick={(e) => this.submitForm(e)}>Submit</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlInput1">Created On:</label>
-                                        <span>&nbsp;{this.state.createdOn}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlInput1">Auto Renew:</label>
-                                        <div className="col-6">
-                                            <Select refs="adgroup"
-                                                value={{ value: this.state.autoRenew, label: this.state.autoRenew }}
-                                                onChange={(e) => this.handleRenewChange(e)}
-                                                options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlInput1">Payment Mode:</label>
-                                        <span>&nbsp;{this.state.payement_mode}</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <React.Fragment>
-                                            <li className="list-inline-item btn btn-sm btn-success"
-                                                onClick={(e) => this.submitForm(e)}>
-                                                Submit
-                                            </li>
-                                        </React.Fragment>
                                     </div>
                                 </div>
                             </div>
@@ -167,7 +205,7 @@ class SubscriptionDetail extends React.Component {
                     </div>
                 </div>
                 <Footer privacyurl="#" facebookurl="#" twitterurl="#" />
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }
