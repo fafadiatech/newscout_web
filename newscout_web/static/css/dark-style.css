@@ -211,3 +211,7 @@ label {
 .skewed-bg h3 {
     text-shadow: 3px 3px 3px #212020;
 }
+
+.css-1uccc91-singleValue {
+    color: hsl(0, 0%, 50%);
+}

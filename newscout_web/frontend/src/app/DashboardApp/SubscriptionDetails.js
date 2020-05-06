@@ -87,6 +87,11 @@ class SubscriptionDetail extends React.Component {
         } else {
             this.setState({ isSideOpen: false })
         }
+        if (cookies.get('isChecked')) {
+            this.setState({ isChecked: true })
+        } else {
+            this.setState({ isChecked: false })
+        }
         this.getTheme();
     }
 
@@ -192,7 +197,7 @@ class SubscriptionDetail extends React.Component {
                                             </div>
                                             <div class="form-group">
                                                 <label for="exampleFormControlInput1">Payment Mode:</label>
-                                                <h4>&nbsp;{this.state.payement_mode}</h4>
+                                                <h4>{this.state.payement_mode}</h4>
                                             </div>
                                             <div class="form-group">
                                                 <button className="list-inline-item btn btn-sm btn-success" onClick={(e) => this.submitForm(e)}>Submit</button>
