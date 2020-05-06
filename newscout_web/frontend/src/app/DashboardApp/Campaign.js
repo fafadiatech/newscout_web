@@ -7,7 +7,7 @@ import Cookies from 'universal-cookie';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import {CAMPAIGN_URL} from '../../utils/Constants';
+import { CAMPAIGN_URL } from '../../utils/Constants';
 import { getRequest, postRequest, putRequest, deleteRequest, notify, authHeaders } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
@@ -33,9 +33,10 @@ class Campaign extends React.Component {
 			previous: null,
 			loading: false,
 			q: "",
-			page : 0,
+			page: 0,
 			isSideOpen: true,
-			username: USERNAME
+			username: USERNAME,
+			isChecked: false,
 		};
 	}
 
@@ -64,15 +65,15 @@ class Campaign extends React.Component {
 		let required_msg = "This fields is required";
 
 		//Campaign Name
-		if(!fields["name"]){
+		if (!fields["name"]) {
 			formIsValid = false;
 			errors["name"] = required_msg;
 		} else {
 			errors["name"] = "";
 		}
 
-		if(typeof fields["name"] !== "undefined"){
-			if(!fields["name"].match(/^[a-zA-Z ]+$/)){
+		if (typeof fields["name"] !== "undefined") {
+			if (!fields["name"].match(/^[a-zA-Z ]+$/)) {
 				formIsValid = false;
 				errors["name"] = "Only characters allowed";
 			} else {
@@ -81,79 +82,79 @@ class Campaign extends React.Component {
 		}
 
 		//Daily Budget
-		if(typeof fields["daily_budget"] !== "undefined"){
-			if(!fields["daily_budget"].match(/^\d+(?:\.\d{1,2})?$/)){
+		if (typeof fields["daily_budget"] !== "undefined") {
+			if (!fields["daily_budget"].match(/^\d+(?:\.\d{1,2})?$/)) {
 				formIsValid = false;
 				errors["daily_budget"] = "Only numbers allowed";
 			}
 		}
 
 		//Daily Budget
-		if(typeof fields["max_bid"] !== "undefined"){
-			if(!fields["max_bid"].match(/^\d+(?:\.\d{1,2})?$/)){
+		if (typeof fields["max_bid"] !== "undefined") {
+			if (!fields["max_bid"].match(/^\d+(?:\.\d{1,2})?$/)) {
 				formIsValid = false;
 				errors["max_bid"] = "Only numbers allowed";
 			}
 		}
 
 		//Start Date
-		if(!fields["start_date"]){
+		if (!fields["start_date"]) {
 			formIsValid = false;
 			errors["start_date"] = required_msg;
 		}
 
 		//End Date
-		if(!fields["end_date"]){
+		if (!fields["end_date"]) {
 			formIsValid = false;
 			errors["end_date"] = required_msg;
 		}
 
-		if(fields["end_date"] < fields["start_date"]){
+		if (fields["end_date"] < fields["start_date"]) {
 			formIsValid = false;
 			errors["end_date"] = "End date should be greater than start date";
 		}
 
-		this.setState({errors: errors});
+		this.setState({ errors: errors });
 		return formIsValid;
 	}
 
 	handleChange = (field, e) => {
 		let fields = this.state.fields;
-		if(field === "start_date" || field === "end_date"){
+		if (field === "start_date" || field === "end_date") {
 			fields[field] = e;
-		} else if(field === "is_active") {
+		} else if (field === "is_active") {
 			fields[field] = e.target.checked;
 		} else {
 			fields[field] = e.target.value;
 		}
-		if(this.handleValidation()){
-			this.setState({fields});
+		if (this.handleValidation()) {
+			this.setState({ fields });
 		}
 	}
 
 	campaignSubmitResponse = (data, extra_data) => {
 		if (extra_data.clean_results) {
-			this.setState({'formSuccess': true, loading: true, results: []});
+			this.setState({ 'formSuccess': true, loading: true, results: [] });
 		} else {
-			this.setState({'formSuccess': true});
+			this.setState({ 'formSuccess': true });
 		}
 
 		setTimeout(() => {
-			this.setState({'modal': false, 'formSuccess': false, 'fields': {}});
+			this.setState({ 'modal': false, 'formSuccess': false, 'fields': {} });
 			this.getCampaigns()
-        }, 3000);
+		}, 3000);
 	}
 
 	campaignSubmit = (e) => {
 		e.preventDefault();
 
-		if(this.handleValidation()){
+		if (this.handleValidation()) {
 			this.state.fields["is_active"] = true;
 			const body = JSON.stringify(this.state.fields)
-			var extra_data = {"clean_results": true};
+			var extra_data = { "clean_results": true };
 			postRequest(CAMPAIGN_URL, body, this.campaignSubmitResponse, "POST", authHeaders, extra_data);
-		}else{
-			this.setState({'formSuccess': false});
+		} else {
+			this.setState({ 'formSuccess': false });
 		}
 	}
 
@@ -167,10 +168,10 @@ class Campaign extends React.Component {
 	submitRow = (e) => {
 		e.preventDefault();
 
-		if(this.handleValidation()){
+		if (this.handleValidation()) {
 			const body = JSON.stringify(this.state.fields)
 			var url = CAMPAIGN_URL + this.state.fields.id + "/";
-			var extra_data = {"clean_results": true};
+			var extra_data = { "clean_results": true };
 			putRequest(url, body, this.campaignUpdateResponse, "PUT", authHeaders, extra_data);
 		}
 	}
@@ -180,10 +181,10 @@ class Campaign extends React.Component {
 		let dataindex = data.body.id;
 		let rows = this.state.rows;
 		rows[dataindex] = false;
-		if(extra_data.clean_results) {
-			this.setState({rows: rows, results: [], loading: true, fields: {}});
+		if (extra_data.clean_results) {
+			this.setState({ rows: rows, results: [], loading: true, fields: {} });
 		} else {
-			this.setState({rows: rows});
+			this.setState({ rows: rows });
 		}
 		this.getCampaigns();
 	}
@@ -194,7 +195,7 @@ class Campaign extends React.Component {
 		let rows = this.state.rows;
 		let fields = this.state.results[index]
 		rows[dataindex] = true
-		this.setState({rows, fields});
+		this.setState({ rows, fields });
 	}
 
 	cancelRow = (e) => {
@@ -202,18 +203,18 @@ class Campaign extends React.Component {
 		let dataindex = e.target.getAttribute('data-id');
 		let rows = this.state.rows;
 		rows[dataindex] = false
-		this.setState({rows});
+		this.setState({ rows });
 	}
 
 	deleteCampaignResponse = (data) => {
-		this.setState({results: [], loading: true})
+		this.setState({ results: [], loading: true })
 		this.getCampaigns();
 		notify(data.body.Msg)
 	}
 
 	deleteRow = (e) => {
 		let dataindex = e.target.getAttribute('data-id');
-		let findrow = document.body.querySelector('[data-row="'+dataindex+'"]');
+		let findrow = document.body.querySelector('[data-row="' + dataindex + '"]');
 		let url = CAMPAIGN_URL + dataindex + "/";
 		deleteRequest(url, this.deleteCampaignResponse, authHeaders)
 	}
@@ -224,7 +225,7 @@ class Campaign extends React.Component {
 	}
 
 	getCampaignsData = (data) => {
-		if(!Array.isArray(data.body)){
+		if (!Array.isArray(data.body)) {
 			var results = [
 				...this.state.results,
 				...data.body.results
@@ -245,21 +246,21 @@ class Campaign extends React.Component {
 	getNext = () => {
 		this.setState({
 			loading: true,
-			page : this.state.page + 1
+			page: this.state.page + 1
 		})
 		getRequest(this.state.next, this.getCampaignsData, authHeaders);
 	}
 
 	handleScroll = () => {
 		if ($(window).scrollTop() == $(document).height() - $(window).height()) {
-			if (!this.state.loading && this.state.next){
+			if (!this.state.loading && this.state.next) {
 				this.getNext();
 			}
 		}
 	}
 
 	isSideBarToogle = (data) => {
-		if(data === true){
+		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
 		} else {
@@ -268,23 +269,75 @@ class Campaign extends React.Component {
 		}
 	}
 
+	toggleSwitch = (data) => {
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style'
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+			this.setState({ isChecked: true })
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+			cookies.remove('isChecked', { path: '/' });
+		}
+	}
+
+	getTheme = () => {
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style';
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+		}
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getCampaigns()
-		if(cookies.get('isSideOpen')){
+		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
 			this.setState({ isSideOpen: false })
 		}
+		if (cookies.get('isChecked')) {
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		this.getTheme();
 	}
 
 	componentWillUnmount = () => {
 		window.removeEventListener('scroll', this.handleScroll)
 	}
 
-	render(){
-		var { menus, isSideOpen, username } = this.state
-		
+	render() {
+		var { menus, isSideOpen, username, isChecked } = this.state
+
 		let result_array = this.state.results
 		let results = []
 
@@ -293,14 +346,14 @@ class Campaign extends React.Component {
 			var end_date = moment(el.end_date).format('YYYY-MM-DD m:ss A');
 
 			var data = <tr key={index} data-row={el.id}>
-				<th scope="row">{index+1}</th>
+				<th scope="row">{index + 1}</th>
 				<td>
 					{this.state.rows[el.id] ?
 						<React.Fragment>
 							<input refs="name" type="text" name="name" className="form-control" placeholder="Campaign Name" id="name" onChange={(e) => this.handleChange("name", e)} defaultValue={el.name} />
 							<FormText color="danger">{this.state.errors["name"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{el.name}</span>
 					}
 				</td>
@@ -310,7 +363,7 @@ class Campaign extends React.Component {
 							<input refs="daily_budget" type="text" name="daily_budget" className="form-control" placeholder="Daily Budget" id="daily_budget" onChange={(e) => this.handleChange("daily_budget", e)} defaultValue={el.daily_budget} />
 							<FormText color="danger">{this.state.errors["daily_budget"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{el.daily_budget}</span>
 					}
 				</td>
@@ -320,7 +373,7 @@ class Campaign extends React.Component {
 							<input refs="max_bid" type="text" name="max_bid" className="form-control" placeholder="Max Bid" id="max_bid" onChange={(e) => this.handleChange("max_bid", e)} defaultValue={el.max_bid} />
 							<FormText color="danger">{this.state.errors["max_bid"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{el.max_bid}</span>
 					}
 				</td>
@@ -330,7 +383,7 @@ class Campaign extends React.Component {
 							<Datetime refs="start_date" defaultValue={start_date} dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="start_date" onChange={(e) => this.handleChange("start_date", e)} />
 							<FormText color="danger">{this.state.errors["start_date"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{start_date}</span>
 					}
 				</td>
@@ -340,13 +393,13 @@ class Campaign extends React.Component {
 							<Datetime refs="end_date" defaultValue={end_date} dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="end_date" onChange={(e) => this.handleChange("end_date", e)} />
 							<FormText color="danger">{this.state.errors["end_date"]}</FormText>
 						</React.Fragment>
-					:
+						:
 						<span>{end_date}</span>
 					}
 				</td>
 				{this.state.rows[el.id] ?
 					<td><input type="checkbox" name="is_active" checked={el.is_active} onChange={(e) => this.handleChange("is_active", e)} /></td>
-				:
+					:
 					<td className="text-success">{el.is_active ? "Active" : ""}</td>
 				}
 				<td>
@@ -357,7 +410,7 @@ class Campaign extends React.Component {
 								</li>
 								<li className="list-inline-item btn btn-sm btn-danger" index={index} data-id={el.id} onClick={this.cancelRow}>Cancel</li>
 							</React.Fragment>
-						:
+							:
 							<React.Fragment>
 								<li className="list-inline-item btn btn-sm btn-warning" index={index} data-id={el.id} onClick={this.editRow}>Edit</li>
 								<li className="list-inline-item btn btn-sm btn-danger" data-id={el.id} onClick={this.deleteRow}>Delete</li>
@@ -369,7 +422,7 @@ class Campaign extends React.Component {
 			results.push(data);
 		})
 
-		return(
+		return (
 			<React.Fragment>
 				<ToastContainer />
 				<div className="campaign">
@@ -380,10 +433,12 @@ class Campaign extends React.Component {
 						isSideBarToogle={this.isSideBarToogle}
 						isSideOpen={isSideOpen}
 						domain="dashboard"
-						username={username} />
+						username={username}
+						toggleSwitch={this.toggleSwitch}
+						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
-							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
 									<h1 className="h2">Campaigns</h1>
@@ -393,25 +448,25 @@ class Campaign extends React.Component {
 										</div>
 										<div className="float-right">
 											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => {this.handleKeyPress(event)} }/>
+												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
 											</Form>
 										</div>
 									</div>
 								</div>
-								<hr/>
+								<hr />
 								<div className="my-5">
 									<h5 className="text-info">Total {this.state.results.length} Campaigns</h5>
 									<Table striped id="campaign-table">
 										<thead>
 											<tr>
-												<th style={{width:"5%"}}>#</th>
-												<th style={{width:"17%"}}>Name</th>
-												<th style={{width:"12%"}}>Daily Budget</th>
-												<th style={{width:"12%"}}>Max Bid</th>
-												<th style={{width:"17%"}}>Start Date</th>
-												<th style={{width:"17%"}}>End Date</th>
-												<th style={{width:"10%"}}>Status</th>
-												<th style={{width:"10%"}}></th>
+												<th style={{ width: "5%" }}>#</th>
+												<th style={{ width: "17%" }}>Name</th>
+												<th style={{ width: "12%" }}>Daily Budget</th>
+												<th style={{ width: "12%" }}>Max Bid</th>
+												<th style={{ width: "17%" }}>Start Date</th>
+												<th style={{ width: "17%" }}>End Date</th>
+												<th style={{ width: "10%" }}>Status</th>
+												<th style={{ width: "10%" }}></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -420,10 +475,10 @@ class Campaign extends React.Component {
 									</Table>
 									{
 										this.state.loading ?
-										<React.Fragment>
-											<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
-										</React.Fragment>
-										: ""
+											<React.Fragment>
+												<div className="lds-ring col-sm-12 col-md-7 offset-md-5"><div></div><div></div><div></div><div></div></div>
+											</React.Fragment>
+											: ""
 									}
 								</div>
 							</div>
@@ -474,11 +529,11 @@ class Campaign extends React.Component {
 							</Form>
 						</ModalBody>
 						<ModalFooter>
-							<div className="clearfix" style={{width:"100%"}}>
+							<div className="clearfix" style={{ width: "100%" }}>
 								<div className="float-left">
 									{this.state.formSuccess ?
 										<h6 className="text-success m-0">Form submitted successfully.</h6>
-									: ""}
+										: ""}
 								</div>
 								<div className="float-right">
 									<Button color="success" onClick={this.campaignSubmit} type="button">Submit</Button>&nbsp;&nbsp;

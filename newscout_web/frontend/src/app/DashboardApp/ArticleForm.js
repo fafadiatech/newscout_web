@@ -8,11 +8,15 @@ import Cookies from 'universal-cookie';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import {ARTICLE_SOURCE_LIST_URL, ARTICLE_CATEGORY_LIST_URL,
+import {
+    ARTICLE_SOURCE_LIST_URL, ARTICLE_CATEGORY_LIST_URL,
     ARTICLE_CREATE_URL, ARTICLE_DETAIL_URL,
-    ARTICLE_DRAFTIMAGE_URL} from '../../utils/Constants';
-import { getRequest, postRequest, putRequest, fileUploadHeaders,
-    deleteRequest } from '../../utils/Utils';
+    ARTICLE_DRAFTIMAGE_URL
+} from '../../utils/Constants';
+import {
+    getRequest, postRequest, putRequest, fileUploadHeaders,
+    deleteRequest
+} from '../../utils/Utils';
 import { Button, Form, FormGroup, Label, FormText, Row, Col } from 'reactstrap';
 import Summernote from '../../components/Summernote';
 
@@ -25,11 +29,11 @@ import 'newscout/assets/Sidebar.css'
 const cookies = new Cookies();
 
 class ArticleForm extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			modal: false,
-			fields: {
+    constructor(props) {
+        super(props);
+        this.state = {
+            modal: false,
+            fields: {
                 title: "",
                 source: "",
                 category: "",
@@ -39,9 +43,9 @@ class ArticleForm extends React.Component {
             },
             sources: [],
             categories: [],
-			errors: {},
-			rows: {},
-			formSuccess: false,
+            errors: {},
+            rows: {},
+            formSuccess: false,
             results: [],
             active_page: ACTIVE_PAGE,
             article_slug: ARTICLE_SLUG,
@@ -51,8 +55,9 @@ class ArticleForm extends React.Component {
             cover_image_id: "",
             isSideOpen: true,
             isChecked: false,
-            username: USERNAME
-		};
+            username: USERNAME,
+            isChecked: false,
+        };
     }
 
     handleChange = (value_type, e) => {
@@ -60,11 +65,11 @@ class ArticleForm extends React.Component {
         var value = e.value;
         var state = this.state
         if (value_type == "article_source") {
-            state.fields.source = {value: value, label: label}
+            state.fields.source = { value: value, label: label }
         }
 
         if (value_type == "article_category") {
-            state.fields.category = {value: value, label: label}
+            state.fields.category = { value: value, label: label }
         }
 
         if (value_type == "cover_image") {
@@ -80,14 +85,14 @@ class ArticleForm extends React.Component {
     }
 
     onChange = (field, e) => {
-		let fields = this.state.fields;
-		if(field === "published_on"){
-			fields[field] = e;
-		} else {
-			fields[field] = e.target.value;
-		}
+        let fields = this.state.fields;
+        if (field === "published_on") {
+            fields[field] = e;
+        } else {
+            fields[field] = e.target.value;
+        }
 
-		this.setState({fields});
+        this.setState({ fields });
     }
 
     onSummernoteChange = (content) => {
@@ -104,7 +109,7 @@ class ArticleForm extends React.Component {
     setSources = (data) => {
         var sources = [];
         data.body.results.map((el, index) => {
-            var option = {label: el.name, value: el.id}
+            var option = { label: el.name, value: el.id }
             sources.push(option)
         })
         this.setState({
@@ -114,7 +119,7 @@ class ArticleForm extends React.Component {
 
     getArticleDetails = () => {
         var url = ARTICLE_DETAIL_URL + this.state.article_slug + "/";
-		getRequest(url, this.setArticleDetails);
+        getRequest(url, this.setArticleDetails);
     }
 
     setArticleDetails = (data) => {
@@ -122,8 +127,8 @@ class ArticleForm extends React.Component {
         var article_detail = data.body.article;
         state.article_id = article_detail.id;
         state.fields.title = article_detail.title;
-        state.fields.category = {label: article_detail.category, value: article_detail.category_id};
-        state.fields.source = {label: article_detail.source, value: article_detail.source_id};
+        state.fields.category = { label: article_detail.category, value: article_detail.category_id };
+        state.fields.source = { label: article_detail.source, value: article_detail.source_id };
         state.fields.blurb = article_detail.blurb;
         state.fields.published_on = moment(article_detail.published_on).format('YYYY-MM-DD m:ss A');
         state.fields.cover_image = article_detail.cover_image;
@@ -133,13 +138,13 @@ class ArticleForm extends React.Component {
 
     getSources = () => {
         var url = ARTICLE_SOURCE_LIST_URL;
-		getRequest(url, this.setSources);
+        getRequest(url, this.setSources);
     }
 
     setCategories = (data) => {
         var categories = [];
         data.body.categories.map((el, index) => {
-            var option = {label: el.name, value: el.id}
+            var option = { label: el.name, value: el.id }
             categories.push(option)
         })
         this.setState({
@@ -149,7 +154,7 @@ class ArticleForm extends React.Component {
 
     getCategories = () => {
         var url = ARTICLE_CATEGORY_LIST_URL;
-		getRequest(url, this.setCategories);
+        getRequest(url, this.setCategories);
     }
 
     articleSave = (method) => {
@@ -158,7 +163,7 @@ class ArticleForm extends React.Component {
         fields.source_url = "http://" + fields.source.label
         fields.cover_image = fields.cover_image
         fields.source = fields.source.value
-        if (method == "post"){
+        if (method == "post") {
             var body = JSON.stringify(fields)
             postRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "POST");
         } else {
@@ -169,14 +174,14 @@ class ArticleForm extends React.Component {
         }
     }
 
-    articlePublish = (method) =>{
+    articlePublish = (method) => {
         var fields = this.state.fields;
         fields.category = fields.category.value
         fields.source_url = "http://" + fields.source.label
         fields.cover_image = fields.source_url
         fields.source = fields.source.value
         fields.is_publish = true;
-        if (method == "post"){
+        if (method == "post") {
             fields.publish = true
             var body = JSON.stringify(fields)
             postRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "POST");
@@ -190,9 +195,9 @@ class ArticleForm extends React.Component {
     }
 
     articleSubmitResponse = (data) => {
-        this.setState({'formSuccess': true});
-		setTimeout(() => {
-			this.setState({
+        this.setState({ 'formSuccess': true });
+        setTimeout(() => {
+            this.setState({
                 "formSuccess": false,
                 "fields": {
                     "title": "",
@@ -210,7 +215,7 @@ class ArticleForm extends React.Component {
     }
 
     uploadImage = (imageFile) => {
-        if (this.state.cover_image_id == ""){
+        if (this.state.cover_image_id == "") {
             const body = new FormData();
             body.set('image', imageFile)
             postRequest(ARTICLE_DRAFTIMAGE_URL, body, this.handleUploadImageResponse, "POST", fileUploadHeaders);
@@ -242,7 +247,7 @@ class ArticleForm extends React.Component {
 
     deleteImage = (e) => {
         var image_id = this.state.cover_image_id;
-        if(image_id){
+        if (image_id) {
             var url = ARTICLE_DRAFTIMAGE_URL + image_id + "/";
             deleteRequest(url, this.handleDeleteImageResponse);
         } else {
@@ -251,12 +256,58 @@ class ArticleForm extends React.Component {
     }
 
     isSideBarToogle = (data) => {
-        if(data === true){
+        if (data === true) {
             this.setState({ isSideOpen: true })
             cookies.set('isSideOpen', true, { path: '/' });
         } else {
             this.setState({ isSideOpen: false })
             cookies.remove('isSideOpen', { path: '/' });
+        }
+    }
+
+    toggleSwitch = (data) => {
+        if (data === true) {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = false;
+            } else {
+                var head = document.getElementsByTagName('head')[0];
+                var link = document.createElement('link');
+                link.id = 'dark_style'
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = '/static/css/dark-style.css';
+                link.media = 'all';
+                head.appendChild(link);
+            }
+            this.setState({ isChecked: true })
+            cookies.set('isChecked', true, { path: '/' });
+        } else {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = true;
+            }
+            this.setState({ isChecked: false })
+            cookies.remove('isChecked', { path: '/' });
+        }
+    }
+
+    getTheme = () => {
+        if (cookies.get('isChecked')) {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = false;
+            } else {
+                var head = document.getElementsByTagName('head')[0];
+                var link = document.createElement('link');
+                link.id = 'dark_style';
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = '/static/css/dark-style.css';
+                link.media = 'all';
+                head.appendChild(link);
+            }
+        } else {
+            if (document.getElementById("dark_style")) {
+                document.getElementById("dark_style").disabled = true;
+            }
         }
     }
 
@@ -266,41 +317,49 @@ class ArticleForm extends React.Component {
         }
         this.getSources()
         this.getCategories()
-        if(cookies.get('isSideOpen')){
+        if (cookies.get('isSideOpen')) {
             this.setState({ isSideOpen: true })
         } else {
             this.setState({ isSideOpen: false })
         }
+        if (cookies.get('isChecked')) {
+            this.setState({ isChecked: true })
+        } else {
+            this.setState({ isChecked: false })
+        }
+        this.getTheme();
     }
 
-	render(){
-        var { menus, isSideOpen, username } = this.state
+    render() {
+        var { menus, isSideOpen, username, isChecked } = this.state
 
-        if (this.state.active_page == "article-create"){
+        if (this.state.active_page == "article-create") {
             var page_title = "Article Create"
             var method = "post"
         } else {
             var page_title = "Article Edit"
             var method = "put"
         }
-		return(
-			<React.Fragment>
-				<ToastContainer />
-				<div className="campaign">
-					<Menu
+        return (
+            <React.Fragment>
+                <ToastContainer />
+                <div className="campaign">
+                    <Menu
                         logo={logo}
                         navitems={config_data.dashboardmenu}
                         isSlider={true}
                         isSideBarToogle={this.isSideBarToogle}
                         isSideOpen={isSideOpen}
                         domain="dashboard"
-                        username={username} />
+                        username={username}
+                        toggleSwitch={this.toggleSwitch}
+                        isChecked={isChecked} />
                     <div className="container-fluid">
                         <div className="row">
-                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
                             <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
                                 <div className="pt-50 mb-3">
-									<h1 className="h2">{page_title}</h1>
+                                    <h1 className="h2">{page_title}</h1>
                                     <Form>
                                         <Row>
                                             <Col md={5}>
@@ -329,7 +388,7 @@ class ArticleForm extends React.Component {
                                                     <Col md={12}>
                                                         <FormGroup>
                                                             <Label for="article_category">Article Category</Label>
-                                                            <Select refs="category" value={this.state.fields.category}  options={this.state.categories} onChange={(e) => this.handleChange("article_category", e)} />
+                                                            <Select refs="category" value={this.state.fields.category} options={this.state.categories} onChange={(e) => this.handleChange("article_category", e)} />
                                                             <FormText color="danger">{this.state.errors["article_category"]}</FormText>
                                                         </FormGroup>
                                                     </Col>
@@ -338,7 +397,7 @@ class ArticleForm extends React.Component {
                                                     <Col md={12}>
                                                         <FormGroup>
                                                             <Label for="published_on">Published On</Label>
-                                                            <Datetime refs="published_on" value={this.state.fields.published_on}  dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="published_on" onChange={(e) => this.onChange("published_on", e)} />
+                                                            <Datetime refs="published_on" value={this.state.fields.published_on} dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="published_on" onChange={(e) => this.onChange("published_on", e)} />
                                                             <FormText color="danger">{this.state.errors["published_on"]}</FormText>
                                                         </FormGroup>
                                                     </Col>
@@ -346,26 +405,26 @@ class ArticleForm extends React.Component {
                                                 <Row form>
                                                     <Col md={12}>
                                                         <FormGroup>
-                                                        <Label for="cover_image">Cover Image</Label>
-                                                            <input refs="cover_image" type="file" name="cover_image" className="form-control" placeholder="Cover Image" id="cover_image" onChange={(e) => this.handleChange("cover_image", e)} value={this.state.cover_image_name} />
+                                                            <Label for="cover_image">Cover Image</Label>
+                                                            <input refs="cover_image" type="file" name="cover_image" className="" placeholder="Cover Image" id="cover_image" onChange={(e) => this.handleChange("cover_image", e)} value={this.state.cover_image_name} />
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
                                             </Col>
                                             <Col md={4}>
                                                 <div className="image-view">
-                                                    { this.state.loading ?
+                                                    {this.state.loading ?
                                                         <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
-                                                    :
+                                                        :
                                                         ""
                                                     }
                                                     {
                                                         this.state.fields.cover_image != "" ?
                                                             <div className="float-right mb-2 text-right text-danger cursor-pointer" onClick={(e) => this.deleteImage(e)} data_id={this.state.cover_image_id} title="Remove Image">X</div>
-                                                        :
+                                                            :
                                                             ""
                                                     }
-                                                    <img src={this.state.cover_image} className="img-fluid"/>
+                                                    <img src={this.state.cover_image} className="img-fluid" />
                                                 </div>
                                             </Col>
                                         </Row>
@@ -383,7 +442,7 @@ class ArticleForm extends React.Component {
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col md={3}>
+                                                    <Col md={6}>
                                                         <Button color="success" onClick={(e) => this.articleSave(method)} type="button">Save</Button>&nbsp;&nbsp;
                                                         <Button color="success" onClick={(e) => this.articlePublish(method)} type="button">Save & Publish</Button>&nbsp;&nbsp;
                                                         <Button color="secondary" onClick={this.redirecttoArticleList} type="button">Cancel</Button>
@@ -391,7 +450,7 @@ class ArticleForm extends React.Component {
                                                     <Col md={6}>
                                                         {this.state.formSuccess ?
                                                             <h6 className="text-success mt-2">Article submitted successfully.</h6>
-                                                        : ""}
+                                                            : ""}
                                                     </Col>
                                                 </Row>
                                             </Col>
@@ -401,11 +460,11 @@ class ArticleForm extends React.Component {
                             </div>
                         </div>
                     </div>
-				</div>
+                </div>
                 <Footer privacyurl="#" facebookurl="#" twitterurl="#" />
-			</React.Fragment>
-		);
-	}
+            </React.Fragment>
+        );
+    }
 }
 
 export default ArticleForm;

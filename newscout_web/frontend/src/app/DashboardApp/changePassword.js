@@ -28,7 +28,8 @@ class ChangePassword extends React.Component {
 				confirm_password: ""
 			},
 			errors: {},
-			username: USERNAME
+			username: USERNAME,
+			isChecked: false,
 		};
 	}
 
@@ -45,44 +46,44 @@ class ChangePassword extends React.Component {
 	onChange = (field, e) => {
 		let fields = this.state.fields;
 		fields[field] = e.target.value;
-		this.setState({fields});
-    }
+		this.setState({ fields });
+	}
 
-    handleValidation = () => {
+	handleValidation = () => {
 		let fields = this.state.fields;
 		let errors = {};
 		let formIsValid = true;
 		let required_msg = "This fields is required";
 
-		if(!fields["old_password"]){
+		if (!fields["old_password"]) {
 			formIsValid = false;
 			errors["old_password"] = required_msg;
 		}
 
-		if(!fields["password"]){
+		if (!fields["password"]) {
 			formIsValid = false;
 			errors["password"] = required_msg;
 		}
 
-		if(!fields["confirm_password"]){
+		if (!fields["confirm_password"]) {
 			formIsValid = false;
 			errors["confirm_password"] = required_msg;
 		}
 
-		this.setState({errors: errors});
+		this.setState({ errors: errors });
 		return formIsValid;
 	}
 
 	handleSubmit = (event) => {
 		event.preventDefault();
-		if(this.handleValidation()){
+		if (this.handleValidation()) {
 			var body = JSON.stringify(this.state.fields)
 			postRequest(CHANGE_PASSWORD_URL, body, this.changePasswordResponse, "POST", authHeaders);
 		}
 	}
 
 	changePasswordResponse = (data) => {
-		if(data.body) {
+		if (data.body) {
 			toast.success(data.body.Msg);
 			setTimeout(() => {
 				window.location.href = "/"
@@ -93,7 +94,53 @@ class ChangePassword extends React.Component {
 			let error_msg = data.errors.Msg;
 			formIsValid = false;
 			errors[data.errors.field] = error_msg;
-			this.setState({errors: errors});
+			this.setState({ errors: errors });
+		}
+	}
+
+	toggleSwitch = (data) => {
+		if (data === true) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style'
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+			this.setState({ isChecked: true })
+			cookies.set('isChecked', true, { path: '/' });
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
+			this.setState({ isChecked: false })
+			cookies.remove('isChecked', { path: '/' });
+		}
+	}
+
+	getTheme = () => {
+		if (cookies.get('isChecked')) {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = false;
+			} else {
+				var head = document.getElementsByTagName('head')[0];
+				var link = document.createElement('link');
+				link.id = 'dark_style';
+				link.rel = 'stylesheet';
+				link.type = 'text/css';
+				link.href = '/static/css/dark-style.css';
+				link.media = 'all';
+				head.appendChild(link);
+			}
+		} else {
+			if (document.getElementById("dark_style")) {
+				document.getElementById("dark_style").disabled = true;
+			}
 		}
 	}
 
@@ -104,6 +151,12 @@ class ChangePassword extends React.Component {
 		} else {
 			this.setState({ isSideOpen: false })
 		}
+		if (cookies.get('isChecked')) {
+			this.setState({ isChecked: true })
+		} else {
+			this.setState({ isChecked: false })
+		}
+		this.getTheme();
 	}
 
 	componentWillUnmount = () => {
@@ -111,7 +164,7 @@ class ChangePassword extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen, isChecked, username } = this.state;
+		var { menus, isSideOpen, isChecked, username, isChecked } = this.state;
 
 		return (
 			<React.Fragment>
@@ -125,10 +178,12 @@ class ChangePassword extends React.Component {
 						isSideOpen={isSideOpen}
 						domain="dashboard"
 						isChecked={isChecked}
-						username={username} />
+						username={username}
+						toggleSwitch={this.toggleSwitch}
+						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
-							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" />
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
 									<h1 className="h2">Change Password</h1>

@@ -4,20 +4,17 @@ import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
-import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
-import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
+import { Menu, ImageOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
 import Auth from './Auth';
 
 import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS, ACCESS_SESSION, EVENT_TRACK_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
-import 'newscout/assets/Menu.css'
-import 'newscout/assets/ImageOverlay.css'
-import 'newscout/assets/ContentOverlay.css'
-import 'newscout/assets/CardItem.css'
-import 'newscout/assets/Sidebar.css'
-
-import config_data from './config.json';
+import 'newscout/assets/Menu.css';
+import 'newscout/assets/ImageOverlay.css';
+import 'newscout/assets/ContentOverlay.css';
+import 'newscout/assets/CardItem.css';
+import 'newscout/assets/Sidebar.css';
 
 var article_array = [];
 const URL = "/news/search/"
