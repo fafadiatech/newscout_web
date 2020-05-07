@@ -42,7 +42,7 @@ final_result = []
 def html_to_pdf_view(final_result, report_type):
     imagelist = []
     imvar1 = ''
-    # print(final_result)
+    
     for index, image in enumerate(final_result):
         imgvar = 'image{0}'.format(index+1)
         imvar = 'im{0}'.format(index+1)
@@ -83,7 +83,7 @@ def send_mail(final_result, report_type):
 
     imagelist = []
     imvar1 = ''
-    # print(final_result)
+    
     for index, image in enumerate(final_result):
         imgvar = 'image{0}'.format(index+1)
         imvar = 'im{0}'.format(index+1)
@@ -113,22 +113,6 @@ def send_mail(final_result, report_type):
         email_subject = 'NewScout Weekly Report ' + today.strftime("%d, %b %Y")
     else:
         email_subject = 'NewScout Monthly Report ' + today.strftime("%d, %b %Y")
-
-    # report_avg_table = """
-    #     <table border=1>
-    #         <thead>
-    #             <tr>
-    #                 <th>Report type</th>
-    #                 <th>Avg. Count</th>
-    #             </tr>
-    #         </thead>
-    #         <tbody>"""
-    # for i in final_result:
-    #     report_avg_table = report_avg_table + """<tr>
-    #                     <td>"""+i['report_name']+"""</td>
-    #                     <td>"""+str(i['report_result']['avg_count'])+"""</td>
-    #                 </tr>"""
-    # report_avg_table + """</tbody></table>"""
 
     email_body = """
             <html>
@@ -318,7 +302,7 @@ class Command(BaseCommand):
         self.autolabel(rects1, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
         # return Response(create_response(
         #     {"result": res, "no_data": no_data, "avg_count": avg["avg_count"]}))
@@ -461,7 +445,7 @@ class Command(BaseCommand):
         self.autolabel(rects3, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
 
         # return Response(create_response({"result": res, "no_data": no_data, "avg_count": avg["avg_count"]}))
@@ -547,7 +531,7 @@ class Command(BaseCommand):
         self.autolabel(rects1, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
 
         # final_result.append(final_report.copy())
@@ -634,7 +618,7 @@ class Command(BaseCommand):
         self.autolabel(rects1, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
 
         # final_result.append(final_report.copy())
@@ -714,7 +698,7 @@ class Command(BaseCommand):
         self.autolabel(rects1, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
         # final_result.append(final_report.copy())
         # return Response(create_response(
@@ -812,7 +796,7 @@ class Command(BaseCommand):
         # self.autolabel(rects1, ax)
         # fig.tight_layout()
         
-        # plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        # plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         # final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
         
         # final_result.append(final_report.copy())
@@ -937,7 +921,7 @@ class Command(BaseCommand):
         self.autolabel(rects1, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
         # final_result.append(final_report.copy())
         # return Response(create_response(
@@ -1052,7 +1036,7 @@ class Command(BaseCommand):
         self.autolabel(rects1, ax)
         fig.tight_layout()
         
-        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name))
+        plt.savefig('/tmp/{0}-{1}.png'.format(date_range, report_name), dpi=150)
         final_result.append('/tmp/{0}-{1}.png'.format(date_range, report_name))
 
         # final_result.append(final_report.copy())
@@ -1076,4 +1060,4 @@ class Command(BaseCommand):
         report_type = kwargs['report_type']
         contents = self.get_report(report_type)
         send_mail(final_result, report_type)
-        #html_to_pdf_view(final_result, report_type)
+        # html_to_pdf_view(final_result, report_type)
