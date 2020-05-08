@@ -37,7 +37,8 @@ class RSS extends React.Component {
             username: cookies.get('full_name'),
             bookmark_ids: [],
             isChecked: false,
-            options: []
+            options: [],
+            active_page: ACTIVE_PAGE
         };
     }
 
@@ -184,7 +185,7 @@ class RSS extends React.Component {
     }
 
     render() {
-        var { menus, isSideOpen, username, is_loggedin, modal, isChecked, options, category } = this.state;
+        var { menus, isSideOpen, username, is_loggedin, modal, isChecked, options, category, active_page } = this.state;
         var rssTable = (category => {
             var items = [];
             for (var key in category) {
@@ -219,7 +220,7 @@ class RSS extends React.Component {
                 />
                 <div className="container-fluid">
                     <div className="row">
-                        <SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
+                        <SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} active={active_page} />
                         <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
                             <div className="p-70 pb-5">
                                 <div class="container">
