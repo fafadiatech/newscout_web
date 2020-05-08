@@ -207,7 +207,7 @@ nav.navbar {
 .slick-arrow.slick-hidden,
 .note-image-popover,
 .note-link-popover {
-  display: none;
+	display: none;
 }
 
 .slick-slide.dragging img {
@@ -516,7 +516,7 @@ nav.navbar {
 
 .list-group-item.active-menu {
 	background-color: #f04336 !important;
-	border-color: transparent;
+	color: white !important;
 }
 
 .section-title {

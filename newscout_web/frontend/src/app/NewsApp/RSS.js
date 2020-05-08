@@ -227,7 +227,7 @@ class RSS extends React.Component {
                                     <h2 align="center">NewScout RSS Feed</h2>
 
                                     <br />
-                                    <table class="table table-bordered table-dark">
+                                    <table class={`${this.state.isChecked ? "table table-bordered table-dark" : "table table-bordered"}`}>
                                         <tr>
                                             <th>Category</th>
                                             <th>RSS Feed</th>
