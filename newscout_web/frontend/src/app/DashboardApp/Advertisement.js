@@ -446,11 +446,11 @@ class Advertisement extends React.Component {
 					<React.Fragment>
 						{el.is_active ?
 							<React.Fragment>
-								<td className="text-success">Active</td>
+								<td className="text-success font-weight-bold">Active</td>
 							</React.Fragment>
 							:
 							<React.Fragment>
-								<td>-</td>
+								<td className="text-info font-weight-bold">Pause</td>
 							</React.Fragment>
 						}
 					</React.Fragment>

@@ -4,7 +4,7 @@ export const RED_COLOR = "#f04138";
 export const GREEN_COLOR = "#63ff42";
 export const BLUE_COLOR = "#4263ff";
 
-export const AD_API_URL = BASE_URL + "/ads/";
+export const AD_API_URL = BASE_URL + "/adapi/";
 export const ARTICLE_API_URL = BASE_URL + "/api/v1/"
 
 export const SCHEDULES_URL = AD_API_URL + "schedules/";

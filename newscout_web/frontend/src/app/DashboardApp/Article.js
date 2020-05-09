@@ -301,7 +301,7 @@ class Article extends React.Component {
 												<th style={{ width: "5%" }}>#</th>
 												<th style={{ width: "17%" }}>Title</th>
 												<th style={{ width: "12%" }}>Published On</th>
-												<th style={{ width: "12%" }}>Is Active</th>
+												<th style={{ width: "12%" }}>Status</th>
 												<th style={{ width: "10%" }}></th>
 											</tr>
 										</thead>

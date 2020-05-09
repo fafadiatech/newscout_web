@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
     url(r'^event/', include('event_tracking.urls')),
-    url(r'^ads/', include('advertising.urls')),
+    url(r'^adapi/', include('advertising.urls')),
     url(r'^article/rss/', ArticlesFeed(), name="news-item"),
     url(r'^captcha/', include('captcha.urls'))
 ]
