@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import random
+import datetime
 import operator
 from functools import reduce
 from django.db.models import Q
@@ -76,8 +77,9 @@ class CampaignCategoriesListView(APIView):
         """
         List all news category
         """
+        current_date = datetime.datetime.now()
         categories = CategorySerializer(Category.objects.all(), many=True)
-        campaigns = CampaignSerializer(Campaign.objects.filter(domain=request.user.domain), many=True)
+        campaigns = CampaignSerializer(Campaign.objects.filter(domain=request.user.domain, is_active=True, start_date__lte=current_date, end_date__gte=current_date), many=True)
         return Response(create_response({"categories": categories.data, "campaigns": campaigns.data}))
 
 
@@ -308,7 +310,6 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
                 obj.media = file_obj
                 obj.save()
             return Response(create_response(serializer.data))
-        print(serializer.errors)
         return Response(create_error_response(serializer.errors), status=400)
 
     def update(self, request, pk=None):
@@ -320,7 +321,6 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
         serializer = AdSerializer(advertisment, data=request.data)
         # import pdb
         # pdb.set_trace()
-        print(request.data)
         if serializer.is_valid():
             updated = serializer.save()
             if file:

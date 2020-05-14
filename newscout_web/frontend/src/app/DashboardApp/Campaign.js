@@ -400,7 +400,17 @@ class Campaign extends React.Component {
 				{this.state.rows[el.id] ?
 					<td><input type="checkbox" name="is_active" checked={el.is_active} onChange={(e) => this.handleChange("is_active", e)} /></td>
 					:
-					<td className="text-success">{el.is_active ? "Active" : ""}</td>
+					<React.Fragment>
+						{el.is_active ?
+							<React.Fragment>
+								<td className="text-success font-weight-bold">Active</td>
+							</React.Fragment>
+							:
+							<React.Fragment>
+								<td className="text-info font-weight-bold">Pause</td>
+							</React.Fragment>
+						}
+					</React.Fragment>
 				}
 				<td>
 					<ul className="list-inline m-0">

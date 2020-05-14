@@ -101,6 +101,8 @@ export default class Group extends React.Component {
 					}
 				})
 			}
+		} else if (field === "is_active") {
+			fields[field] = e.target.checked;
 		} else {
 			var campaign_array = []
 			if (e !== null) {
@@ -160,7 +162,7 @@ export default class Group extends React.Component {
 		if (this.handleValidation()) {
 			var final_category = [];
 			this.state.fields['category'].map(function (i, x) { final_category.push(i.value) })
-			var body = { 'campaign': this.state.fields['campaign'].value, 'category': final_category, 'id': this.state.fields.id }
+			var body = { 'campaign': this.state.fields['campaign'].value, 'category': final_category, 'id': this.state.fields.id, 'is_active': this.state.fields['is_active'] }
 			var url = GROUP_URL + this.state.fields.id + "/";
 			var extra_data = { "clean_results": true };
 			putRequest(url, JSON.stringify(body), this.groupUpdateResponse, "PUT", authHeaders, extra_data);
@@ -423,9 +425,19 @@ export default class Group extends React.Component {
 					}
 				</td>
 				{this.state.rows[el.id] ?
-					<td><input type="checkbox" name="is_active" checked={el.is_active} /></td>
+					<td><input type="checkbox" name="is_active" checked={el.is_active} onChange={(e) => this.handleChange("is_active", e)} /></td>
 					:
-					<td className="text-success">{el.is_active ? "Active" : ""}</td>
+					<React.Fragment>
+						{el.is_active ?
+							<React.Fragment>
+								<td className="text-success font-weight-bold">Active</td>
+							</React.Fragment>
+							:
+							<React.Fragment>
+								<td className="text-info font-weight-bold">Pause</td>
+							</React.Fragment>
+						}
+					</React.Fragment>
 				}
 				<td>
 					<ul className="list-inline m-0">
