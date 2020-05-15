@@ -349,7 +349,7 @@ class ArticleDetail extends React.Component {
 
 	getEventTracker = (article) => {
 		if (cookies.get("sessionID")) {
-			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=article_detail&platform=web&type=ENGAGE_VIEW&category=" + article.category_id + "&category_name=" + article.category + "sid=" + cookies.get("sessionID"), this.setEventTracker);
+			getRequest(EVENT_TRACK_URL + "?domain=newscout&action=article_detail&platform=web&type=ENGAGE_VIEW&category=" + article.category_id + "&category_name=" + article.category + "&sid=" + cookies.get("sessionID"), this.setEventTracker);
 		}
 		else {
 			getRequest(ACCESS_SESSION, this.getSessionId);

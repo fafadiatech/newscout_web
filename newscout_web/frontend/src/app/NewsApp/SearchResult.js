@@ -411,28 +411,32 @@ class SearchResult extends React.Component {
 		var result = searchResult.map((item, index) => {
 			return (
 				<div className="col-lg-4 mb-5" key={index}>
-					{isLoading ?
-						<Skeleton height={525} />
-						:
-						<VerticleCardItem
-							id={item.id}
-							image={item.src}
-							title={item.header}
-							description={item.caption}
-							uploaded_by={item.source}
-							source_url={item.slug}
-							slug_url={item.slug}
-							category={item.category}
-							hash_tags={item.hash_tags}
-							uploaded_on={item.published_on}
-							is_loggedin={is_loggedin}
-							toggle={this.toggle}
-							is_open={modal}
-							getArticleId={this.getArticleId}
-							bookmark_ids={bookmark_ids}
-							base_url={BASE_URL}
-						/>
-					}
+					<VerticleCardItem
+						id={item.id}
+						image={item.src}
+						title={item.header}
+						description={item.caption}
+						uploaded_by={item.source}
+						source_url={item.slug}
+						slug_url={item.slug}
+						category={item.category}
+						hash_tags={item.hash_tags}
+						uploaded_on={item.published_on}
+						is_loggedin={is_loggedin}
+						toggle={this.toggle}
+						is_open={modal}
+						getArticleId={this.getArticleId}
+						bookmark_ids={bookmark_ids}
+						base_url={BASE_URL}
+					/>
+				</div>
+			)
+		})
+
+		var skeleton_div = [...Array(20)].map((item, index) => {
+			return (
+				<div className="col-lg-4 mb-5" key={index}>
+					<Skeleton height={525} />
 				</div>
 			)
 		})
@@ -508,6 +512,10 @@ class SearchResult extends React.Component {
 												: ""
 										}
 										{result}
+										{isLoading ?
+											skeleton_div
+											: ''
+										}
 									</div>
 								</div>
 							</div>

@@ -43,7 +43,8 @@ class Trending extends React.Component {
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
 			isChecked: false,
-			options: []
+			options: [],
+			active_page: ACTIVE_PAGE,
 		};
 	}
 
@@ -300,7 +301,7 @@ class Trending extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state;
+		var { menus, trending, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options, active_page } = this.state;
 		var result = trending.map((item, index) => {
 			return (
 				<div className="col-lg-6 mb-4" key={index}>
@@ -341,7 +342,7 @@ class Trending extends React.Component {
 				/>
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
+						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} active={active_page} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50 pb-5">

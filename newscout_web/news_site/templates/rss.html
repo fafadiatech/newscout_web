@@ -13,7 +13,8 @@
 
 {% block js %}
     <script type="text/javascript">
-		var DOMAIN = '{{domain|safe}}'
+        var DOMAIN = '{{domain|safe}}'
+        var ACTIVE_PAGE = '{{active_page|safe}}'
     </script>
     <script src="{% static "js/react/newsRSS.js" %}"></script>
 {% endblock js %}

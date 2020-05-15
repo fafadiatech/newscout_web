@@ -6,6 +6,16 @@
 			"item_icon": "static/icons/dashboard.png"
 		},
 		{
+			"itemurl": "dashboard/articles",
+			"itemtext": "Articles",
+			"item_icon": "static/icons/article.png"
+		},
+		{
+			"itemurl": "dashboard/subscription",
+			"itemtext": "Subscription",
+			"item_icon": "static/icons/article.png"
+		},
+		{
 			"itemurl": "dashboard/campaigns",
 			"itemtext": "Campaign",
 			"item_icon": "static/icons/campaign.png"
@@ -19,16 +29,6 @@
 			"itemurl": "dashboard/advertisements",
 			"itemtext": "Advertisement",
 			"item_icon": "static/icons/advrtisement.png"
-		},
-		{
-			"itemurl": "dashboard/articles",
-			"itemtext": "Articles",
-			"item_icon": "static/icons/article.png"
-		},
-		{
-			"itemurl": "dashboard/subscription",
-			"itemtext": "Subscription",
-			"item_icon": "static/icons/article.png"
 		}
 	]
 }

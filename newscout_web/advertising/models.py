@@ -24,6 +24,9 @@ class Campaign(NewsSiteBaseModel):
 
     def __unicode__(self):
         return self.name
+    
+    def __str__(self):
+        return self.name
 
 
 class AdGroup(NewsSiteBaseModel):
@@ -33,11 +36,14 @@ class AdGroup(NewsSiteBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.is_active:
-            ads = Advertisement.objects.filter(addgroup=self)
+            ads = Advertisement.objects.filter(adgroup=self)
             ads.update(is_active=False)
         super(AdGroup, self).save(*args, **kwargs)
 
     def __unicode__(self):
+        return self.campaign.name
+    
+    def __str__(self):
         return self.campaign.name
 
 
@@ -45,6 +51,9 @@ class AdType(NewsSiteBaseModel):
     type = models.CharField(max_length=100)
 
     def __unicode__(self):
+        return self.type
+    
+    def __str__(self):
         return self.type
 
 
@@ -60,4 +69,7 @@ class Advertisement(NewsSiteBaseModel):
     click_count = models.IntegerField(default=0)
 
     def __unicode__(self):
-        return "{0} - {1} - {2}".format(self.addgroup.campaign.name, self.ad_type.type, self.is_active)
+        return "{0} - {1} - {2}".format(self.adgroup.campaign.name, self.ad_type.type, self.is_active)
+    
+    def __str__(self):
+        return "{0} - {1} - {2}".format(self.adgroup.campaign.name, self.ad_type.type, self.is_active)

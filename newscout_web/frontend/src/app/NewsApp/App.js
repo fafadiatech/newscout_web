@@ -4,20 +4,17 @@ import ReactDOM from 'react-dom';
 import Slider from "react-slick";
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
-import { Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
-import { Menu, ImageOverlay, ContentOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
+import { Menu, ImageOverlay, VerticleCardItem, HorizontalCardItem, SideBar, Footer } from 'newscout';
 import Auth from './Auth';
 
 import { BASE_URL, MENUS, TRENDING_NEWS, ARTICLE_POSTS, ARTICLE_BOOKMARK, ALL_ARTICLE_BOOKMARK, ARTICLE_LOGOUT, SUGGESTIONS, ACCESS_SESSION, EVENT_TRACK_URL } from '../../utils/Constants';
 import { getRequest, postRequest } from '../../utils/Utils';
 
-import 'newscout/assets/Menu.css'
-import 'newscout/assets/ImageOverlay.css'
-import 'newscout/assets/ContentOverlay.css'
-import 'newscout/assets/CardItem.css'
-import 'newscout/assets/Sidebar.css'
-
-import config_data from './config.json';
+import 'newscout/assets/Menu.css';
+import 'newscout/assets/ImageOverlay.css';
+import 'newscout/assets/ContentOverlay.css';
+import 'newscout/assets/CardItem.css';
+import 'newscout/assets/Sidebar.css';
 
 var article_array = [];
 const URL = "/news/search/"
@@ -699,7 +696,7 @@ class App extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
-												<h2 className="m-0 section-title">Sector Updates</h2>
+												<h2 className="m-0 section-title"><a href="/news/sector-updates/"> Sector Updates</a></h2>
 											</div>
 										</div>
 									</div>
@@ -710,7 +707,7 @@ class App extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
-												<h2 className="m-0 section-title">Regional Updates</h2>
+												<h2 className="m-0 section-title"><a href="/news/regional-updates/"> Regional Updates</a></h2>
 											</div>
 										</div>
 									</div>
@@ -721,7 +718,7 @@ class App extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title slider-header">
-												<h2 className="m-0 section-title">Finance</h2>
+												<h2 className="m-0 section-title"><a href="/news/finance/"> Finance</a></h2>
 											</div>
 										</div>
 									</div>
@@ -736,7 +733,7 @@ class App extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
-												<h2 className="m-0 section-title">Economics</h2>
+												<h2 className="m-0 section-title"><a href="/news/economics/"> Economics</a></h2>
 											</div>
 										</div>
 									</div>
@@ -747,7 +744,7 @@ class App extends React.Component {
 									<div className="row">
 										<div className="col-lg-12 col-12 mb-4">
 											<div className="section-title">
-												<h2 className="m-0 section-title">Misc</h2>
+												<h2 className="m-0 section-title"><a href="/news/misc/"> Misc</a></h2>
 											</div>
 										</div>
 									</div>

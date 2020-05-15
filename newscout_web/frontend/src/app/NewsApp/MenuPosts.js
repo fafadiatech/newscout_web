@@ -346,7 +346,7 @@ class MenuPosts extends React.Component {
 	}
 
 	render() {
-		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options, subCategories, bookmark_ids, ads_article, cat_name } = this.state;
+		var { menus, newsPosts, isSideOpen, isLoading, username, is_loggedin, modal, isChecked, options, subCategories, bookmark_ids, ads_article, cat_name, category } = this.state;
 
 		var subcategories = subCategories.map((item, index) => {
 			return (
@@ -355,7 +355,6 @@ class MenuPosts extends React.Component {
 				</React.Fragment>
 			)
 		})
-
 		var items = newsPosts.map((item, index) => {
 			return (
 				<div className="col-lg-4 col-md-4 mb-4" key={index + "-news"}>
@@ -421,7 +420,7 @@ class MenuPosts extends React.Component {
 				/>
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} />
+						<SideBar menuitems={menus} class={isSideOpen} isChecked={isChecked} active={category} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="container">
 								<div className="pt-50">
