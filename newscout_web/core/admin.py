@@ -3,11 +3,28 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from .models import (Category, BaseUserProfile,
-                     Source, HashTag, Article, ArticleMedia,
-                     ArticleRating, RelatedArticle, BookmarkArticle, CategoryAssociation,
-                     ScoutFrontier, ScoutedItem, TrendingArticle, Menu, SubMenu,
-                     CategoryDefaultImage, Domain, Comment, ArticleLike)
+from .models import (
+    Category,
+    BaseUserProfile,
+    Source,
+    HashTag,
+    Article,
+    ArticleMedia,
+    ArticleRating,
+    RelatedArticle,
+    BookmarkArticle,
+    CategoryAssociation,
+    ScoutFrontier,
+    ScoutedItem,
+    TrendingArticle,
+    Menu,
+    SubMenu,
+    CategoryDefaultImage,
+    Domain,
+    Comment,
+    ArticleLike,
+    Subscription,
+)
 
 from core.utils import ingest_to_elastic, delete_from_elastic
 from api.v1.serializers import ArticleSerializer
@@ -28,42 +45,53 @@ admin.site.register(CategoryDefaultImage)
 admin.site.register(Domain)
 admin.site.register(Comment)
 admin.site.register(ArticleLike)
+admin.site.register(Subscription)
 
 
 class ArticleEditedByFilter(admin.SimpleListFilter):
-    title = _('Edited By')
-    parameter_name = 'edited_by'
+    title = _("Edited By")
+    parameter_name = "edited_by"
 
     def lookups(self, request, model_admin):
-        return [(i.id, i.username) for i in BaseUserProfile.objects.filter(is_staff=True)]
+        return [
+            (i.id, i.username) for i in BaseUserProfile.objects.filter(is_staff=True)
+        ]
 
     def queryset(self, request, queryset):
         return queryset.filter(edited_by__id=self.value())
 
 
-@register('category')
+@register("category")
 class CategoryLookup(LookupChannel):
 
     model = Category
 
     def get_query(self, q, request):
-        return self.model.objects.filter(name__icontains=q).order_by('name')
+        return self.model.objects.filter(name__icontains=q).order_by("name")
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_title', 'source', 'category', 'cover_image', 'published_on')
-    list_filter = ('source', 'category', 'published_on', ArticleEditedByFilter)
+    list_display = (
+        "id",
+        "get_title",
+        "source",
+        "category",
+        "cover_image",
+        "published_on",
+    )
+    list_filter = ("source", "category", "published_on", ArticleEditedByFilter)
     exclude = ("hash_tags",)
-    search_fields = ('title',)
+    search_fields = ("title",)
 
-    form = make_ajax_form(Article, {
-        'category': 'category',
-    })
+    form = make_ajax_form(Article, {"category": "category",})
 
     def get_title(self, obj):
-        return mark_safe("<a href='{0}' target='_blank'>{1}</a>".format(obj.source_url, obj.title))
-    get_title.admin_order_field = 'title'
-    get_title.short_description = 'Title'
+        return mark_safe(
+            "<a href='{0}' target='_blank'>{1}</a>".format(obj.source_url, obj.title)
+        )
+
+    get_title.admin_order_field = "title"
+    get_title.short_description = "Title"
 
     def get_tags(self, tags):
         """
@@ -103,7 +131,7 @@ admin.site.register(Article, ArticleAdmin)
 
 
 class BookmarkAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'article')
+    list_display = ("id", "user", "article")
 
 
 admin.site.register(BookmarkArticle, BookmarkAdmin)
@@ -121,7 +149,7 @@ admin.site.register(BaseUserProfile, BaseUserProfileAdmin)
 
 
 class SubMenuAdmin(admin.ModelAdmin):
-    exclude = ('hash_tags',)
+    exclude = ("hash_tags",)
 
 
 admin.site.register(SubMenu, SubMenuAdmin)

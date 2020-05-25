@@ -717,3 +717,9 @@ ul.usr li {
 .subcategory-menu ul li.list-inline-item:last-child {
 	border-right: none;
 }
+
+.iframe-settings {
+	overflow:hidden;
+	height:100vh;
+	width:100%;
+}

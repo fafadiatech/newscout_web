@@ -2,22 +2,57 @@
 from __future__ import unicode_literals
 from django.http import Http404
 
-from core.models import (Category, Article, Source, BaseUserProfile,
-                         BookmarkArticle, ArticleLike, HashTag, Menu, Notification, Devices,
-                         SocialAccount, Category, CategoryAssociation,
-                         TrendingArticle, Domain, DailyDigest, DraftMedia, Comment,
-                         Subscription)
+import os
+import sys
+
+from core.models import (
+    Category,
+    Article,
+    Source,
+    BaseUserProfile,
+    BookmarkArticle,
+    ArticleLike,
+    HashTag,
+    Menu,
+    Notification,
+    Devices,
+    SocialAccount,
+    Category,
+    CategoryAssociation,
+    TrendingArticle,
+    Domain,
+    DailyDigest,
+    DraftMedia,
+    Comment,
+    Subscription,
+)
 
 from rest_framework.authtoken.models import Token
 
 from rest_framework.views import APIView
 
-from .serializers import (CategorySerializer, ArticleSerializer, UserSerializer,
-                          SourceSerializer, LoginUserSerializer, BaseUserProfileSerializer,
-                          BookmarkArticleSerializer, ArticleLikeSerializer, HashTagSerializer,
-                          MenuSerializer, NotificationSerializer, TrendingArticleSerializer,
-                          ArticleCreateUpdateSerializer, DraftMediaSerializer, CommentSerializer,
-                          CommentListSerializer, SubsMediaSerializer, UserProfileSerializer)
+from .serializers import (
+    CategorySerializer,
+    ArticleSerializer,
+    UserSerializer,
+    SourceSerializer,
+    LoginUserSerializer,
+    BaseUserProfileSerializer,
+    BookmarkArticleSerializer,
+    ArticleLikeSerializer,
+    HashTagSerializer,
+    MenuSerializer,
+    NotificationSerializer,
+    TrendingArticleSerializer,
+    ArticleCreateUpdateSerializer,
+    DraftMediaSerializer,
+    CommentSerializer,
+    CommentListSerializer,
+    SubsMediaSerializer,
+    UserProfileSerializer,
+    DomainSerializer,
+    UserListSerializer,
+)
 
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -43,8 +78,12 @@ from rest_framework.utils.urls import replace_query_param
 from google.auth.transport import requests as grequests
 from google.oauth2 import id_token
 import facebook
-from .exception_handler import (create_error_response, TokenIDMissing, ProviderMissing,
-                                SocialAuthTokenException)
+from .exception_handler import (
+    create_error_response,
+    TokenIDMissing,
+    ProviderMissing,
+    SocialAuthTokenException,
+)
 import logging
 import operator
 from functools import reduce
@@ -53,9 +92,18 @@ import json
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 
+from newscout_web.settings import ETHERPAD_URL, ETHERPAD_SERVER, ETHERPAD_APIKEY
 
 log = logging.getLogger(__name__)
 
+EMAIL_FROM = settings.EMAIL_FROM
+SMTP_SERVER = settings.EMAIL_HOST
+SMTP_PORT = settings.EMAIL_PORT
+SMTP_PASSWORD = settings.EMAIL_HOST_PASSWORD
+
+from event_tracking.models import ArticleMongo
+from etherpad_lite import EtherpadLiteClient
+etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY})
 
 def create_response(response_data):
     """
@@ -79,8 +127,7 @@ def create_serializer_error_response(errors):
         d["field"] = k
         d["field_error"] = v[0]
         error_list.append(d)
-    return OrderedDict({"header": {"status": "0"}, "errors": {
-        "errorList": error_list}})
+    return OrderedDict({"header": {"status": "0"}, "errors": {"errorList": error_list}})
 
 
 class SignUpAPIView(APIView):
@@ -93,16 +140,17 @@ class SignUpAPIView(APIView):
             return Response(create_response({"Msg": "sign up successfully"}))
         else:
             return Response(
-                create_serializer_error_response(user_serializer.errors),
-                status=403)
+                create_serializer_error_response(user_serializer.errors), status=403
+            )
 
 
 class LoginFieldsRequired(APIException):
     """
     api exception for no user found
     """
+
     status_code = 401
-    default_detail = ("username and password are required")
+    default_detail = "username and password are required"
     default_code = "username_and_password"
 
 
@@ -120,9 +168,9 @@ class LoginAPIView(generics.GenericAPIView):
         device_name = request.data.get("device_name")
         device_id = request.data.get("device_id")
         if device_id and device_name:
-            device, _ = Devices.objects.get_or_create(user=user,
-                                                      device_name=device_name,
-                                                      device_id=device_id)
+            device, _ = Devices.objects.get_or_create(
+                user=user, device_name=device_name, device_id=device_id
+            )
             notification_obj, _ = Notification.objects.get_or_create(device=device)
             notification = NotificationSerializer(notification_obj)
 
@@ -132,9 +180,9 @@ class LoginAPIView(generics.GenericAPIView):
         data = user_serializer.data
         data["token"] = token.key
         if device_id and device_name:
-            data["breaking_news"] = notification.data['breaking_news']
-            data["daily_edition"] = notification.data['daily_edition']
-            data["personalized"] = notification.data['personalized']
+            data["breaking_news"] = notification.data["breaking_news"]
+            data["daily_edition"] = notification.data["daily_edition"]
+            data["personalized"] = notification.data["personalized"]
 
         response_data = create_response({"user": data})
         return Response(response_data)
@@ -152,6 +200,7 @@ class UserHashTagAPIView(APIView):
     """
     Save new tags and remove older tags based on user selection
     """
+
     permission_classes = (IsAuthenticated,)
     parser_classes = (JSONParser,)
 
@@ -214,19 +263,42 @@ class SourceListAPIView(APIView):
         return Response(create_response({"results": source.data}))
 
 
+class DomainsListAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None, *args, **kwargs):
+        """
+        List all the domains
+        """
+        domain = DomainSerializer(Domain.objects.all(), many=True)
+        return Response(create_response({"results": domain.data}))
+
+
+class UsersListAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None, *args, **kwargs):
+        """
+        List all the Users
+        """
+        users = UserListSerializer(BaseUserProfile.objects.all(), many=True)
+        return Response(create_response({"results": users.data}))
+
+
 class NoarticleFound(APIException):
     """
     api exception for no user found
     """
+
     status_code = 404
-    default_detail = ("Article does not exist")
+    default_detail = "Article does not exist"
     default_code = "no_article_found"
 
 
 class PostpageNumberPagination(CursorPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
-    ordering = '-created_at'
+    page_size_query_param = "page_size"
+    ordering = "-created_at"
 
 
 class ArticleListAPIView(ListAPIView):
@@ -234,7 +306,7 @@ class ArticleListAPIView(ListAPIView):
     permission_classes = (AllowAny,)
     pagination_class = PostpageNumberPagination
     filter_backends = (filters.OrderingFilter,)
-    ordering = ('-published_on',)
+    ordering = ("-published_on",)
 
     def get_queryset(self):
         q = self.request.GET.get("q", "")
@@ -260,7 +332,9 @@ class ArticleListAPIView(ListAPIView):
         if q:
             q_list = q.split(" ")
             condition_1 = reduce(operator.or_, [Q(title__icontains=s) for s in q_list])
-            condition_2 = reduce(operator.or_, [Q(full_text__icontains=s) for s in q_list])
+            condition_2 = reduce(
+                operator.or_, [Q(full_text__icontains=s) for s in q_list]
+            )
             queryset = queryset.filter(condition_1 | condition_2)
 
         return queryset
@@ -275,7 +349,9 @@ class ArticleListAPIView(ListAPIView):
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
             else:
-                return Response(create_error_response({"Msg": "News Doesn't Exist"}), status=400)
+                return Response(
+                    create_error_response({"Msg": "News Doesn't Exist"}), status=400
+                )
 
 
 class ArticleDetailAPIView(APIView):
@@ -287,31 +363,45 @@ class ArticleDetailAPIView(APIView):
         user = self.request.user
         article = Article.objects.filter(slug=slug).first()
         has_subscribed = False
-        if not self.request.user.is_anonymous and \
-            Subscription.objects.filter(
-                user=self.request.user).exlcude(subs_type='Basic').exists():
+        if (
+            not user.is_anonymous
+            and Subscription.objects.filter(user=user)
+            .exclude(subs_type="Basic")
+            .exists()
+        ):
             has_subscribed = True
 
         try:
-            next_article = Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
+            next_article = (
+                Article.objects.filter(id__gt=article.id).order_by("id")[0:1].get().slug
+            )
         except Exception as error:
             print(error)
-            next_article = Article.objects.aggregate(Min("id"))['id__min']
+            next_article = Article.objects.aggregate(Min("id"))["id__min"]
 
         try:
-            prev_article = Article.objects.filter(id__gt=article.id).order_by("-id")[0:1].get().slug
+            prev_article = (
+                Article.objects.filter(id__gt=article.id)
+                .order_by("-id")[0:1]
+                .get()
+                .slug
+            )
         except Exception as error:
             print(error)
-            prev_article = Article.objects.aggregate(Max("id"))['id__max']
+            prev_article = Article.objects.aggregate(Max("id"))["id__max"]
 
         if article:
-            response_data = ArticleSerializer(article, context={
-                "hash_tags_list": True, 'has_subscribed': has_subscribed}).data
+            response_data = ArticleSerializer(
+                article,
+                context={"hash_tags_list": True, "has_subscribed": has_subscribed},
+            ).data
             if not user.is_anonymous:
                 book_mark_article = BookmarkArticle.objects.filter(
-                    user=user, article=article).first()
+                    user=user, article=article
+                ).first()
                 like_article = ArticleLike.objects.filter(
-                    user=user, article=article).first()
+                    user=user, article=article
+                ).first()
 
                 if book_mark_article:
                     response_data["isBookMark"] = True
@@ -323,8 +413,15 @@ class ArticleDetailAPIView(APIView):
                 else:
                     response_data["isLike"] = 2
 
-            return Response(create_response({
-                "article": response_data, "next_article": next_article, "prev_article": prev_article}))
+            return Response(
+                create_response(
+                    {
+                        "article": response_data,
+                        "next_article": next_article,
+                        "prev_article": prev_article,
+                    }
+                )
+            )
         raise NoarticleFound
 
     def post(self, request, *args, **kwargs):
@@ -336,19 +433,25 @@ class ArticleDetailAPIView(APIView):
             if article:
                 if is_like and int(is_like) <= 2:
                     article_like, created = ArticleLike.objects.get_or_create(
-                        user=user, article=article)
+                        user=user, article=article
+                    )
                     article_like.is_like = is_like
                     article_like.save()
                     serializer = ArticleLikeSerializer(article_like)
-                    return Response(create_response({
-                        "Msg": "Article like status changed", "article": serializer.data
-                    }))
+                    return Response(
+                        create_response(
+                            {
+                                "Msg": "Article like status changed",
+                                "article": serializer.data,
+                            }
+                        )
+                    )
                 else:
-                    return Response(create_error_response({
-                        "Msg": "Invalid Input"
-                    }))
+                    return Response(create_error_response({"Msg": "Invalid Input"}))
             else:
-                return Response(create_error_response({"Msg": "News doesn't exist"}), status=400)
+                return Response(
+                    create_error_response({"Msg": "News doesn't exist"}), status=400
+                )
         raise Http404
 
 
@@ -364,22 +467,32 @@ class ArticleBookMarkAPIView(APIView):
         if article_id:
             article = Article.objects.filter(id=article_id).first()
             if article:
-                bookmark_article, created = \
-                    BookmarkArticle.objects.get_or_create(user=user,
-                                                          article=article)
+                bookmark_article, created = BookmarkArticle.objects.get_or_create(
+                    user=user, article=article
+                )
                 if not created:
                     del_bookmark_article = BookmarkArticleSerializer(bookmark_article)
                     del_bookmark = del_bookmark_article.data
                     del_bookmark["status"] = 0
                     bookmark_article.delete()
-                    return Response(create_response({
-                        "Msg": "Article removed from bookmark list", "bookmark_article": del_bookmark
-                    }))
+                    return Response(
+                        create_response(
+                            {
+                                "Msg": "Article removed from bookmark list",
+                                "bookmark_article": del_bookmark,
+                            }
+                        )
+                    )
                 else:
                     bookmark_article = BookmarkArticleSerializer(bookmark_article)
-                    return Response(create_response({
-                        "Msg": "Article bookmarked successfully", "bookmark_article": bookmark_article.data
-                    }))
+                    return Response(
+                        create_response(
+                            {
+                                "Msg": "Article bookmarked successfully",
+                                "bookmark_article": bookmark_article.data,
+                            }
+                        )
+                    )
 
         raise NoarticleFound
 
@@ -389,26 +502,31 @@ class ArticleRecommendationsAPIView(APIView):
 
     def format_response(self, response):
         results = []
-        if response['hits']['hits']:
-            for result in response['hits']['hits']:
+        if response["hits"]["hits"]:
+            for result in response["hits"]["hits"]:
                 results.append(result["_source"])
         return results
 
     def get(self, request, *args, **kwargs):
         article_id = self.kwargs.get("article_id", "")
         if article_id:
-            results = es.search(index='recommendation', body={"query": {"match": {"id": int(article_id)}}})
-            if results['hits']['hits']:
-                recommendation = results['hits']['hits'][0]['_source']['recommendation']
-                search_results = es.search(index='article', body={
-                                           "query": {"terms": {"id": recommendation}}, "size": 25})
-                return Response(create_response({
-                    "results": self.format_response(search_results)
-                }))
+            results = es.search(
+                index="recommendation",
+                body={"query": {"match": {"id": int(article_id)}}},
+            )
+            if results["hits"]["hits"]:
+                recommendation = results["hits"]["hits"][0]["_source"]["recommendation"]
+                search_results = es.search(
+                    index="article",
+                    body={"query": {"terms": {"id": recommendation}}, "size": 25},
+                )
+                return Response(
+                    create_response({"results": self.format_response(search_results)})
+                )
 
-        return Response(create_error_response({
-            "Msg": "Error generating recommendation"
-        }))
+        return Response(
+            create_error_response({"Msg": "Error generating recommendation"})
+        )
 
 
 class ForgotPasswordAPIView(APIView):
@@ -425,15 +543,20 @@ class ForgotPasswordAPIView(APIView):
 
     def send_mail_to_user(self, email, password, first_name="", last_name=""):
         username = first_name + " " + last_name
-        email_subject = 'NewsPost: Forgot Password Request'
-        email_body = """
+        email_subject = "NewsPost: Forgot Password Request"
+        email_body = (
+            """
             <html>
                 <head>
                 </head>
                 <body>
                     <p>
-                        Hello """ + username + """,<br><br><b>
-                        """ + password + """</b> is your new password
+                        Hello """
+            + username
+            + """,<br><br><b>
+                        """
+            + password
+            + """</b> is your new password
                         <br>
                         <br>
                         Thanks,<br>
@@ -441,9 +564,9 @@ class ForgotPasswordAPIView(APIView):
                     </p>
                 </body>
             </html>"""
+        )
 
-        msg = EmailMultiAlternatives(
-            email_subject, '', settings.EMAIL_FROM, [email])
+        msg = EmailMultiAlternatives(email_subject, "", settings.EMAIL_FROM, [email])
         ebody = email_body
         msg.attach_alternative(ebody, "text/html")
         msg.send(fail_silently=False)
@@ -455,17 +578,14 @@ class ForgotPasswordAPIView(APIView):
             if user:
                 user = user.first()
                 password = self.genrate_password()
-                self.send_mail_to_user(
-                    email, password, user.first_name, user.last_name)
+                self.send_mail_to_user(email, password, user.first_name, user.last_name)
                 user.set_password(password)
                 user.save()
-                return Response(create_response({
-                    "Msg": "New password sent to your email"
-                }))
+                return Response(
+                    create_response({"Msg": "New password sent to your email"})
+                )
 
-        return Response(create_error_response({
-            "Msg": "Email Does Not Exist"
-        }))
+        return Response(create_error_response({"Msg": "Email Does Not Exist"}))
 
 
 class ChangePasswordAPIView(APIView):
@@ -485,44 +605,56 @@ class ChangePasswordAPIView(APIView):
         if old_password:
             if not user.check_password(old_password):
                 msg = "Old Password Does Not Match With User"
-                return Response(create_error_response({
-                    "Msg": msg, "field": "old_password"
-                }))
+                return Response(
+                    create_error_response({"Msg": msg, "field": "old_password"})
+                )
             if confirm_password != password:
                 msg = "Password and Confirm Password does not match"
-                return Response(create_error_response({
-                    "Msg": msg, "field": "confirm_password"
-                }))
+                return Response(
+                    create_error_response({"Msg": msg, "field": "confirm_password"})
+                )
             if old_password == password:
                 msg = "New password should not same as Old password"
-                return Response(create_error_response({
-                    "Msg": msg, "field": "password"
-                }))
+                return Response(
+                    create_error_response({"Msg": msg, "field": "password"})
+                )
             if user and password:
                 user.set_password(password)
                 user.save()
-                return Response(create_response({
-                    "Msg": "Password changed successfully", "field": "confirm_password"
-                }))
+                return Response(
+                    create_response(
+                        {
+                            "Msg": "Password changed successfully",
+                            "field": "confirm_password",
+                        }
+                    )
+                )
             else:
-                return Response(create_error_response({
-                    "Msg": "Password field is required", "field": "password"
-                }))
+                return Response(
+                    create_error_response(
+                        {"Msg": "Password field is required", "field": "password"}
+                    )
+                )
         else:
-            return Response(create_error_response({
-                "Msg": "Old Password field is required", "field": "old_password"
-            }))
+            return Response(
+                create_error_response(
+                    {"Msg": "Old Password field is required", "field": "old_password"}
+                )
+            )
 
 
 class BookmarkArticleAPIView(APIView):
     """
     This class is used to get user bookmark list
     """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         user = self.request.user
-        bookmark_list = BookmarkArticleSerializer(BookmarkArticle.objects.filter(user=user), many=True)
+        bookmark_list = BookmarkArticleSerializer(
+            BookmarkArticle.objects.filter(user=user), many=True
+        )
         return Response(create_response({"results": bookmark_list.data}))
 
 
@@ -530,12 +662,15 @@ class ArticleLikeAPIView(APIView):
     """
     This class is used to get user articles
     """
+
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         like_list = [0, 1]
         user = self.request.user
-        article_list = ArticleLikeSerializer(ArticleLike.objects.filter(user=user, is_like__in=like_list), many=True)
+        article_list = ArticleLikeSerializer(
+            ArticleLike.objects.filter(user=user, is_like__in=like_list), many=True
+        )
         return Response(create_response({"results": article_list.data}))
 
 
@@ -547,7 +682,7 @@ class HashTagAPIView(ListAPIView):
         weekly = self.request.GET.get("weekly", "")
         monthly = self.request.GET.get("monthly", "")
         end = datetime.utcnow()
-        pst = pytz.timezone('Asia/Kolkata')
+        pst = pytz.timezone("Asia/Kolkata")
         end = pst.localize(end)
         utc = pytz.UTC
         end = end.astimezone(utc)
@@ -557,27 +692,39 @@ class HashTagAPIView(ListAPIView):
         if weekly:
             weekly = int(weekly)
             start = end - timedelta(days=7 * weekly)
-            hash_tags = articles.filter(published_on__range=(start, end)).values(
-                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = (
+                articles.filter(published_on__range=(start, end))
+                .values("hash_tags__name")
+                .annotate(count=Count("hash_tags"))
+                .order_by("-count")[:10]
+            )
             for hashtag in hash_tags:
-                hashtag['name'] = hashtag.pop('hash_tags__name')
+                hashtag["name"] = hashtag.pop("hash_tags__name")
             queryset = hash_tags
 
         if monthly:
             monthly = int(monthly)
             start = end - timedelta(days=30 * monthly)
-            hash_tags = articles.filter(published_on__range=(start, end)).values(
-                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = (
+                articles.filter(published_on__range=(start, end))
+                .values("hash_tags__name")
+                .annotate(count=Count("hash_tags"))
+                .order_by("-count")[:10]
+            )
             for hashtag in hash_tags:
-                hashtag['name'] = hashtag.pop('hash_tags__name')
+                hashtag["name"] = hashtag.pop("hash_tags__name")
             queryset = hash_tags
 
         if not weekly and not monthly:
             start = end - timedelta(days=1)
-            hash_tags = articles.filter(published_on__range=(start, end)).values(
-                'hash_tags__name').annotate(count=Count('hash_tags')).order_by('-count')[:10]
+            hash_tags = (
+                articles.filter(published_on__range=(start, end))
+                .values("hash_tags__name")
+                .annotate(count=Count("hash_tags"))
+                .order_by("-count")[:10]
+            )
             for hashtag in hash_tags:
-                hashtag['name'] = hashtag.pop('hash_tags__name')
+                hashtag["name"] = hashtag.pop("hash_tags__name")
             queryset = hash_tags
 
         return queryset
@@ -592,7 +739,9 @@ class HashTagAPIView(ListAPIView):
                 paginated_response = self.get_paginated_response(serializer.data)
                 return Response(create_response(paginated_response.data))
             else:
-                return Response(create_error_response({"Msg": "No trending tags"}), status=400)
+                return Response(
+                    create_error_response({"Msg": "No trending tags"}), status=400
+                )
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(create_response(serializer.data))
@@ -602,6 +751,7 @@ class ArticleSearchAPI(APIView):
     """
     this view is used for article search and filter
     """
+
     permission_classes = (AllowAny,)
 
     def format_response(self, response):
@@ -610,27 +760,30 @@ class ArticleSearchAPI(APIView):
         if response.hits.hits:
             for result in response.hits.hits:
                 source = result["_source"]
-                if 'highlight' in result:
-                    if 'title' in result['highlight']:
-                        source['title'] = " ".join(result['highlight']['title'])
-                    if 'blurb' in result['highlight']:
-                        source['blurb'] = " ".join(result['highlight']['blurb'])
+                if "highlight" in result:
+                    if "title" in result["highlight"]:
+                        source["title"] = " ".join(result["highlight"]["title"])
+                    if "blurb" in result["highlight"]:
+                        source["blurb"] = " ".join(result["highlight"]["blurb"])
                 results.append(source)
 
             if response.aggregations.category.buckets:
                 filters["category"] = sorted(
                     response.aggregations.category.buckets._l_,
-                    key=operator.itemgetter("key"))
+                    key=operator.itemgetter("key"),
+                )
 
             if response.aggregations.source.buckets:
                 filters["source"] = sorted(
                     response.aggregations.source.buckets._l_,
-                    key=operator.itemgetter("key"))
+                    key=operator.itemgetter("key"),
+                )
 
             if response.aggregations.hash_tags.buckets:
                 filters["hash_tags"] = sorted(
                     response.aggregations.hash_tags.buckets._l_,
-                    key=operator.itemgetter("key"))
+                    key=operator.itemgetter("key"),
+                )
         return results, filters
 
     def get(self, request):
@@ -655,14 +808,25 @@ class ArticleSearchAPI(APIView):
         sort = self.request.GET.get("sort", "desc")
 
         if not domain:
-            return Response(create_serializer_error_response({"domain": ["Domain id is required"]}))
+            return Response(
+                create_serializer_error_response({"domain": ["Domain id is required"]})
+            )
 
         # mort like this for related queries
         mlt_fields = ["has_tags"]
         if source:
             mlt_fields = ["has_tags", "source", "domain"]
-        mlt = Search(using=es, index="article").query("more_like_this", fields=mlt_fields,
-                                                      like=query, min_term_freq=1, max_query_terms=12).source(mlt_fields)
+        mlt = (
+            Search(using=es, index="article")
+            .query(
+                "more_like_this",
+                fields=mlt_fields,
+                like=query,
+                min_term_freq=1,
+                max_query_terms=12,
+            )
+            .source(mlt_fields)
+        )
         mlt.execute()
         sr = Search(using=es, index="article")
 
@@ -675,8 +839,15 @@ class ArticleSearchAPI(APIView):
 
         if query:
             query = query.lower()
-            must_query.append({"multi_match": {"query": query,
-                                               "fields": ["title", "blurb"], 'type': 'phrase'}})
+            must_query.append(
+                {
+                    "multi_match": {
+                        "query": query,
+                        "fields": ["title", "blurb"],
+                        "type": "phrase",
+                    }
+                }
+            )
 
         if tags:
             tags = [tag.lower().replace("-", " ") for tag in tags]
@@ -700,8 +871,8 @@ class ArticleSearchAPI(APIView):
             cat_objs = Category.objects.filter(name__in=category)
             category = cat_objs.values_list("id", flat=True)
             cat_assn_objs = CategoryAssociation.objects.filter(
-                parent_cat__in=cat_objs).values_list(
-                "child_cat__id", flat=True)
+                parent_cat__in=cat_objs
+            ).values_list("child_cat__id", flat=True)
             if cat_assn_objs:
                 new_category = set(list(cat_assn_objs) + list(category))
                 sr = sr.filter("terms", category_id=list(new_category))
@@ -752,7 +923,7 @@ class ArticleSearchAPI(APIView):
             "total_pages": total_pages,
             "current_page": page,
             "next": next_url,
-            "previous": previous_url
+            "previous": previous_url,
         }
 
         return Response(create_response(data))
@@ -762,32 +933,38 @@ class MenuAPIView(APIView):
     """
     This Api will return all the menus
     """
+
     permission_classes = (AllowAny,)
 
     def get(self, request):
         domain_id = self.request.GET.get("domain")
         if not domain_id:
-            return Response(create_error_response({"domain": ["Domain id is required"]}))
+            return Response(
+                create_error_response({"domain": ["Domain id is required"]})
+            )
 
         domain = Domain.objects.filter(domain_id=domain_id).first()
         if not domain:
-            return Response(create_error_response({"domain": ["Domain id is required"]}))
+            return Response(
+                create_error_response({"domain": ["Domain id is required"]})
+            )
 
         menus = MenuSerializer(Menu.objects.filter(domain=domain), many=True)
         menus_list = menus.data
         new_menulist = []
         for menu in menus_list:
             menu_dict = {}
-            menu_dict['heading'] = menu
+            menu_dict["heading"] = menu
             new_menulist.append(menu_dict)
 
-        return Response(create_response({'results': new_menulist}))
+        return Response(create_response({"results": new_menulist}))
 
 
 class DevicesAPIView(APIView):
     """
     this api will add device_id and device_name
     """
+
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
@@ -797,28 +974,41 @@ class DevicesAPIView(APIView):
         if not user.is_anonymous and device_id and device_name:
             user_device = Devices.objects.filter(user=user.pk)
             if user_device:
-                user_device.update(device_id=device_id, device_name=device_name, user=user.id)
+                user_device.update(
+                    device_id=device_id, device_name=device_name, user=user.id
+                )
                 return Response(create_response({"Msg": "Device successfully created"}))
             elif not user_device:
-                get, created = Devices.objects.get_or_create(device_id=device_id, device_name=device_name, user=user.id)
+                get, created = Devices.objects.get_or_create(
+                    device_id=device_id, device_name=device_name, user=user.id
+                )
                 if created:
-                    return Response(create_response({"Msg": "Device successfully created"}))
+                    return Response(
+                        create_response({"Msg": "Device successfully created"})
+                    )
                 else:
                     return Response(create_response({"Msg": "Device already exist"}))
         elif device_id and device_name:
-            get, created = Devices.objects.get_or_create(device_id=device_id, device_name=device_name)
+            get, created = Devices.objects.get_or_create(
+                device_id=device_id, device_name=device_name
+            )
             if created:
                 return Response(create_response({"Msg": "Device successfully created"}))
             else:
                 return Response(create_response({"Msg": "Device already exist"}))
         else:
-            return Response(create_error_response({"Msg": "device_id and device_name field are required"}))
+            return Response(
+                create_error_response(
+                    {"Msg": "device_id and device_name field are required"}
+                )
+            )
 
 
 class NotificationAPIView(APIView):
     """
     this api will add notification data
     """
+
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -832,30 +1022,53 @@ class NotificationAPIView(APIView):
         if breaking_news and daily_edition and personalized and device:
             notification = Notification.objects.filter(device=device)
             if notification:
-                notification.update(breaking_news=breaking_news, daily_edition=daily_edition, personalized=personalized)
-                return Response(create_response({"Msg": "Notification updated successfully"}))
-            Notification.objects.create(breaking_news=breaking_news, daily_edition=daily_edition,
-                                        personalized=personalized, device=device)
-            return Response(create_response({"Msg": "Notification created successfully"}))
+                notification.update(
+                    breaking_news=breaking_news,
+                    daily_edition=daily_edition,
+                    personalized=personalized,
+                )
+                return Response(
+                    create_response({"Msg": "Notification updated successfully"})
+                )
+            Notification.objects.create(
+                breaking_news=breaking_news,
+                daily_edition=daily_edition,
+                personalized=personalized,
+                device=device,
+            )
+            return Response(
+                create_response({"Msg": "Notification created successfully"})
+            )
         else:
             return Response(
                 create_error_response(
-                    {"Msg": "device_id, device_name, breaking_news, daily_edition and personalized are required"}))
+                    {
+                        "Msg": "device_id, device_name, breaking_news, daily_edition and personalized are required"
+                    }
+                )
+            )
 
     def get(self, request):
         device_id = request.GET.get("device_id")
         device_name = request.GET.get("device_name")
-        device = Devices.objects.filter(device_id=device_id, device_name=device_name).first()
+        device = Devices.objects.filter(
+            device_id=device_id, device_name=device_name
+        ).first()
         if device:
-            notification = NotificationSerializer(Notification.objects.fitler(device=device), many=True)
+            notification = NotificationSerializer(
+                Notification.objects.fitler(device=device), many=True
+            )
             return Response(create_response(notification.data))
-        return Response(create_error_response({"Msg": "Invalid device_id or device_name"}))
+        return Response(
+            create_error_response({"Msg": "Invalid device_id or device_name"})
+        )
 
 
 class SocialLoginView(generics.GenericAPIView):
     """
     this view is used for google social authentication and login
     """
+
     permission_classes = (AllowAny,)
     serializer_class = BaseUserProfileSerializer
 
@@ -894,7 +1107,9 @@ class SocialLoginView(generics.GenericAPIView):
 
         return first_name, last_name
 
-    def create_user_profile(self, first_name, last_name, username, email, image_url, sid, provider):
+    def create_user_profile(
+        self, first_name, last_name, username, email, image_url, sid, provider
+    ):
         """
         this method is used to create base user profile object for given
         social account
@@ -906,13 +1121,10 @@ class SocialLoginView(generics.GenericAPIView):
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
-                username=username
+                username=username,
             )
             sa_obj, created = SocialAccount.objects.get_or_create(
-                social_account_id=sid,
-                image_url=image_url,
-                user=user,
-                provider=provider
+                social_account_id=sid, image_url=image_url, user=user, provider=provider
             )
             # create_profile_image.delay(sa_obj.id)
         return user, created
@@ -924,7 +1136,8 @@ class SocialLoginView(generics.GenericAPIView):
         graph = facebook.GraphAPI(access_token=token_id)
         try:
             res_data = graph.get_object(
-                id='me?fields=email,id,first_name,last_name,name,picture.width(150).height(150)')
+                id="me?fields=email,id,first_name,last_name,name,picture.width(150).height(150)"
+            )
             return res_data
         except Exception as e:
             log.debug("error in facebook fetch data: {0}".format(e))
@@ -962,15 +1175,19 @@ class SocialLoginView(generics.GenericAPIView):
         if device:
             device.update(device_name=device_name, device_id=device_id)
         else:
-            device, created = Devices.objects.get_or_create(device_name=device_name, device_id=device_id)
+            device, created = Devices.objects.get_or_create(
+                device_name=device_name, device_id=device_id
+            )
             Devices.objects.filter(pk=device.pk).update(user=user)
-        notification = NotificationSerializer(Notification.objects.get_or_create(device=device), many=True)
+        notification = NotificationSerializer(
+            Notification.objects.get_or_create(device=device), many=True
+        )
         token, _ = Token.objects.get_or_create(user=user)
         data = BaseUserProfileSerializer(user).data
         data["token"] = token.key
-        data["breaking_news"] = notification.data[0]['breaking_news']
-        data["daily_edition"] = notification.data[0]['daily_edition']
-        data["personalized"] = notification.data[0]['personalized']
+        data["breaking_news"] = notification.data[0]["breaking_news"]
+        data["daily_edition"] = notification.data[0]["daily_edition"]
+        data["personalized"] = notification.data[0]["personalized"]
         return data
 
     def post(self, request, *args, **kwargs):
@@ -990,10 +1207,18 @@ class SocialLoginView(generics.GenericAPIView):
             raise ProviderMissing()
 
         if not device_id:
-            return Response(create_error_response({"Msg": "device_id is missing or Invalid device_id"}))
+            return Response(
+                create_error_response(
+                    {"Msg": "device_id is missing or Invalid device_id"}
+                )
+            )
 
         if not device_name:
-            return Response(create_error_response({"Msg": "device_name is missing or Invalid device_name"}))
+            return Response(
+                create_error_response(
+                    {"Msg": "device_name is missing or Invalid device_name"}
+                )
+            )
 
         if provider not in SOCIAL_AUTH_PROVIDERS:
             raise ProviderMissing()
@@ -1015,7 +1240,8 @@ class SocialLoginView(generics.GenericAPIView):
             image_url = id_info.get("picture", "")
 
             user, created = self.create_user_profile(
-                first_name, last_name, username, email, image_url, google_id, provider)
+                first_name, last_name, username, email, image_url, google_id, provider
+            )
 
             user_data = self.get_user_serialize_data(email, device_id, device_name)
 
@@ -1026,8 +1252,7 @@ class SocialLoginView(generics.GenericAPIView):
             if not profile_data:
                 raise SocialAuthTokenException()
 
-            first_name, last_name = self.get_facebook_name_details(
-                profile_data)
+            first_name, last_name = self.get_facebook_name_details(profile_data)
 
             email = profile_data.get("email")
             if not email:
@@ -1041,7 +1266,8 @@ class SocialLoginView(generics.GenericAPIView):
                     image_url = profile_data["picture"]["data"]["url"]
 
             user, created = self.create_user_profile(
-                first_name, last_name, username, email, image_url, facebook_id, provider)
+                first_name, last_name, username, email, image_url, facebook_id, provider
+            )
 
             user_data = self.get_user_serialize_data(email, device_id, device_name)
 
@@ -1059,17 +1285,21 @@ class TrendingArticleAPIView(APIView):
         """
         domain_id = self.request.GET.get("domain")
         if not domain_id:
-            return Response(create_error_response({"domain": ["Domain id is required"]}))
+            return Response(
+                create_error_response({"domain": ["Domain id is required"]})
+            )
 
         domain = Domain.objects.filter(domain_id=domain_id).first()
         if not domain:
             return Response(create_error_response({"domain": ["Invalid domain name"]}))
 
-        source = TrendingArticleSerializer(TrendingArticle.objects.filter(domain=domain), many=True)
+        source = TrendingArticleSerializer(
+            TrendingArticle.objects.filter(domain=domain), many=True
+        )
         return Response(create_response({"results": source.data}))
 
 
-class SocailMediaPublishing():
+class SocailMediaPublishing:
     """
     this class is to update news arrticles on social media
     """
@@ -1079,8 +1309,12 @@ class SocailMediaPublishing():
         this function will tweet article title and its url in twitter
         """
         try:
-            auth = tweepy.OAuthHandler(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
-            auth.set_access_token(settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET)
+            auth = tweepy.OAuthHandler(
+                settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET
+            )
+            auth.set_access_token(
+                settings.TWITTER_ACCESS_TOKEN, settings.TWITTER_ACCESS_TOKEN_SECRET
+            )
             api = tweepy.API(auth)
             api.update_status(data["title"] + "\n" + data["url"])
         except Exception as e:
@@ -1091,6 +1325,7 @@ class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
     """
     Article create update view
     """
+
     permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
@@ -1127,10 +1362,10 @@ class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
 
         if not request.data.get("cover_image"):
             request.data["cover_image"] = "/".join(
-                [origin, request.user.domain.default_image.url])
+                [origin, request.user.domain.default_image.url]
+            )
         context = {"publish": publish, "user": request.user}
-        serializer = ArticleCreateUpdateSerializer(
-            data=request.data, context=context)
+        serializer = ArticleCreateUpdateSerializer(data=request.data, context=context)
         if serializer.is_valid():
             serializer.save()
             if publish:
@@ -1150,11 +1385,13 @@ class ArticleCreateUpdateView(APIView, SocailMediaPublishing):
 
         if not request.data.get("cover_image"):
             request.data["cover_image"] = "/".join(
-                [origin, request.user.domain.default_image.url])
+                [origin, request.user.domain.default_image.url]
+            )
         context = {"publish": publish, "user": request.user}
         article = Article.objects.get(id=_id)
         serializer = ArticleCreateUpdateSerializer(
-            article, data=request.data, context=context)
+            article, data=request.data, context=context
+        )
         if serializer.is_valid():
             serializer.save()
             if publish:
@@ -1167,6 +1404,7 @@ class ChangeArticleStatusView(APIView, SocailMediaPublishing):
     """
     this view is used to update status of given article activate or deactivate
     """
+
     permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
@@ -1198,18 +1436,20 @@ class ChangeArticleStatusView(APIView, SocailMediaPublishing):
         _id = request.data.get("id")
         article = Article.objects.filter(id=_id).first()
         if not article:
-            return Response(create_error_response({"error": "Article does not exists"}), status=400)
+            return Response(
+                create_error_response({"error": "Article does not exists"}), status=400
+            )
         article.active = request.data.get("activate")
         article.save()
         self.publish(article)
-        return Response(create_response({
-            "id": article.id, "active": article.active}))
+        return Response(create_response({"id": article.id, "active": article.active}))
 
 
 class CategoryBulkUpdate(APIView):
     """
     update whole bunch of articles in one go
     """
+
     permission_classes = (IsAuthenticated,)
 
     def get_tags(self, tags):
@@ -1222,9 +1462,9 @@ class CategoryBulkUpdate(APIView):
         return tag_list
 
     def post(self, request):
-        category_id = request.data['categories']
+        category_id = request.data["categories"]
         category = Category.objects.get(id=category_id)
-        for article_id in request.data['articles']:
+        for article_id in request.data["articles"]:
             current = Article.objects.get(id=article_id)
             current.category = category
             current.save()
@@ -1275,13 +1515,16 @@ class GetDailyDigestView(ListAPIView):
         if serializer.data:
             return Response(create_response(serializer.data))
         else:
-            return Response(create_error_response({"Msg": "Daily Digest Doesn't Exist"}), status=400)
+            return Response(
+                create_error_response({"Msg": "Daily Digest Doesn't Exist"}), status=400
+            )
 
 
 class DraftMediaUploadViewSet(viewsets.ViewSet):
     """
     this view is used to upload article images
     """
+
     permission_classes = (IsAuthenticated,)
 
     def create(self, request):
@@ -1326,7 +1569,7 @@ class CommentViewSet(viewsets.ViewSet):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        if self.action == 'list':
+        if self.action == "list":
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
@@ -1362,14 +1605,19 @@ class CommentViewSet(viewsets.ViewSet):
             )
         article_obj = Article.objects.filter(id=article_id).first()
         if not article_obj:
-            return Response(create_error_response({"error": "Article does not exist"})
-                            )
+            return Response(create_error_response({"error": "Article does not exist"}))
         comment_list = Comment.objects.filter(article=article_obj, reply=None)
         serializer = CommentSerializer(comment_list, many=True)
         return Response(
             create_response(
-                {"results": serializer.data, "total_article_likes": ArticleLike.objects.filter(
-                    article=article_obj).count()}))
+                {
+                    "results": serializer.data,
+                    "total_article_likes": ArticleLike.objects.filter(
+                        article=article_obj
+                    ).count(),
+                }
+            )
+        )
 
     def destroy(self, request, pk):
         comment_obj = Comment.objects.filter(id=pk)
@@ -1403,17 +1651,21 @@ class CaptchaCommentApiView(APIView):
     def get(self, request):
         captcha_len = len(CaptchaStore.objects.all())
         if captcha_len > 500:
-            captcha = CaptchaStore.objects.order_by('?')[:1]
+            captcha = CaptchaStore.objects.order_by("?")[:1]
             to_json_response = dict()
-            to_json_response['status'] = 1
-            to_json_response['new_captch_key'] = captcha[0].hashkey
-            to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
+            to_json_response["status"] = 1
+            to_json_response["new_captch_key"] = captcha[0].hashkey
+            to_json_response["new_captch_image"] = captcha_image_url(
+                to_json_response["new_captch_key"]
+            )
             return Response(create_response({"result": to_json_response}))
         else:
             to_json_response = dict()
-            to_json_response['status'] = 1
-            to_json_response['new_captch_key'] = CaptchaStore.generate_key()
-            to_json_response['new_captch_image'] = captcha_image_url(to_json_response['new_captch_key'])
+            to_json_response["status"] = 1
+            to_json_response["new_captch_key"] = CaptchaStore.generate_key()
+            to_json_response["new_captch_image"] = captcha_image_url(
+                to_json_response["new_captch_key"]
+            )
             return Response(create_response({"result": to_json_response}))
 
 
@@ -1422,8 +1674,8 @@ class AutoCompleteAPIView(generics.GenericAPIView):
 
     def format_response(self, response):
         results = []
-        if response['hits']['hits']:
-            for result in response['hits']['hits']:
+        if response["hits"]["hits"]:
+            for result in response["hits"]["hits"]:
                 results.append(result["_source"])
         return results
 
@@ -1445,7 +1697,7 @@ class AutoCompleteAPIView(generics.GenericAPIView):
                     }
                 },
             )
-            results = results['suggest']['results'][0]['options']
+            results = results["suggest"]["results"][0]["options"]
             if results:
                 for result in results:
                     result_list.append(
@@ -1481,13 +1733,13 @@ class UpdateSubsAPIView(APIView):
         return Response(create_response({"results": source.data}))
 
     def post(self, request, *args, **kwargs):
-        subs_id = self.request.POST.get('id')
+        subs_id = self.request.POST.get("id")
         subs = Subscription.objects.filter(id=subs_id)
         if subs.exists():
             subs = subs.first()
-            subs.subs_type = self.request.POST.get('subs_type')
-            auto_renew = self.request.POST.get('auto_renew')
-            if auto_renew == 'No':
+            subs.subs_type = self.request.POST.get("subs_type")
+            auto_renew = self.request.POST.get("auto_renew")
+            if auto_renew == "No":
                 subs.auto_renew = False
             else:
                 subs.auto_renew = True
@@ -1497,7 +1749,7 @@ class UpdateSubsAPIView(APIView):
 
 
 class UserProfileAPIView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         user = BaseUserProfile.objects.filter(id=self.request.user.id).first()
@@ -1511,12 +1763,19 @@ class UserProfileAPIView(APIView):
             if request.data:
                 _id = request.data["id"]
             else:
-                _id = self.request.POST.get('id')
+                _id = self.request.POST.get("id")
             user = BaseUserProfile.objects.get(id=_id)
             serializer = UserProfileSerializer(user, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(create_response({"result":serializer.data, "Msg":"Profile updated successfully."}))
+                return Response(
+                    create_response(
+                        {
+                            "result": serializer.data,
+                            "Msg": "Profile updated successfully.",
+                        }
+                    )
+                )
             return Response(create_error_response(serializer.errors), status=400)
         raise Http404
 
@@ -1525,8 +1784,7 @@ class AccessSession(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        print(request.META.items())
-        request.session["ip"] = request.META.get('REMOTE_ADDR')
+        request.session["ip"] = request.META.get("REMOTE_ADDR")
         return Response(create_response({"results": request.session._session_key}))
 
 
@@ -1543,7 +1801,75 @@ class RSSAPIView(APIView):
                 for menu in menus:
                     all_categories = menu.submenu.all()
                     for category in all_categories:
-                        data[category.name.name] = "/article/rss/?domain=" + domain + "&category=" + category.name.name
+                        data[category.name.name] = (
+                            "/article/rss/?domain="
+                            + domain
+                            + "&category="
+                            + category.name.name
+                        )
                 return Response(create_response({"results": data}))
             return Response(create_error_response({"error": "Domain do not exist."}))
         return Response(create_error_response({"error": "Domain is required"}))
+
+
+class SendInvitationView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.data:
+            collaborator = request.data["collaborator"]
+            slug = request.data["slug"]
+        else:
+            collaborator = self.request.POST.get("collaborator", "")
+            slug = self.request.POST.get("slug", "")
+
+        get_user = BaseUserProfile.objects.filter(id=collaborator)
+        get_article = Article.objects.filter(slug=slug)
+
+        email_subject = 'Collaborate Article'
+
+        if get_user.exists():
+            get_user_email = get_user[0].email
+            get_article_detail = get_article[0]
+            invitation_url = "{0}/etherpad/{1}-{2}".format(request.META['HTTP_HOST'], slug, get_user[0].id)
+
+            email_body = """
+                <html>
+                    <head>
+                    </head>
+                    <body>
+                        Hi,
+                        <a href='{0}'>{1}</a>
+                    </body>
+                </html>
+            """.format(invitation_url, invitation_url)
+
+            article = ArticleMongo()
+
+            split_slug = slug.split("-")
+            slug_array = []
+            for i in split_slug:
+                if i != split_slug[-1]:
+                    slug_array.append(i)
+            slug_string = "-".join(slug_array)
+            get_article_obj = get_article[0]
+            print("======")
+            print(get_article_obj.slug)
+            pad_id = uuid.uuid4().hex
+            article.insert_article(get_article_obj, pad_id)
+            etherpad_obj.createPad(padID=pad_id, text=get_article_obj.blurb)
+
+        try:
+            msg = EmailMultiAlternatives(email_subject, '', EMAIL_FROM, [get_user_email])
+            ebody = email_body
+            msg.attach_alternative(ebody, "text/html")
+            msg.send(fail_silently=False)
+        except:
+            print("Unable to send the email. Error: ", sys.exc_info()[0])
+            raise
+
+        return Response(
+            create_error_response(
+                {"Msg": "Old Password field is required", "field": "old_password"}
+            )
+        )

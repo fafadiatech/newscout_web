@@ -11,7 +11,7 @@ import * as serviceWorker from './serviceWorker';
 import {
     ARTICLE_SOURCE_LIST_URL, ARTICLE_CATEGORY_LIST_URL,
     ARTICLE_CREATE_URL, ARTICLE_DETAIL_URL,
-    ARTICLE_DRAFTIMAGE_URL
+    ARTICLE_DRAFTIMAGE_URL, ARTICLE_DOMAIN_LIST_URL
 } from '../../utils/Constants';
 import {
     getRequest, postRequest, putRequest, fileUploadHeaders,
@@ -39,8 +39,9 @@ class ArticleForm extends React.Component {
                 category: "",
                 published_on: "",
                 blurb: "",
-                cover_image: ""
+                cover_image: "",
             },
+            domains: [],
             sources: [],
             categories: [],
             errors: {},
@@ -70,6 +71,10 @@ class ArticleForm extends React.Component {
 
         if (value_type == "article_category") {
             state.fields.category = { value: value, label: label }
+        }
+
+        if (value_type == "article_domain") {
+            state.fields.domain = { value: value, label: label }
         }
 
         if (value_type == "cover_image") {
@@ -117,6 +122,17 @@ class ArticleForm extends React.Component {
         })
     }
 
+    setDomains = (data) => {
+        var domains = [];
+        data.body.results.map((el, index) => {
+            var option = { label: el.domain_name, value: el.id }
+            domains.push(option)
+        })
+        this.setState({
+            "domains": domains
+        })
+    }
+
     getArticleDetails = () => {
         var url = ARTICLE_DETAIL_URL + this.state.article_slug + "/";
         getRequest(url, this.setArticleDetails);
@@ -129,6 +145,7 @@ class ArticleForm extends React.Component {
         state.fields.title = article_detail.title;
         state.fields.category = { label: article_detail.category, value: article_detail.category_id };
         state.fields.source = { label: article_detail.source, value: article_detail.source_id };
+        state.fields.domain = { label: article_detail.domain, value: article_detail.domain_id };
         state.fields.blurb = article_detail.blurb;
         state.fields.published_on = moment(article_detail.published_on).format('YYYY-MM-DD m:ss A');
         state.fields.cover_image = article_detail.cover_image;
@@ -139,6 +156,11 @@ class ArticleForm extends React.Component {
     getSources = () => {
         var url = ARTICLE_SOURCE_LIST_URL;
         getRequest(url, this.setSources);
+    }
+
+    getDomains = () => {
+        var url = ARTICLE_DOMAIN_LIST_URL;
+        getRequest(url, this.setDomains)
     }
 
     setCategories = (data) => {
@@ -160,9 +182,9 @@ class ArticleForm extends React.Component {
     articleSave = (method) => {
         var fields = this.state.fields;
         fields.category = fields.category.value
-        fields.source_url = "http://" + fields.source.label
         fields.cover_image = fields.cover_image
         fields.source = fields.source.value
+        fields.domain = fields.domain.value
         if (method == "post") {
             var body = JSON.stringify(fields)
             postRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "POST");
@@ -177,9 +199,9 @@ class ArticleForm extends React.Component {
     articlePublish = (method) => {
         var fields = this.state.fields;
         fields.category = fields.category.value
-        fields.source_url = "http://" + fields.source.label
-        fields.cover_image = fields.source_url
+        fields.cover_image = fields.cover_image
         fields.source = fields.source.value
+        fields.domain = fields.domain.value
         fields.is_publish = true;
         if (method == "post") {
             fields.publish = true
@@ -206,6 +228,7 @@ class ArticleForm extends React.Component {
                     "published_on": "",
                     "blurb": "",
                     "cover_image": "",
+                    "domain": ""
                 },
                 "cover_image": "",
                 "cover_image_id": "",
@@ -316,6 +339,7 @@ class ArticleForm extends React.Component {
             this.getArticleDetails()
         }
         this.getSources()
+        this.getDomains()
         this.getCategories()
         if (cookies.get('isSideOpen')) {
             this.setState({ isSideOpen: true })
@@ -363,6 +387,15 @@ class ArticleForm extends React.Component {
                                     <Form>
                                         <Row>
                                             <Col md={5}>
+                                                <Row form>
+                                                    <Col md={12}>
+                                                        <FormGroup>
+                                                            <Label for="article_domain">Domain</Label>
+                                                            <Select refs="article_domain" options={this.state.domains} value={this.state.fields.domain} onChange={(e) => this.handleChange("article_domain", e)} />
+                                                            <FormText color="danger">{this.state.errors["article_domain"]}</FormText>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
                                                 <Row form>
                                                     <Col md={12}>
                                                         <FormGroup>
