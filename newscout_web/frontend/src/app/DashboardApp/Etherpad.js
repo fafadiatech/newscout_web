@@ -7,7 +7,7 @@ import Cookies from 'universal-cookie';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import { CAMPAIGN_URL } from '../../utils/Constants';
+import { CAMPAIGN_URL, SYNC_ETHERPAD } from '../../utils/Constants';
 import { getRequest, postRequest, putRequest, deleteRequest, notify, authHeaders } from '../../utils/Utils';
 import { Button, Form, FormGroup, Input, Label, FormText, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Table } from 'reactstrap';
 
@@ -37,6 +37,8 @@ class Campaign extends React.Component {
             isSideOpen: true,
             username: USERNAME,
             isChecked: false,
+            article_update_msg: false,
+            article_sync_msg: false
         };
     }
 
@@ -57,9 +59,16 @@ class Campaign extends React.Component {
         }
     }
 
-    handleUpdate = () => {
-        console.log("========")
-        console.log(PAD_ID)
+    syncData = () => {
+        var body = JSON.stringify({"pad_id": PAD_ID})
+        postRequest(SYNC_ETHERPAD, body, this.etherpadResponse, "POST");
+    }
+
+    etherpadResponse = (data) => {
+        this.setState({article_sync_msg: true})
+        setTimeout(() => {
+            this.setState({article_sync_msg: false})
+        }, 3000);
     }
 
     toggleSwitch = (data) => {
@@ -108,6 +117,14 @@ class Campaign extends React.Component {
         }
     }
 
+    updateEtherpad = () => {
+        window.top.location = window.top.location
+        this.setState({article_update_msg: true})
+        setTimeout(() => {
+            this.setState({article_update_msg: false})
+        }, 3000);
+    }
+
     componentDidMount() {
         console.log(PAD_ID)
         if (cookies.get('isSideOpen')) {
@@ -124,7 +141,7 @@ class Campaign extends React.Component {
     }
 
     render() {
-        var { isSideOpen, username, isChecked } = this.state
+        var { isSideOpen, username, isChecked, article_update_msg, article_sync_msg } = this.state
 
         return (
             <React.Fragment>
@@ -147,13 +164,25 @@ class Campaign extends React.Component {
                                 <div className="row">
                                     <div className="col-lg-12">
                                         <div className="py-3 text-right">
-                                            <Button className="btn btn-success" type="button" onClick={(e) => this.handleUpdate()}>Update</Button>&nbsp;&nbsp;
-                                            <Button className="btn btn-success" type="button">Sync</Button>
+                                            {article_update_msg ?
+                                                <React.Fragment>
+                                                    <span className="text-success">Article updated successfully.</span>&nbsp;&nbsp;
+                                                </React.Fragment>
+                                            : ''
+                                            }
+                                            {article_sync_msg ?
+                                                <React.Fragment>
+                                                    <span className="text-success">Article synced successfully.</span>&nbsp;&nbsp;
+                                                </React.Fragment>
+                                            : ''
+                                            }
+                                            <Button className="btn btn-success" type="button" onClick={this.updateEtherpad}>Update</Button>&nbsp;&nbsp;
+                                            <Button className="btn btn-success" type="button" onClick={this.syncData}>Sync</Button>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="">
-                                    <iframe name='embed_readwrite' src={`${ETHERPAD_SERVER}p/${PAD_ID}?showControls=true&showChat=false&showLineNumbers=true&showLineNumbers=true&useMonospaceFont=false`} className="iframe-settings" frameBorder="0" height="100%" width="100%"></iframe>
+                                    <iframe id="etherpad-frame" name='embed_readwrite' src={`${ETHERPAD_SERVER}p/${PAD_ID}?showControls=true&showChat=false&showLineNumbers=true&showLineNumbers=true&useMonospaceFont=false`} className="iframe-settings" frameBorder="0" height="100%" width="100%"></iframe>
                                 </div>
                             </div>
                         </div>

@@ -1838,11 +1838,14 @@ class SendInvitationView(APIView):
                     <head>
                     </head>
                     <body>
-                        Hi,
-                        <a href='{0}'>{1}</a>
+                        Hi {0} {1},
+                        <br/>
+                        Please find url to collaborate with newscout.
+                        <br/>
+                        <b>Collaborate Url :</b> <a href='{2}'>{3}</a>
                     </body>
                 </html>
-            """.format(invitation_url, invitation_url)
+            """.format(get_user[0].first_name.capitalize(), get_user[0].last_name.capitalize(), invitation_url, invitation_url)
 
             article = ArticleMongo()
 
@@ -1853,8 +1856,6 @@ class SendInvitationView(APIView):
                     slug_array.append(i)
             slug_string = "-".join(slug_array)
             get_article_obj = get_article[0]
-            print("======")
-            print(get_article_obj.slug)
             pad_id = uuid.uuid4().hex
             article.insert_article(get_article_obj, pad_id)
             etherpad_obj.createPad(padID=pad_id, text=get_article_obj.blurb)
@@ -1873,3 +1874,25 @@ class SendInvitationView(APIView):
                 {"Msg": "Old Password field is required", "field": "old_password"}
             )
         )
+
+
+class SyncEtherpadView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.data:
+            pad_id = request.data['pad_id']
+        else:
+            pad_id = self.request.POST.get('pad_id')
+
+        article = ArticleMongo()
+        get_content = article.sync_article(pad_id)
+        pad_id = get_content[0]['pad_id']
+        get_slug = get_content[0]['slug']
+
+        updated_content = etherpad_obj.getHTML(padID=pad_id)
+        article_obj = Article.objects.get(slug=get_slug)
+        article_obj.blurb = updated_content['html']
+        article_obj.save()
+        
+        return Response(create_response({"results": "Article synced successfully."}))

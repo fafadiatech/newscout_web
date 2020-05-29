@@ -42,19 +42,23 @@ class ArticleMongo(MongoDBModel):
     def find_article(self, article_id):
         return self.collection.find({"article_id": article_id})
 
+    def sync_article(self, pad_id):
+        return self.collection.find({"pad_id": pad_id})
+
+    def update_article(self, pad_id, text_content):
+        return self.collection.update_one(
+            {"pad_id": pad_id}, 
+            {"$set": 
+                {"blurb": text_content}
+            }
+        )
+
     def insert_article(self, article_obj, pad_id):
-        print(self.collection)
         obj = article_obj
 
         if self.collection.find({"slug": obj.slug}).count() > 0:
-            print("if===")
             item = self.find_article(obj)
         else:
-            print("else===")
-            print(obj.id)
-            print(obj.blurb)
-            print(obj.slug)
-            print(pad_id)
             item = self.collection.insert_one(
                 {"article_id": obj.id, "blurb": obj.blurb, "slug": obj.slug, "pad_id":pad_id}
             )

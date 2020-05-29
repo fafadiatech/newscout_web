@@ -36,7 +36,8 @@ from .views import (
     RSSAPIView,
     DomainsListAPIView,
     UsersListAPIView,
-    SendInvitationView
+    SendInvitationView,
+    SyncEtherpadView
 )
 from django.conf.urls import url, include
 
@@ -91,4 +92,5 @@ urlpatterns = [
     url(r"access-session/$", AccessSession.as_view(), name="access-session-api"),
     url(r"rss/$", RSSAPIView.as_view(), name="rss-api"),
     url(r"send-invitation/$", SendInvitationView.as_view(), name="send-invitation"),
+    url(r"sync-etherpad/$", SyncEtherpadView.as_view(), name="update-etherpad"),
 ]

@@ -44,6 +44,11 @@ export const ARTICLE_BOOKMARK = ARTICLE_API_URL + "articles/bookmark/";
 export const ALL_ARTICLE_BOOKMARK = ARTICLE_API_URL + "bookmark-articles/bookmark-news-list/";
 export const SUGGESTIONS = ARTICLE_API_URL + "suggest/";
 
+export const ARTICLE_DOMAIN_LIST_URL = ARTICLE_API_URL + "domains/";
+export const SYNC_ETHERPAD = ARTICLE_API_URL + "sync-etherpad/";
+export const SEND_INVITATION_URL = ARTICLE_API_URL + "send-invitation/";
+export const USERS_LIST_URL = ARTICLE_API_URL + "users/";
+
 // export const SUBSCRIPTION_URL = ARTICLE_API_URL + "subscription/";
 export const SUBSCRIPTION_URL = "/api/v1/subscription/";
 export const USER_PROFILE_URL = "/api/v1/userprofile/";

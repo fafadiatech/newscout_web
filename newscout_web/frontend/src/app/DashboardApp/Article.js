@@ -7,15 +7,15 @@ import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import { ARTICLE_LIST_URL, ARTICLE_STATUS_URL, USERS_LIST_URL, SEND_INVITATION_URL } from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
 import { getRequest, postRequest, authHeaders } from '../../utils/Utils';
+import { ARTICLE_LIST_URL, ARTICLE_STATUS_URL, USERS_LIST_URL, SEND_INVITATION_URL } from '../../utils/Constants';
 import { Button, Form, Input, Table, FormGroup, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-import './index.css';
 import config_data from '../NewsApp/config.json';
 
+import './index.css';
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
 
@@ -399,7 +399,7 @@ class Article extends React.Component {
 						<div className="clearfix" style={{ width: "100%" }}>
 							<div className="float-left">
 								{this.state.formSuccess ?
-									<h6 className="text-success m-0">Form submitted successfully.</h6>
+									<h6 className="text-success m-0">Send Invitation successfully.</h6>
 									: ""}
 							</div>
 							<div className="float-right">

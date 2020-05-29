@@ -217,6 +217,10 @@ class EtherpadView(EditorTemplateView):
 
         pad_id = get_content[0]['pad_id']
 
+        text_data = etherpad_obj.getText(padID=pad_id)
+
+        update_content = article.update_article(pad_id, text_data)
+
         context["domain"] = self.request.user.domain.domain_id
         context["etherpad_url"] = ETHERPAD_URL
         context["etherpad_server"] = ETHERPAD_SERVER
