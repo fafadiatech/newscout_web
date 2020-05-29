@@ -11,6 +11,7 @@ module.exports = {
     dashboardAdvertisement: './src/app/DashboardApp/Advertisement.js',
     dashboardArticle: './src/app/DashboardApp/Article.js',
     dashboardArticleForm: './src/app/DashboardApp/ArticleForm.js',
+    dashboardEtherpad: './src/app/DashboardApp/Etherpad.js',
     news: './src/app/NewsApp/index.js',
     newsLatestNews: './src/app/NewsApp/LatestNews.js',
     newsMenuPosts: './src/app/NewsApp/MenuPosts.js',

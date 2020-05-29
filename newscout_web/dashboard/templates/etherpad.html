@@ -1,0 +1,20 @@
+{% extends 'dashboard-base.html' %}
+{% load static %}
+
+{% block title %}NewScout: Etherpad{% endblock title %}
+
+{% block content %}
+<div id="root"></div>
+{% endblock content %}
+
+{% block js %}
+<script type="text/javascript">
+    var ACTIVE_PAGE = '{{active_page|safe}}'
+    var USERNAME = '{{request.user.first_name}} {{request.user.last_name}}'
+    var ETHERPAD_URL = '{{etherpad_url|safe}}'
+    var ETHERPAD_SERVER = '{{etherpad_server|safe}}'
+    var ETHERPAD_API = '{{etherpad_api|safe}}'
+    var PAD_ID = '{{pad_id|safe}}'
+</script>
+<script src="{% static "js/react/dashboardEtherpad.js" %}"></script>
+{% endblock js %}

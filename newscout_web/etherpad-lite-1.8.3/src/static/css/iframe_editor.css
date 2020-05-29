@@ -1,0 +1,146 @@
+/*
+  These CSS rules are included in both the outer and inner ACE iframe (pad editor)
+*/
+
+@import url('./lists_and_indents.css');
+
+html.inner-editor {
+  height: auto !important;
+  background-color: transparent !important;
+}
+#outerdocbody {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  min-height: 100vh; /* take at least full height */
+}
+#outerdocbody iframe {
+  flex: 1 auto;
+  display: flex;
+  width: 100%;
+}
+#outerdocbody #sidediv {
+  order: -1; /* display it on the first row positionning, i.e. on the left */
+}
+
+/* ACE-PAD Container (i.e. where the text is displayed) */
+#innerdocbody {
+  padding: 10px;
+  overflow: hidden;
+  background-color: white;
+}
+#innerdocbody, #sidediv {
+  padding-top: 10px; /* Both must have same top padding, so line number are aligned with the rows */
+  padding-bottom: 10px; /* some space when we scroll to the bottom */
+}
+
+/* --------------------- */
+/* -- BROWSER SUPPORT -- */
+/* --------------------- */
+
+body.mozilla, body.safari {
+  display: table-cell; /* cause "body" area (e.g. where clicks are heard) to grow horizontally with text */
+}
+.safari div {
+  padding-right: 1px; /* prevents the caret from disappearing on the longest line of the doc */
+}
+span { line-height: 125%; }
+
+
+/* -------------- */
+/* -- WRAPPING -- */
+/* -------------- */
+
+body {
+  white-space: nowrap;
+  word-wrap: normal;
+}
+body.doesWrap {
+  display: block !important;
+  /* white-space: pre-wrap; */
+  /*
+    Must be pre-wrap to keep trailing spaces. Otherwise you get a zombie caret,
+    walking around your screen (see #1766).
+    WARNING: Enabling this causes Paste as plain text in Chrome to remove line breaks
+    this is probably undesirable
+    WARNING: This causes copy & paste events to lose bold etc. attributes
+    NOTE: The walking-zombie caret issue seems to have been fixed in FF upstream
+    so let's try diabling pre-wrap and see how we get on now.
+    For more details see: https://github.com/ether/etherpad-lite/issues/2574
+  */
+  word-wrap: break-word; /* fix for issue #1648 - firefox not wrapping long lines (without spaces) correctly */
+}
+.noprewrap{
+  white-space: normal;
+}
+body.doesWrap:not(.noprewrap) > div {
+  /* Related to #1766 */
+  white-space: pre-wrap;
+}
+
+
+/* ------------------------------------------ */
+/* -- SIDEDIV (line number, text author..) -- */
+/* ------------------------------------------ */
+
+#sidediv {
+  font-size: 11px;
+  font-family: monospace;
+  padding-right: 5px;
+  padding-left: 12px;
+  background-color: transparent;
+  border-right: 1px solid #ccc;
+}
+#sidedivinner {
+  text-align: right;
+  opacity: .9;
+}
+#sidediv:not(.sidedivdelayed) { /* before sidediv get initialized, hide text */
+  color: transparent;
+}
+#sidediv.sidedivhidden {
+  /* Do not use display: none to hide the sidediv, otherwise the parent container does not
+       get its height properly calculated by flexboxes */
+  visibility: hidden;
+  width: 0;
+  padding: 0;
+}
+#linemetricsdiv {
+  position: absolute;
+  left: -1000px;
+  top: -1000px;
+  color: white;
+  z-index: -1;
+  font-size: 12px; /* overridden by lineMetricsDiv.style */
+  font-family: monospace; /* overridden by lineMetricsDiv.style */
+}
+@media (max-width: 720px) {
+  #sidediv {
+    /* Do not use display: none to hide the sidediv, otherwise the parent container does not
+       get its height properly calculated by flexboxes */
+    visibility: hidden;
+    width: 0;
+    padding: 0;
+  }
+}
+
+
+
+
+/* ----------- */
+/* -- OTHER -- */
+/* ----------- */
+
+::selection {
+  background: #acf;
+}
+::-moz-selection {
+  background: #acf;
+}
+#innerdocbody a {
+  cursor: pointer !important;
+  white-space:pre-wrap;
+}
+body.grayedout {
+  background-color: #eee !important
+}

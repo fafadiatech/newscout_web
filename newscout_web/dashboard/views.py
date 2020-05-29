@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 
+import uuid
+import requests
 from django.views.generic import FormView
+from braces.views import LoginRequiredMixin
+from etherpad_lite import EtherpadLiteClient
 from django.http import HttpResponseRedirect
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic.base import TemplateView, RedirectView
-from braces.views import LoginRequiredMixin
-from django.contrib.auth.views import redirect_to_login
+from newscout_web.settings import ETHERPAD_URL, ETHERPAD_SERVER, ETHERPAD_APIKEY
+
+from core.models import Article
+
 from .forms import LoginForm
+
+from event_tracking.models import ArticleMongo
+etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY})
 
 
 class EditorTemplateView(LoginRequiredMixin, TemplateView):
@@ -17,14 +27,15 @@ class EditorTemplateView(LoginRequiredMixin, TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect_to_login(request.get_full_path(),
-                                     self.get_login_url(),
-                                     self.get_redirect_field_name())
+            return redirect_to_login(
+                request.get_full_path(),
+                self.get_login_url(),
+                self.get_redirect_field_name(),
+            )
 
         if not request.user.is_editor:
             return HttpResponseRedirect("/")
-        return super(EditorTemplateView, self).dispatch(
-            request, *args, **kwargs)
+        return super(EditorTemplateView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -45,7 +56,7 @@ class IndexView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['active_page'] = "dashboard"
+        context["active_page"] = "dashboard"
         return context
 
 
@@ -54,7 +65,7 @@ class CampaignView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CampaignView, self).get_context_data(**kwargs)
-        context['active_page'] = "campaign"
+        context["active_page"] = "campaign"
         return context
 
 
@@ -63,7 +74,7 @@ class GroupView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(GroupView, self).get_context_data(**kwargs)
-        context['active_page'] = "group"
+        context["active_page"] = "group"
         return context
 
 
@@ -72,7 +83,7 @@ class AdvertisementView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AdvertisementView, self).get_context_data(**kwargs)
-        context['active_page'] = "advertisement"
+        context["active_page"] = "advertisement"
         return context
 
 
@@ -81,7 +92,7 @@ class ArticleView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleView, self).get_context_data(**kwargs)
-        context['active_page'] = "article"
+        context["active_page"] = "article"
         return context
 
 
@@ -90,7 +101,7 @@ class ArticleCreateView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleCreateView, self).get_context_data(**kwargs)
-        context['active_page'] = 'article-create'
+        context["active_page"] = "article-create"
         return context
 
 
@@ -99,8 +110,8 @@ class ArticleEditView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleEditView, self).get_context_data(**kwargs)
-        context['active_page'] = 'article-edit'
-        context['article_slug'] = kwargs.get('slug')
+        context["active_page"] = "article-edit"
+        context["article_slug"] = kwargs.get("slug")
         return context
 
 
@@ -112,12 +123,13 @@ class QCToolView(EditorTemplateView):
         context["domain"] = self.request.user.domain.domain_id
         return context
 
+
 class ChangePasswordView(EditorTemplateView):
     template_name = "change-password.html"
-    
+
     def get_context_data(self, **kwargs):
         context = super(ChangePasswordView, self).get_context_data(**kwargs)
-        context['active_page'] = 'change-password'
+        context["active_page"] = "change-password"
         return context
 
 
@@ -136,8 +148,8 @@ class LoginView(FormView):
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        email = form.cleaned_data['email']
-        password = form.cleaned_data['password']
+        email = form.cleaned_data["email"]
+        password = form.cleaned_data["password"]
         next_url = self.request.GET.get("next")
         user = authenticate(request=None, username=email, password=password)
         if user and user.is_active:
@@ -177,9 +189,41 @@ class SubscriptionView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubscriptionView, self).get_context_data(**kwargs)
-        context['active_page'] = "subscription"
-        if 'pk' in kwargs:
-            context['pk'] = kwargs.get('pk')
+        context["active_page"] = "subscription"
+        if "pk" in kwargs:
+            context["pk"] = kwargs.get("pk")
         else:
-            context['pk'] = None
+            context["pk"] = None
+        return context
+
+
+class EtherpadView(EditorTemplateView):
+    template_name = "etherpad.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(EtherpadView, self).get_context_data(**kwargs)
+        slug = kwargs["slug"]
+        split_slug = slug.split("-")
+        slug_array = []
+
+        for i in split_slug:
+            if i != split_slug[-1]:
+                slug_array.append(i)
+        slug_string = "-".join(slug_array)
+        get_article_obj = Article.objects.get(slug=slug_string)
+        
+        article = ArticleMongo()
+        get_content = article.find_article(get_article_obj.id)
+
+        pad_id = get_content[0]['pad_id']
+
+        text_data = etherpad_obj.getText(padID=pad_id)
+
+        update_content = article.update_article(pad_id, text_data)
+
+        context["domain"] = self.request.user.domain.domain_id
+        context["etherpad_url"] = ETHERPAD_URL
+        context["etherpad_server"] = ETHERPAD_SERVER
+        context["etherpad_api"] = ETHERPAD_APIKEY
+        context["pad_id"] = pad_id
         return context
