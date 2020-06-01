@@ -15,7 +15,7 @@ import {
 } from '../../utils/Constants';
 import {
     getRequest, postRequest, putRequest, fileUploadHeaders,
-    deleteRequest
+    deleteRequest, authHeaders
 } from '../../utils/Utils';
 import { Button, Form, FormGroup, Label, FormText, Row, Col } from 'reactstrap';
 import Summernote from '../../components/Summernote';
@@ -187,12 +187,12 @@ class ArticleForm extends React.Component {
         fields.domain = fields.domain.value
         if (method == "post") {
             var body = JSON.stringify(fields)
-            postRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "POST");
+            postRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "POST", authHeaders);
         } else {
             fields.published_on = moment(fields.published_on, "YYYY-MM-DD HH:mm Z")
             fields.id = this.state.article_id
             var body = JSON.stringify(fields)
-            putRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "PUT");
+            putRequest(ARTICLE_CREATE_URL, body, this.articleSubmitResponse, "PUT", authHeaders);
         }
     }
 

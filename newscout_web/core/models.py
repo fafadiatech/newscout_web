@@ -129,7 +129,7 @@ class Article(NewsSiteBaseModel):
         Category, blank=True, null=True, on_delete=models.CASCADE
     )
     hash_tags = models.ManyToManyField(HashTag, blank=True, default=None)
-    source_url = models.TextField(validators=[URLValidator()], blank=True, null=True)
+    source_url = models.TextField(validators=[URLValidator()])
     cover_image = models.TextField(validators=[URLValidator()])
     blurb = models.TextField(blank=True, null=True)
     full_text = models.TextField()
