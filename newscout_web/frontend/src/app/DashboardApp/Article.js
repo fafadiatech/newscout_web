@@ -172,9 +172,8 @@ class Article extends React.Component {
 		postRequest(SEND_INVITATION_URL, body, this.sendInvitationResponse, "POST", authHeaders);
 	}
 
-	collaborateModal = () => {
-		var col_data = document.getElementsByClassName('col-link')[0];
-		var slug = col_data.dataset.slug;
+	collaborateModal = (e) => {
+		var slug = e.target.dataset.slug;
 		this.setState(prevState => ({
 			modal: !prevState.modal,
 			slug: slug
@@ -313,7 +312,7 @@ class Article extends React.Component {
 					</ul>
 				</td>
 				<td>
-					<a className="btn btn-info btn-sm col-link" data-slug={el.slug} onClick={this.collaborateModal}>Collaborate</a>
+					<a className="btn btn-info btn-sm col-link" data-slug={el.slug} onClick={(e) => this.collaborateModal(e)}>Collaborate</a>
 				</td>
 			</tr>
 			results.push(data);
