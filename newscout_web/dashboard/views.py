@@ -17,7 +17,7 @@ from core.models import Article
 from .forms import LoginForm
 
 from event_tracking.models import ArticleMongo
-etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY})
+etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY}, base_url=ETHERPAD_SERVER+"api")
 
 
 class EditorTemplateView(LoginRequiredMixin, TemplateView):
