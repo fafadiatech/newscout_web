@@ -103,7 +103,7 @@ SMTP_PASSWORD = settings.EMAIL_HOST_PASSWORD
 
 from event_tracking.models import ArticleMongo
 from etherpad_lite import EtherpadLiteClient
-etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY})
+etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY}, base_url=ETHERPAD_SERVER+"api")
 
 def create_response(response_data):
     """
