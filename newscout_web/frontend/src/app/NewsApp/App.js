@@ -239,29 +239,28 @@ class App extends React.Component {
 		})
 		this.setState({
 			trending: trending_array,
-			isLoading: false
 		})
 	}
 
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS + "?" + this.state.domain + "&category=" + cat_name
 		if (cat_name == "Uncategorised") {
-			this.setState({ isLoading: true })
+			this.setState({ isLoading: false })
 			getRequest(url, this.latestNewsPosts)
 		} else if (cat_name == "Finance") {
-			this.setState({ isLoading: true })
+			this.setState({ isLoading: false })
 			getRequest(url, this.financePosts)
 		} else if (cat_name == "Economics") {
-			this.setState({ isLoading: true })
+			this.setState({ isLoading: false })
 			getRequest(url, this.economicPosts)
 		} else if (cat_name == "Misc") {
-			this.setState({ isLoading: true })
+			this.setState({ isLoading: false })
 			getRequest(url, this.miscPosts)
 		} else if (cat_name == "Sector Updates") {
-			this.setState({ isLoading: true })
+			this.setState({ isLoading: false })
 			getRequest(url, this.sectorUpdatePosts)
 		} else if (cat_name == "Regional Updates") {
-			this.setState({ isLoading: true })
+			this.setState({ isLoading: false })
 			getRequest(url, this.regionalUpdatePosts)
 		}
 	}
@@ -458,6 +457,7 @@ class App extends React.Component {
 			options: options_array
 		})
 	}
+
 	setEventTracker = () => {
 		console.log("data")
 	}
