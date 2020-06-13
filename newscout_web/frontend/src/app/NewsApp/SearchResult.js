@@ -273,7 +273,7 @@ class SearchResult extends React.Component {
 		})
 		setTimeout(() => {
 			this.setState({ isLoading: false })
-		}, 3000)
+		}, 1000)
 	}
 
 	queryFilter = (data, checked) => {
