@@ -421,7 +421,10 @@ class ArticleDetail extends React.Component {
 			var category = article.category.replace(" ", "-").toLowerCase()
 		}
 		var description = article.caption;
-		var source_url = article.source_url;
+		var source_url = "";
+		if(source_url !== undefined){
+			source_url = article.source_url;
+		}
 		if (!this.state.has_subscribed) {
 			source_url = "";
 			description = article.caption
@@ -481,7 +484,7 @@ class ArticleDetail extends React.Component {
 																title={article.title}
 																description={description}
 																uploaded_by={article.source}
-																source_url={source_url}
+																source_url={article.source_url}
 																slug_url={article.slug}
 																category={article.category}
 																hash_tags={article.hash_tags}

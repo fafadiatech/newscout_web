@@ -176,6 +176,7 @@ class MenuPosts extends React.Component {
 					article_dict['altText'] = item.title
 					article_dict['caption'] = item.blurb
 					article_dict['source'] = item.source
+					article_dict['source_url'] = item.source_url
 					article_dict['slug'] = "/news/article/" + item.slug
 					article_dict['category'] = item.category
 					article_dict['hash_tags'] = item.hash_tags
@@ -367,7 +368,7 @@ class MenuPosts extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}

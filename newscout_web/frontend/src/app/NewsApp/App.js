@@ -228,6 +228,7 @@ class App extends React.Component {
 					article_dict['altText'] = articles.title
 					article_dict['caption'] = articles.blurb
 					article_dict['source'] = articles.source
+					article_dict['source_url'] = articles.source_url
 					article_dict['category'] = articles.category
 					article_dict['slug'] = "/news/article/" + articles.slug
 					article_dict['source_url'] = articles.source_url
@@ -283,6 +284,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
+				article_dict['source_url'] = item.source_url
 				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
@@ -308,6 +310,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
+				article_dict['source_url'] = item.source_url
 				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
@@ -333,6 +336,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
+				article_dict['source_url'] = item.source_url
 				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
@@ -359,6 +363,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
+				article_dict['source_url'] = item.source_url
 				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
@@ -384,6 +389,7 @@ class App extends React.Component {
 				article_dict['altText'] = item.title
 				article_dict['caption'] = item.blurb
 				article_dict['source'] = item.source
+				article_dict['source_url'] = item.source_url
 				article_dict['slug'] = "/news/article/" + item.slug
 				article_dict['category'] = item.category
 				article_dict['hash_tags'] = item.hash_tags
@@ -506,7 +512,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -533,7 +539,7 @@ class App extends React.Component {
 						title={item.header}
 						description={item.caption}
 						uploaded_by={item.source}
-						source_url={item.slug}
+						source_url={item.source_url}
 						slug_url={item.slug}
 						category={item.category}
 						is_loggedin={is_loggedin}
@@ -560,7 +566,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -589,7 +595,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							size="sm"
@@ -611,7 +617,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
@@ -640,7 +646,7 @@ class App extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}
