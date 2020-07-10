@@ -131,6 +131,7 @@ class MenuPosts extends React.Component {
 	}
 
 	getNewsData = (data) => {
+		var final_category = '';
 		data.body.results.map((item, index) => {
 			if (item.heading) {
 				var heading = item.heading.name.replace(" ", "-").toLowerCase();
@@ -145,12 +146,15 @@ class MenuPosts extends React.Component {
 						})
 						// console.log(final_data[0])
 						// if (final_data.length === 1) {
-						this.getPosts(final_data[0].name)
+						final_category = final_data[0].name
 						// }
 					})
 				}
 			}
 		})
+		if(final_category !== undefined && final_category !== null){
+			this.getPosts(final_category)
+		}
 	}
 
 	getPosts = (cat_name) => {
