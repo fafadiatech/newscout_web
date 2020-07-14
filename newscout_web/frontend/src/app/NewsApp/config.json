@@ -8,12 +8,12 @@
 		{
 			"itemurl": "dashboard/articles",
 			"itemtext": "Articles",
-			"item_icon": "static/icons/article.png"
+			"item_icon": "static/icons/news.png"
 		},
 		{
 			"itemurl": "dashboard/subscription",
 			"itemtext": "Subscription",
-			"item_icon": "static/icons/article.png"
+			"item_icon": "static/icons/news.png"
 		},
 		{
 			"itemurl": "dashboard/campaigns",
@@ -28,7 +28,7 @@
 		{
 			"itemurl": "dashboard/advertisements",
 			"itemtext": "Advertisement",
-			"item_icon": "static/icons/advrtisement.png"
+			"item_icon": "static/icons/advrtismnt.png"
 		}
 	]
 }
