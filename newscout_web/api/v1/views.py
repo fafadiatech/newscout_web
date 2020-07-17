@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.http import Http404
 
+
 import os
 import sys
 
@@ -52,6 +53,7 @@ from .serializers import (
     UserProfileSerializer,
     DomainSerializer,
     UserListSerializer,
+
 )
 
 from rest_framework.response import Response
@@ -1692,7 +1694,7 @@ class AutoCompleteAPIView(generics.GenericAPIView):
                     "suggest": {
                         "results": {
                             "text": query,
-                            "completion": {"field": "name_suggest"},
+                            "completion": {"field": "name_suggest", "size": 10,},
                         }
                     }
                 },

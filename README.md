@@ -82,3 +82,4 @@ in settings.py file it will create sqlite database (You can skip following 3 ste
    sudo apt install elasticsearch
    ```
 1. Ingest data into elasticsearch `python manage.py ingest_data_to_elastic`
+1. Ensure you've installed NER model from spaCy `python3 -m spacy download en_core_web_sm`

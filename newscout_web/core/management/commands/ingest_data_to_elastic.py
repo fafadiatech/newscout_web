@@ -1,4 +1,5 @@
 from hashlib import md5
+from collections import defaultdict
 
 from django.core.management.base import BaseCommand
 
@@ -6,7 +7,7 @@ from api.v1.serializers import ArticleSerializer
 
 from core.utils import create_index, ingest_to_elastic
 
-from core.models import Article, Domain, Category, Source
+from core.models import Article, Domain, Category, Source, sample
 
 auto_suggestion_mapping = {
     "mappings": {
@@ -23,6 +24,7 @@ auto_suggestion_mapping = {
     }
 }
 
+
 class IngestArticle(BaseCommand):
     batch = []
 
@@ -37,7 +39,7 @@ class IngestArticle(BaseCommand):
 
     def ingest(self, *args, **options):
         print("Ingesting Data from Database\n")
-        index = 'article'
+        index = "article"
         create_index(index)
         for article in Article.objects.all().iterator():
             serializer = ArticleSerializer(article)
@@ -47,10 +49,10 @@ class IngestArticle(BaseCommand):
                 json_data["hash_tags"] = tag_list
             self.batch.append(json_data)
             if len(self.batch) == 999:
-                ingest_to_elastic(self.batch, index, index, 'id')
+                ingest_to_elastic(self.batch, index, index, "id")
                 self.batch = []
                 print("Ingesting Batch...!!!")
-        ingest_to_elastic(self.batch, index, index, 'id')
+        ingest_to_elastic(self.batch, index, index, "id")
         print("Ingesting Final Batch...!!!")
 
 
@@ -59,8 +61,9 @@ class IngestSuggestions(BaseCommand):
 
     def ingest(self, *args, **options):
         print("Ingesting Data from Database\n")
-        index = 'auto_suggestions'
+        index = "auto_suggestions"
         create_index(index, auto_suggestion_mapping)
+
         for domain in Domain.objects.filter(domain_name__isnull=False).iterator():
             if domain.domain_name:
                 as_dict = {}
@@ -69,9 +72,11 @@ class IngestSuggestions(BaseCommand):
                 as_dict["id"] = md5(str(domain.domain_name).encode("utf-8")).hexdigest()
                 self.batch.append(as_dict)
                 if len(self.batch) == 999:
-                    ingest_to_elastic(self.batch, index, index, 'id')
+                    ingest_to_elastic(self.batch, index, index, "id")
                     self.batch = []
                     print("Ingesting Batch...!!!")
+        print("Done ingesting domains")
+
         for source in Source.objects.filter(name__isnull=False).iterator():
             if source.name:
                 as_dict = {}
@@ -80,9 +85,11 @@ class IngestSuggestions(BaseCommand):
                 as_dict["id"] = md5(str(source.name).encode("utf-8")).hexdigest()
                 self.batch.append(as_dict)
                 if len(self.batch) == 999:
-                    ingest_to_elastic(self.batch, index, index, 'id')
+                    ingest_to_elastic(self.batch, index, index, "id")
                     self.batch = []
                     print("Ingesting Batch...!!!")
+        print("Done ingesting sources")
+
         for cat in Category.objects.filter(name__isnull=False).iterator():
             if cat.name:
                 as_dict = {}
@@ -91,10 +98,37 @@ class IngestSuggestions(BaseCommand):
                 as_dict["id"] = md5(str(cat.name).encode("utf-8")).hexdigest()
                 self.batch.append(as_dict)
                 if len(self.batch) == 999:
-                    ingest_to_elastic(self.batch, index, index, 'id')
+                    ingest_to_elastic(self.batch, index, index, "id")
                     self.batch = []
                     print("Ingesting Batch...!!!")
-        ingest_to_elastic(self.batch, index, index, 'id')
+        ingest_to_elastic(self.batch, index, index, "id")
+        print("Done ingesting categories")
+
+        results = sample(Article, 500)
+        counts = defaultdict(int)
+
+        for current in results:
+            article = Article.objects.get(id=current)
+            for entity in article.entities():
+                token, label = entity
+                counts[token] += 1
+
+        n = 0
+        processed = []
+        for k, v in counts.items():
+            if v > 1 and k[0].isupper() and k not in processed:
+                as_dict = {}
+                as_dict["desc"] = k
+                as_dict["name_suggest"] = k
+                as_dict["id"] = md5(str(k).encode("utf-8")).hexdigest()
+                self.batch.append(as_dict)
+                if len(self.batch) == 999:
+                    ingest_to_elastic(self.batch, index, index, "id")
+                    self.batch = []
+                    print("Ingesting Batch...!!!")
+                n += 1
+        ingest_to_elastic(self.batch, index, index, "id")
+        print(f"Generated {n} suggestions")
         print("Ingesting Final Batch...!!!")
 
 
@@ -135,8 +169,8 @@ def make_a_choice():
 
 
 class Command(BaseCommand):
-    help = 'This command is used to ingest data from \
-        database to elastic search'
+    help = "This command is used to ingest data from \
+        database to elastic search"
 
     def handle(self, *args, **options):
         make_a_choice()

@@ -2,12 +2,16 @@
 from __future__ import unicode_literals
 
 import random
+import spacy
 
 from django.db import models
+from django.db.models import Max
 from django.core.validators import URLValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.utils.text import slugify
+
+nlp = spacy.load("en_core_web_sm")
 
 
 class NewsSiteBaseModel(models.Model):
@@ -173,6 +177,19 @@ class Article(NewsSiteBaseModel):
                 slugify(self.title), self.pk
             )
             self.save()
+
+
+    def entities(self):
+        """
+        this method is used to extract entities using spaCy
+        """
+        results = []
+        doc = nlp(self.title + " " + self.blurb)
+        white_listed_labels = ["PRODUCT", "PERSON", "ORG", "GPE"]
+        for ent in doc.ents:
+            if ent.label_ in white_listed_labels:
+                results.append((ent.text, ent.label_))
+        return list(set(results))
 
 
 class ArticleMedia(NewsSiteBaseModel):
@@ -395,4 +412,25 @@ class Subscription(NewsSiteBaseModel):
     payement_mode = models.CharField(choices=SUBS_TYPE, max_length=50)
 
     def __str__(self):
-        return "{0} {1}".format(self.user.username, self.subs_type)
+        return "{self.user}, {self.sub_typ}"
+
+
+def sample(model, n=100):
+    """
+    this method is used to sample random instances from mode
+    the way it works is it keeps on generating random ids
+    based on instance between some range
+    """
+    results = []
+    max_id = model.objects.all().aggregate(max_id=Max("id"))["max_id"]
+
+    while len(results) < n:
+        pk = random.randint(1, max_id)
+
+        # avoid duplicates
+        if pk in results:
+            continue
+
+        if model.objects.filter(id=pk).exists():
+            results.append(pk)
+    return results
