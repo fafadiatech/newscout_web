@@ -131,6 +131,7 @@ class MenuPosts extends React.Component {
 	}
 
 	getNewsData = (data) => {
+		var final_category = '';
 		data.body.results.map((item, index) => {
 			if (item.heading) {
 				var heading = item.heading.name.replace(" ", "-").toLowerCase();
@@ -145,12 +146,15 @@ class MenuPosts extends React.Component {
 						})
 						// console.log(final_data[0])
 						// if (final_data.length === 1) {
-						this.getPosts(final_data[0].name)
+						final_category = final_data[0].name
 						// }
 					})
 				}
 			}
 		})
+		if(final_category !== undefined && final_category !== null){
+			this.getPosts(final_category)
+		}
 	}
 
 	getPosts = (cat_name) => {
@@ -176,6 +180,7 @@ class MenuPosts extends React.Component {
 					article_dict['altText'] = item.title
 					article_dict['caption'] = item.blurb
 					article_dict['source'] = item.source
+					article_dict['source_url'] = item.source_url
 					article_dict['slug'] = "/news/article/" + item.slug
 					article_dict['category'] = item.category
 					article_dict['hash_tags'] = item.hash_tags
@@ -197,7 +202,7 @@ class MenuPosts extends React.Component {
 			})
 			setTimeout(() => {
 				this.setState({ isLoading: false })
-			}, 3000)
+			}, 1000)
 		}
 	}
 
@@ -367,7 +372,7 @@ class MenuPosts extends React.Component {
 							title={item.header}
 							description={item.caption}
 							uploaded_by={item.source}
-							source_url={item.slug}
+							source_url={item.source_url}
 							slug_url={item.slug}
 							category={item.category}
 							hash_tags={item.hash_tags}

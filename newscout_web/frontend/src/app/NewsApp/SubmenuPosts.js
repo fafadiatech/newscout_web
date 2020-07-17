@@ -251,7 +251,7 @@ class SubmenuPosts extends React.Component {
 		})
 		setTimeout(() => {
 			this.setState({ isLoading: false })
-		}, 3000)
+		}, 1000)
 	}
 
 	isSideBarToogle = (data) => {

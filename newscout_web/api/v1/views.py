@@ -2,6 +2,10 @@
 from __future__ import unicode_literals
 from django.http import Http404
 
+
+import os
+import sys
+
 from core.models import (
     Category,
     Article,
@@ -47,6 +51,9 @@ from .serializers import (
     CommentListSerializer,
     SubsMediaSerializer,
     UserProfileSerializer,
+    DomainSerializer,
+    UserListSerializer,
+
 )
 
 from rest_framework.response import Response
@@ -87,9 +94,18 @@ import json
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 
+from newscout_web.settings import ETHERPAD_URL, ETHERPAD_SERVER, ETHERPAD_APIKEY
 
 log = logging.getLogger(__name__)
 
+EMAIL_FROM = settings.EMAIL_FROM
+SMTP_SERVER = settings.EMAIL_HOST
+SMTP_PORT = settings.EMAIL_PORT
+SMTP_PASSWORD = settings.EMAIL_HOST_PASSWORD
+
+from event_tracking.models import ArticleMongo
+from etherpad_lite import EtherpadLiteClient
+etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY}, base_url=ETHERPAD_SERVER+"api")
 
 def create_response(response_data):
     """
@@ -249,6 +265,28 @@ class SourceListAPIView(APIView):
         return Response(create_response({"results": source.data}))
 
 
+class DomainsListAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None, *args, **kwargs):
+        """
+        List all the domains
+        """
+        domain = DomainSerializer(Domain.objects.all(), many=True)
+        return Response(create_response({"results": domain.data}))
+
+
+class UsersListAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None, *args, **kwargs):
+        """
+        List all the Users
+        """
+        users = UserListSerializer(BaseUserProfile.objects.all(), many=True)
+        return Response(create_response({"results": users.data}))
+
+
 class NoarticleFound(APIException):
     """
     api exception for no user found
@@ -328,9 +366,9 @@ class ArticleDetailAPIView(APIView):
         article = Article.objects.filter(slug=slug).first()
         has_subscribed = False
         if (
-            not self.request.user.is_anonymous
-            and Subscription.objects.filter(user=self.request.user)
-            .exlcude(subs_type="Basic")
+            not user.is_anonymous
+            and Subscription.objects.filter(user=user)
+            .exclude(subs_type="Basic")
             .exists()
         ):
             has_subscribed = True
@@ -1748,7 +1786,6 @@ class AccessSession(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        print(request.META.items())
         request.session["ip"] = request.META.get("REMOTE_ADDR")
         return Response(create_response({"results": request.session._session_key}))
 
@@ -1775,3 +1812,89 @@ class RSSAPIView(APIView):
                 return Response(create_response({"results": data}))
             return Response(create_error_response({"error": "Domain do not exist."}))
         return Response(create_error_response({"error": "Domain is required"}))
+
+
+class SendInvitationView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.data:
+            collaborator = request.data["collaborator"]
+            slug = request.data["slug"]
+        else:
+            collaborator = self.request.POST.get("collaborator", "")
+            slug = self.request.POST.get("slug", "")
+
+        get_user = BaseUserProfile.objects.filter(id=collaborator)
+        get_article = Article.objects.filter(slug=slug)
+
+        email_subject = 'Collaborate Article'
+
+        if get_user.exists():
+            get_user_email = get_user[0].email
+            get_article_detail = get_article[0]
+            invitation_url = "{0}/etherpad/{1}-{2}".format(request.META['HTTP_HOST'], slug, get_user[0].id)
+
+            email_body = """
+                <html>
+                    <head>
+                    </head>
+                    <body>
+                        Hi {0} {1},
+                        <br/>
+                        Please find url to collaborate with newscout.
+                        <br/>
+                        <b>Collaborate Url :</b> <a href='{2}'>{3}</a>
+                    </body>
+                </html>
+            """.format(get_user[0].first_name.capitalize(), get_user[0].last_name.capitalize(), invitation_url, invitation_url)
+
+            article = ArticleMongo()
+
+            split_slug = slug.split("-")
+            slug_array = []
+            for i in split_slug:
+                if i != split_slug[-1]:
+                    slug_array.append(i)
+            slug_string = "-".join(slug_array)
+            get_article_obj = get_article[0]
+            pad_id = uuid.uuid4().hex
+            article.insert_article(get_article_obj, pad_id)
+            etherpad_obj.createPad(padID=pad_id, text=get_article_obj.blurb)
+
+        try:
+            msg = EmailMultiAlternatives(email_subject, '', EMAIL_FROM, [get_user_email])
+            ebody = email_body
+            msg.attach_alternative(ebody, "text/html")
+            msg.send(fail_silently=False)
+        except:
+            print("Unable to send the email. Error: ", sys.exc_info()[0])
+            raise
+
+        return Response(
+            create_error_response(
+                {"Msg": "Old Password field is required", "field": "old_password"}
+            )
+        )
+
+
+class SyncEtherpadView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        if request.data:
+            pad_id = request.data['pad_id']
+        else:
+            pad_id = self.request.POST.get('pad_id')
+
+        article = ArticleMongo()
+        get_content = article.sync_article(pad_id)
+        pad_id = get_content[0]['pad_id']
+        get_slug = get_content[0]['slug']
+
+        updated_content = etherpad_obj.getHTML(padID=pad_id)
+        article_obj = Article.objects.get(slug=get_slug)
+        article_obj.blurb = updated_content['html']
+        article_obj.save()
+        
+        return Response(create_response({"results": "Article synced successfully."}))

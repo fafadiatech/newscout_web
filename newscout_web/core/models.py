@@ -172,6 +172,13 @@ class Article(NewsSiteBaseModel):
             self.slug = "{0}-{1}".format(slugify(self.title), self.pk)
             self.save()
 
+        if not self.source_url:
+            self.source_url = "http://newscout.in/news/aricle/{0}-{1}".format(
+                slugify(self.title), self.pk
+            )
+            self.save()
+
+
     def entities(self):
         """
         this method is used to extract entities using spaCy

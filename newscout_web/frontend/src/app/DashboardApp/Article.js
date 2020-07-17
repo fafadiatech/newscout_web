@@ -1,20 +1,21 @@
 import React from 'react';
 import moment from 'moment';
 import ReactDOM from 'react-dom';
+import Select from 'react-select';
 import Cookies from 'universal-cookie';
 import logo from '../NewsApp/logo.png';
 import { ToastContainer } from 'react-toastify';
 import { Menu, SideBar, Footer } from 'newscout';
 import * as serviceWorker from './serviceWorker';
-import { ARTICLE_LIST_URL, ARTICLE_STATUS_URL } from '../../utils/Constants';
 import DashboardMenu from '../../components/DashboardMenu';
 import DashboardHeader from '../../components/DashboardHeader';
 import { getRequest, postRequest, authHeaders } from '../../utils/Utils';
-import { Button, Form, Input, Row, Col, Table } from 'reactstrap';
+import { ARTICLE_LIST_URL, ARTICLE_STATUS_URL, USERS_LIST_URL, SEND_INVITATION_URL } from '../../utils/Constants';
+import { Button, Form, Input, Table, FormGroup, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
-import './index.css';
 import config_data from '../NewsApp/config.json';
 
+import './index.css';
 import 'newscout/assets/Menu.css'
 import 'newscout/assets/Sidebar.css'
 
@@ -35,6 +36,11 @@ class Article extends React.Component {
 			isChecked: false,
 			username: USERNAME,
 			isChecked: false,
+			modal: false,
+			formSuccess: false,
+			collaborators: [],
+			collaborator: "",
+			slug: "",
 		};
 	}
 
@@ -91,6 +97,12 @@ class Article extends React.Component {
 		})
 	}
 
+	handleCollaborator = (e) => {
+		this.setState({
+			collaborator: e
+		})
+	}
+
 	handleKeyPress = (event) => {
 		if (event.key === 'Enter') {
 			event.preventDefault();
@@ -135,7 +147,7 @@ class Article extends React.Component {
 		}, 3000);
 	}
 
-	isSideBarToogle = (data) => {
+	isSideBarToggle = (data) => {
 		if (data === true) {
 			this.setState({ isSideOpen: true })
 			cookies.set('isSideOpen', true, { path: '/' });
@@ -143,6 +155,29 @@ class Article extends React.Component {
 			this.setState({ isSideOpen: false })
 			cookies.remove('isSideOpen', { path: '/' });
 		}
+	}
+
+	sendInvitationResponse = (data, extra_data) => {
+		this.setState({ 'formSuccess': true });
+		setTimeout(() => {
+			this.setState({ 'modal': false, 'formSuccess': false });
+		}, 3000);
+	}
+
+	sendInvitation = (e) => {
+		e.preventDefault();
+		var collaborator = this.state.collaborator
+		var slug = this.state.slug
+		const body = JSON.stringify({'collaborator':collaborator.value, 'slug':slug})
+		postRequest(SEND_INVITATION_URL, body, this.sendInvitationResponse, "POST", authHeaders);
+	}
+
+	collaborateModal = (e) => {
+		var slug = e.target.dataset.slug;
+		this.setState(prevState => ({
+			modal: !prevState.modal,
+			slug: slug
+		}));
 	}
 
 	toggleSwitch = (data) => {
@@ -191,9 +226,29 @@ class Article extends React.Component {
 		}
 	}
 
+	getUsers = (data) => {
+		getRequest(USERS_LIST_URL, this.getUsersData, authHeaders);
+	}
+
+	getUsersData = (data) => {
+		console.log(data)
+		let users_array = []
+		data.body.results.map((item, index) => {
+			let users_dict = {}
+			users_dict['value'] = item.id
+			users_dict['label'] = item.first_name + " " + item.last_name
+			users_dict['name'] = item.email
+			users_array.push(users_dict)
+		})
+		this.setState({
+			collaborators: users_array
+		})
+	}
+
 	componentDidMount() {
 		window.addEventListener('scroll', this.handleScroll, true);
 		this.getArticles();
+		this.getUsers();
 		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
@@ -256,6 +311,9 @@ class Article extends React.Component {
 						</React.Fragment>
 					</ul>
 				</td>
+				<td>
+					<a className="btn btn-info btn-sm col-link" data-slug={el.slug} onClick={(e) => this.collaborateModal(e)}>Collaborate</a>
+				</td>
 			</tr>
 			results.push(data);
 		})
@@ -268,7 +326,7 @@ class Article extends React.Component {
 						logo={logo}
 						navitems={config_data.dashboardmenu}
 						isSlider={true}
-						isSideBarToogle={this.isSideBarToogle}
+						isSideBarToggle={this.isSideBarToggle}
 						isSideOpen={isSideOpen}
 						domain="dashboard"
 						isChecked={isChecked}
@@ -298,11 +356,11 @@ class Article extends React.Component {
 									<Table striped id="campaign-table">
 										<thead>
 											<tr>
-												<th style={{ width: "5%" }}>#</th>
+												<th style={{ width: "3%" }}>#</th>
 												<th style={{ width: "17%" }}>Title</th>
-												<th style={{ width: "12%" }}>Published On</th>
-												<th style={{ width: "12%" }}>Status</th>
-												<th style={{ width: "10%" }}></th>
+												<th style={{ width: "8%" }}>Published On</th>
+												<th style={{ width: "7%" }}>Status</th>
+												<th colSpan="2" style={{ width: "10%" }}></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -321,6 +379,36 @@ class Article extends React.Component {
 						</div>
 					</div>
 				</div>
+
+				<Modal isOpen={this.state.modal} toggle={this.collaborateModal}>
+					<ModalHeader toggle={this.collaborateModal}>Collaborate Article</ModalHeader>
+					<ModalBody>
+						<Form>
+							<FormGroup>
+								<Label for="collaborator">Select Collaborator</Label>
+								<Select
+									options={this.state.collaborators}
+									onChange={(e) => this.handleCollaborator(e)}
+									value={this.state.collaborator}
+								/>
+							</FormGroup>
+						</Form>
+					</ModalBody>
+					<ModalFooter>
+						<div className="clearfix" style={{ width: "100%" }}>
+							<div className="float-left">
+								{this.state.formSuccess ?
+									<h6 className="text-success m-0">Send Invitation successfully.</h6>
+									: ""}
+							</div>
+							<div className="float-right">
+								<Button color="success" onClick={this.sendInvitation} type="button">Send Invitation</Button>&nbsp;&nbsp;
+								<Button color="secondary" onClick={this.collaborateModal} type="button">Cancel</Button>
+							</div>
+						</div>
+					</ModalFooter>
+				</Modal>
+
 				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
 			</React.Fragment>
 		);
