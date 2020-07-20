@@ -65,7 +65,7 @@ class CampaignView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CampaignView, self).get_context_data(**kwargs)
-        context["active_page"] = "campaign"
+        context["active_page"] = "dashboard/campaigns"
         return context
 
 
@@ -74,7 +74,7 @@ class GroupView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(GroupView, self).get_context_data(**kwargs)
-        context["active_page"] = "group"
+        context["active_page"] = "dashboard/groups"
         return context
 
 
@@ -83,7 +83,7 @@ class AdvertisementView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AdvertisementView, self).get_context_data(**kwargs)
-        context["active_page"] = "advertisement"
+        context["active_page"] = "dashboard/advertisements"
         return context
 
 
@@ -92,7 +92,7 @@ class ArticleView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleView, self).get_context_data(**kwargs)
-        context["active_page"] = "article"
+        context["active_page"] = "dashboard/articles"
         return context
 
 
@@ -189,7 +189,7 @@ class SubscriptionView(EditorTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubscriptionView, self).get_context_data(**kwargs)
-        context["active_page"] = "subscription"
+        context["active_page"] = "dashboard/subscription"
         if "pk" in kwargs:
             context["pk"] = kwargs.get("pk")
         else:

@@ -38,7 +38,8 @@ class Campaign extends React.Component {
             username: USERNAME,
             isChecked: false,
             article_update_msg: false,
-            article_sync_msg: false
+            article_sync_msg: false,
+            active_page: ACTIVE_PAGE
         };
     }
 
@@ -126,7 +127,6 @@ class Campaign extends React.Component {
     }
 
     componentDidMount() {
-        console.log(PAD_ID)
         if (cookies.get('isSideOpen')) {
             this.setState({ isSideOpen: true })
         } else {
@@ -141,7 +141,7 @@ class Campaign extends React.Component {
     }
 
     render() {
-        var { isSideOpen, username, isChecked, article_update_msg, article_sync_msg } = this.state
+        var { isSideOpen, username, isChecked, article_update_msg, article_sync_msg, active_page } = this.state
 
         return (
             <React.Fragment>
@@ -159,7 +159,7 @@ class Campaign extends React.Component {
                         isChecked={isChecked} />
                     <div className="container-fluid">
                         <div className="row">
-                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
+                            <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
                             <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
                                 <div className="row">
                                     <div className="col-lg-12">

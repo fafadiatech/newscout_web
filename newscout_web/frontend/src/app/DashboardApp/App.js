@@ -77,6 +77,7 @@ class App extends React.Component {
 			isSideOpen: true,
 			username: USERNAME,
 			isChecked: false,
+			active_page: ACTIVE_PAGE
 		};
 	}
 
@@ -362,7 +363,7 @@ class App extends React.Component {
 		this.getTheme();
 	}
 	render() {
-		var { menus, isSideOpen, username, isChecked } = this.state
+		var { menus, isSideOpen, username, isChecked, active_page } = this.state
 		return (
 			<div className="App">
 				<Menu
@@ -378,7 +379,7 @@ class App extends React.Component {
 				/>
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
+						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 							<div className="row pt-50">
 								<div className="col-md-4">

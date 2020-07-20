@@ -37,6 +37,7 @@ class Campaign extends React.Component {
 			isSideOpen: true,
 			username: USERNAME,
 			isChecked: false,
+			active_page: ACTIVE_PAGE
 		};
 	}
 
@@ -336,7 +337,7 @@ class Campaign extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen, username, isChecked } = this.state
+		var { menus, isSideOpen, username, isChecked, active_page } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -448,7 +449,7 @@ class Campaign extends React.Component {
 						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
-							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
 									<h1 className="h2">Campaigns</h1>

@@ -41,6 +41,7 @@ class Article extends React.Component {
 			collaborators: [],
 			collaborator: "",
 			slug: "",
+			active_page: ACTIVE_PAGE
 		};
 	}
 
@@ -231,7 +232,6 @@ class Article extends React.Component {
 	}
 
 	getUsersData = (data) => {
-		console.log(data)
 		let users_array = []
 		data.body.results.map((item, index) => {
 			let users_dict = {}
@@ -267,7 +267,7 @@ class Article extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen, isChecked, username, isChecked } = this.state
+		var { menus, isSideOpen, isChecked, username, isChecked, active_page } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -335,7 +335,7 @@ class Article extends React.Component {
 						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
-							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
 									<h1 className="h2">Articles</h1>
