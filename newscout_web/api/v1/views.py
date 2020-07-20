@@ -53,7 +53,6 @@ from .serializers import (
     UserProfileSerializer,
     DomainSerializer,
     UserListSerializer,
-
 )
 
 from rest_framework.response import Response
@@ -105,7 +104,11 @@ SMTP_PASSWORD = settings.EMAIL_HOST_PASSWORD
 
 from event_tracking.models import ArticleMongo
 from etherpad_lite import EtherpadLiteClient
-etherpad_obj = EtherpadLiteClient(base_params={"apikey": ETHERPAD_APIKEY}, base_url=ETHERPAD_SERVER+"api")
+
+etherpad_obj = EtherpadLiteClient(
+    base_params={"apikey": ETHERPAD_APIKEY}, base_url=ETHERPAD_SERVER + "api"
+)
+
 
 def create_response(response_data):
     """
@@ -1712,6 +1715,37 @@ class AutoCompleteAPIView(generics.GenericAPIView):
         return Response(create_response({"result": []}))
 
 
+class RelatedAPIView(generics.GenericAPIView):
+    permission_classes = (AllowAny,)
+
+    def format_response(self, response):
+        results = []
+        if response["hits"]["hits"]:
+            for result in response["hits"]["hits"]:
+                results.append(result["_source"])
+        return results
+
+    def get(self, request):
+        result_list = []
+        if request.data:
+            query = request.data["q"]
+        else:
+            query = request.GET.get("q", "")
+        print(query)
+        if query:
+            results = es.search(
+                index="related_queries", body={"query": {"match": {"q": query}}},
+            )
+            results = results["hits"]["hits"]
+            if results:
+                for result in results:
+                    result_list.append(
+                        {"suggestions": result["_source"]["suggestions"],}
+                    )
+                return Response(create_response({"result": result_list}))
+        return Response(create_response({"result": []}))
+
+
 class SubsAPIView(ListAPIView):
     serializer_class = SubsMediaSerializer
     permission_classes = (AllowAny,)
@@ -1828,12 +1862,14 @@ class SendInvitationView(APIView):
         get_user = BaseUserProfile.objects.filter(id=collaborator)
         get_article = Article.objects.filter(slug=slug)
 
-        email_subject = 'Collaborate Article'
+        email_subject = "Collaborate Article"
 
         if get_user.exists():
             get_user_email = get_user[0].email
             get_article_detail = get_article[0]
-            invitation_url = "{0}/etherpad/{1}-{2}".format(request.META['HTTP_HOST'], slug, get_user[0].id)
+            invitation_url = "{0}/etherpad/{1}-{2}".format(
+                request.META["HTTP_HOST"], slug, get_user[0].id
+            )
 
             email_body = """
                 <html>
@@ -1847,7 +1883,12 @@ class SendInvitationView(APIView):
                         <b>Collaborate Url :</b> <a href='{2}'>{3}</a>
                     </body>
                 </html>
-            """.format(get_user[0].first_name.capitalize(), get_user[0].last_name.capitalize(), invitation_url, invitation_url)
+            """.format(
+                get_user[0].first_name.capitalize(),
+                get_user[0].last_name.capitalize(),
+                invitation_url,
+                invitation_url,
+            )
 
             article = ArticleMongo()
 
@@ -1863,7 +1904,9 @@ class SendInvitationView(APIView):
             etherpad_obj.createPad(padID=pad_id, text=get_article_obj.blurb)
 
         try:
-            msg = EmailMultiAlternatives(email_subject, '', EMAIL_FROM, [get_user_email])
+            msg = EmailMultiAlternatives(
+                email_subject, "", EMAIL_FROM, [get_user_email]
+            )
             ebody = email_body
             msg.attach_alternative(ebody, "text/html")
             msg.send(fail_silently=False)
@@ -1883,18 +1926,18 @@ class SyncEtherpadView(APIView):
 
     def post(self, request, *args, **kwargs):
         if request.data:
-            pad_id = request.data['pad_id']
+            pad_id = request.data["pad_id"]
         else:
-            pad_id = self.request.POST.get('pad_id')
+            pad_id = self.request.POST.get("pad_id")
 
         article = ArticleMongo()
         get_content = article.sync_article(pad_id)
-        pad_id = get_content[0]['pad_id']
-        get_slug = get_content[0]['slug']
+        pad_id = get_content[0]["pad_id"]
+        get_slug = get_content[0]["slug"]
 
         updated_content = etherpad_obj.getHTML(padID=pad_id)
         article_obj = Article.objects.get(slug=get_slug)
-        article_obj.blurb = updated_content['html']
+        article_obj.blurb = updated_content["html"]
         article_obj.save()
-        
+
         return Response(create_response({"results": "Article synced successfully."}))

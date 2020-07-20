@@ -1,11 +1,13 @@
+import operator
 from hashlib import md5
 from collections import defaultdict
+
 
 from django.core.management.base import BaseCommand
 
 from api.v1.serializers import ArticleSerializer
 
-from core.utils import create_index, ingest_to_elastic
+from core.utils import create_index, ingest_to_elastic, get_docs, search_index
 
 from core.models import Article, Domain, Category, Source, sample
 
@@ -132,12 +134,65 @@ class IngestSuggestions(BaseCommand):
         print("Ingesting Final Batch...!!!")
 
 
+class RelatedQueries(BaseCommand):
+    batch = []
+
+    def ingest(self, *args, **options):
+        index = "related_queries"
+        create_index(index, auto_suggestion_mapping)
+        print("Generating related queries")
+        _, total = get_docs("auto_suggestions")
+        i = 0
+        INCR = 25
+        while i < total:
+            results, _ = get_docs("auto_suggestions", i, i + INCR)
+            for current in results:
+                counts = defaultdict(int)
+                if current.strip() != "" and current[0].isupper():
+                    article_ids, _ = search_index(
+                        {"match": {"blurb": current}}, "article", ["id"]
+                    )
+                    for candidate in article_ids:
+                        if Article.objects.filter(id=candidate["id"]).exists():
+                            article = Article.objects.get(id=candidate["id"])
+                            entities = article.entities()
+                            for suggestion in entities:
+                                k, v = suggestion
+                                if k != current and k.strip() != "" and k[0].isupper():
+                                    counts[k.strip()] += 1
+
+                    final_batch = {}
+                    final_results = []
+                    for k, v in counts.items():
+                        if v > 1:
+                            final_batch[k] = v
+                    if len(final_batch) > 0:
+                        sorted_batch = sorted(
+                            final_batch.items(),
+                            key=operator.itemgetter(1),
+                            reverse=True,
+                        )
+                        for final_item in sorted_batch[: min(25, len(sorted_batch))]:
+                            suggestion, _ = final_item
+                            final_results.append(suggestion)
+
+                    if len(final_results) > 0:
+                        doc = {}
+                        doc["id"] = md5(str(current).encode("utf-8")).hexdigest()
+                        doc["q"] = current
+                        doc["suggestions"] = final_results
+                        ingest_to_elastic([doc], index, index, "id")
+                        print(f"Done for:{current}")
+            i += INCR
+
+
 def make_a_choice():
     # Show Options
     choices = [
         "1. Ingest articles",
-        "2. Ingest autosuggestions",
-        "3. Exit",
+        "2. Ingest auto suggestions",
+        "3. Ingest related-query suggestions",
+        "4. Exit",
     ]
     choices_count = len(choices)
     print("\n".join(choices))
@@ -163,6 +218,9 @@ def make_a_choice():
     elif choice == 2:
         auto_suggestion = IngestSuggestions()
         auto_suggestion.ingest()
+    elif choice == 3:
+        related_queries = RelatedQueries()
+        related_queries.ingest()
     else:
         print("Bye!")
         exit()
