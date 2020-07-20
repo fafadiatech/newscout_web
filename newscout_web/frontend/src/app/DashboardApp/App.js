@@ -341,14 +341,47 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
+		var t0 = performance.now();
 		this.GetAllArticlesOpenData()
+		var t1 = performance.now();
+		console.log('Took', (t1 - t0).toFixed(4));
+
+		var t2 = performance.now();
 		this.GetArticlesPerPlatformData()
+		var t3 = performance.now();
+		console.log('Took', (t3 - t2).toFixed(4));
+		
+		var t4 = performance.now();
 		this.GetArticlesPerCategoryData()
+		var t5 = performance.now();
+		console.log('Took', (t5 - t4).toFixed(4));
+		
+		var t6 = performance.now();
 		this.GetInteractionsPerCategoryData()
+		var t7 = performance.now();
+		console.log('Took', (t7 - t6).toFixed(4));
+		
+		var t8 = performance.now();
 		this.GetArticlesPerAuthorData()
+		var t9 = performance.now();
+		console.log('Took', (t9 - t8).toFixed(4));
+		
+		var t10 = performance.now();
 		this.GetInteractionsPerAuthorData()
+		var t11 = performance.now();
+		console.log('Took', (t11 - t10).toFixed(4));
+
+		var t12 = performance.now();
 		this.GetArticlesPerSessionData()
+		var t13 = performance.now();
+		console.log('Took', (t13 - t12).toFixed(4));
+
+		var t14 = performance.now();
 		this.GetInteractionsPerSessionData()
+		var t15 = performance.now();
+		console.log('Took', (t15 - t14).toFixed(4));
+		
+
 		if (cookies.get('isSideOpen')) {
 			this.setState({ isSideOpen: true })
 		} else {
