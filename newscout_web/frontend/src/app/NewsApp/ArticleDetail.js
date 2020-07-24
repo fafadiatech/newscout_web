@@ -54,8 +54,9 @@ class ArticleDetail extends React.Component {
 			isSideOpen: true,
 			bookmark_ids: [],
 			isChecked: false,
-			next_article: '',
-			prev_article: '',
+			next_article: {},
+			next_article_url: '',
+			prev_article_url: '',
 			options: [],
 			isLoading: true,
 			has_subscribed: SUBSCRIBED === 'True' ? true : false,
@@ -177,10 +178,33 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+	getNextArticleDetail = (data) => {
+		var next_article = data.body.article;
+		var state = this.state;
+		state.next_article.id = next_article.id;
+		state.next_article.slug = "/news/article/" + next_article.slug;
+		state.next_article.title = next_article.title;
+		state.next_article.altText = next_article.title;
+		state.next_article.caption = next_article.blurb;
+		state.next_article.source = next_article.source;
+		state.next_article.source_url = next_article.source_url;
+		state.next_article.root_category = next_article.root_category;
+		state.next_article.category = next_article.category;
+		state.next_article.hash_tags = next_article.hash_tags;
+		state.next_article.date = moment(next_article.published_on).format('D MMMM YYYY');
+		if (next_article.cover_image) {
+			state.next_article.src = "http://images.newscout.in/unsafe/1080x610/smart/" + decodeURIComponent(next_article.cover_image);
+		} else {
+			state.next_article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/" + config_data.defaultImage;
+		}
+		state.isLoading = false
+		this.setState(state)
+	}
+
 	getArticleDetail = (data) => {
 		var article = data.body.article;
-		var next_article = data.body.next_article;
-		var prev_article = data.body.prev_article;
+		var next_article_url = data.body.next_article;
+		var prev_article_url = data.body.prev_article;
 		var state = this.state;
 		var article_dict = {}
 		state.article.id = article.id;
@@ -194,14 +218,15 @@ class ArticleDetail extends React.Component {
 		state.article.category = article.category;
 		state.article.hash_tags = article.hash_tags;
 		state.article.date = moment(article.published_on).format('D MMMM YYYY');
-		state.next_article = next_article;
-		state.prev_article = prev_article;
+		state.next_article_url = next_article_url;
+		state.prev_article_url = prev_article_url;
 		if (article.cover_image) {
 			state.article.src = "http://images.newscout.in/unsafe/1080x610/smart/" + decodeURIComponent(article.cover_image);
 		} else {
 			state.article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/" + config_data.defaultImage;
 		}
 		getRequest(ARTICLE_DETAIL_URL + state.article.id + "/recommendations/?" + this.state.domain, this.getRecommendationsResults);
+		getRequest(ARTICLE_DETAIL_URL + next_article_url + "?" + this.state.domain, this.getNextArticleDetail);
 		state.isLoading = false
 		this.setState(state)
 	}
@@ -359,13 +384,13 @@ class ArticleDetail extends React.Component {
 
 	handleNextArticle = () => {
 		this.setState({ isLoading: true })
-		var new_url = BASE_URL + "/news/article/" + this.state.next_article;
+		var new_url = BASE_URL + "/news/article/" + this.state.next_article_url;
 		window.location.href = new_url;
 	}
 
 	handlePrevArticle = () => {
 		this.setState({ isLoading: true })
-		var new_url = BASE_URL + "/news/article/" + this.state.prev_article;
+		var new_url = BASE_URL + "/news/article/" + this.state.prev_article_url;
 		window.location.href = new_url;
 	}
 
@@ -411,7 +436,7 @@ class ArticleDetail extends React.Component {
 	render() {
 		var { menus, article, recommendations, username, modal, captchaImage,
 			isSideOpen, is_loggedin, bookmark_ids, isChecked,
-			isLoading, options } = this.state;
+			isLoading, options, next_article } = this.state;
 		var root_category = "";
 		var category = "";
 		if (article.root_category) {
@@ -420,6 +445,9 @@ class ArticleDetail extends React.Component {
 		if (article.category) {
 			var category = article.category.replace(" ", "-").toLowerCase()
 		}
+
+		var next_article_description = next_article.caption;
+
 		var description = article.caption;
 		var source_url = "";
 		if(source_url !== undefined){
@@ -502,7 +530,7 @@ class ArticleDetail extends React.Component {
 											</div>
 											<div className="row">
 												<div className="col-lg-12">
-													<div className="sidebox mt-5">
+													<div className="sidebox my-5">
 														<div className="heading">
 															<div className="clearfix">
 																<div className="float-left">
@@ -544,6 +572,34 @@ class ArticleDetail extends React.Component {
 																/>
 															}
 														</div>
+													</div>
+												</div>
+											</div>
+											<div className="row">
+												<div className="col-lg-12">
+													<div className="article-detail mb-5">
+														{isLoading ?
+															<Skeleton height={500} />
+															:
+															<JumboBox
+																id={next_article.id}
+																image={next_article.src}
+																title={next_article.title}
+																description={next_article_description}
+																uploaded_by={next_article.source}
+																source_url={next_article.source_url}
+																slug_url={next_article.slug}
+																category={next_article.category}
+																hash_tags={next_article.hash_tags}
+																uploaded_on={next_article.date}
+																is_loggedin={is_loggedin}
+																toggle={this.toggle}
+																is_open={modal}
+																getArticleId={this.getArticleId}
+																bookmark_ids={bookmark_ids}
+																base_url={BASE_URL}
+															/>
+														}
 													</div>
 												</div>
 											</div>
