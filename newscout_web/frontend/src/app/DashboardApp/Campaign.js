@@ -37,6 +37,7 @@ class Campaign extends React.Component {
 			isSideOpen: true,
 			username: USERNAME,
 			isChecked: false,
+			active_page: ACTIVE_PAGE
 		};
 	}
 
@@ -336,7 +337,7 @@ class Campaign extends React.Component {
 	}
 
 	render() {
-		var { menus, isSideOpen, username, isChecked } = this.state
+		var { menus, isSideOpen, username, isChecked, active_page } = this.state
 
 		let result_array = this.state.results
 		let results = []
@@ -448,25 +449,32 @@ class Campaign extends React.Component {
 						isChecked={isChecked} />
 					<div className="container-fluid">
 						<div className="row">
-							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
+							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
-									<h1 className="h2">Campaigns</h1>
 									<div className="clearfix">
 										<div className="float-left">
-											<Button color="success" size="md" onClick={this.toggle}>Add new</Button>
+											<h1 className="h5 mt-2">Campaigns</h1>
 										</div>
 										<div className="float-right">
-											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
-											</Form>
+											<ul className="list-inline m-0">
+												<li className="list-inline-item">
+													<h6 className="text-info fnt-sm"><strong>Total {this.state.results.length} Campaigns</strong></h6>
+												</li>
+												<li className="list-inline-item">
+													<Form>
+														<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
+													</Form>
+												</li>
+												<li className="list-inline-item">
+													<Button color="success" size="md" onClick={this.toggle}>Add new</Button>
+												</li>
+											</ul>
 										</div>
 									</div>
 								</div>
-								<hr />
-								<div className="my-5">
-									<h5 className="text-info">Total {this.state.results.length} Campaigns</h5>
-									<Table striped id="campaign-table">
+								<div className="mb-5 mt-2">
+									<Table striped responsive hover id="campaign-table">
 										<thead>
 											<tr>
 												<th style={{ width: "5%" }}>#</th>

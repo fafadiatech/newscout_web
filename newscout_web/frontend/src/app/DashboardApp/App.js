@@ -5,6 +5,8 @@ import Cookies from 'universal-cookie';
 import { getRequest, authHeaders } from '../../utils/Utils';
 import { Menu, SideBar, Footer } from 'newscout';
 import { Button, FormGroup, Label, Input } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
 
 import AllArticlesOpenGraph from '../../components/AllArticlesOpenGraph';
 import ArticlesPerAuthorGraph from '../../components/ArticlesPerAuthorGraph';
@@ -77,6 +79,7 @@ class App extends React.Component {
 			isSideOpen: true,
 			username: USERNAME,
 			isChecked: false,
+			active_page: ACTIVE_PAGE
 		};
 	}
 
@@ -394,8 +397,9 @@ class App extends React.Component {
 		}
 		this.getTheme();
 	}
+	
 	render() {
-		var { menus, isSideOpen, username, isChecked } = this.state
+		var { menus, isSideOpen, username, isChecked, active_page } = this.state
 		return (
 			<div className="App">
 				<Menu
@@ -411,8 +415,9 @@ class App extends React.Component {
 				/>
 				<div className="container-fluid">
 					<div className="row">
-						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} />
+						<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
 						<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
+
 							<div className="row pt-50">
 								<div className="col-md-4">
 									<FormGroup>
@@ -447,163 +452,196 @@ class App extends React.Component {
 									<Button color="danger" onClick={this.handleSubmitBtn} disabled={this.state.disabled}>Submit</Button>
 								</div>
 							</div>
-							<div className="row mt-3">
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;<span className={`sm-data ${this.state.AllArticleColor}`} style={{ fontSize: '40%' }}>{this.state.AllArticleOpenDiff}</span></h3>
-										</div>
-										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Articles</p>
-												<h5 className="mb-0 mt-1">Open</h5>
+							
+							<div className="accordion mt-4" id="average-cards">
+								<div className="card mb-4 avg-article-per-category">
+									<div className="card-header" id="headingOne" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Articles Per Category</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerCategoryColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerCategoryOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerPlatformColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerPlatformOpenDiff}</span></h3>
-										</div>
+									<div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Articles Per</p>
-												<h5 className="mb-0 mt-1">Platform</h5>
+											<ArticlesPerCategoryGraph data={this.state.ArticlesPerCategoryData} loading={this.state.ArticlesPerCategoryLoading} no_data={this.state.ArticlesPerCategoryNoData} />
+										</div>
+									</div>
+								</div>
+
+								<div className="card mb-4 avg-article-open">
+									<div className="card-header" id="headingTwo" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Articles Open</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.AllArticlesOpenAvgCount}&nbsp;<span className={`sm-data ${this.state.AllArticleColor}`} style={{ fontSize: '40%' }}>{this.state.AllArticleOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerCategoryAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerCategoryColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerCategoryOpenDiff}</span></h3>
-										</div>
+
+									<div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Articles Per</p>
-												<h5 className="mb-0 mt-1">Category</h5>
+											<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData} />
+										</div>
+									</div>
+								</div>
+								
+								<div className="card mb-4 avg-article-per-platform">
+									<div className="card-header" id="headingThree" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Articles Per Platform</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.ArticlesPerPlatformAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerPlatformColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerPlatformOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerCategoryColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerCategoryOpenDiff}</span></h3>
-										</div>
+
+									<div id="collapseThree" className="collapse" aria-labelledby="headingThree" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Interactions Per</p>
-												<h5 className="mb-0 mt-1">Category</h5>
+											<ArticlesPerPlatformGraph data={this.state.ArticlesPerPlatformData} loading={this.state.ArticlesPerPlatformLoading} no_data={this.state.ArticlesPerPlatformNoData} />
+										</div>
+									</div>
+								</div>
+
+								<div className="card mb-4 avg-interactions-per-category">
+									<div className="card-header" id="headingFour" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Interactions Per Category</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.InteractionsPerCategoryAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerCategoryColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerCategoryOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-							</div>
-							<div className="row mb-3">
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerAuthorColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerAuthorOpenDiff}</span></h3>
-										</div>
+
+									<div id="collapseFour" className="collapse" aria-labelledby="headingFour" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Articles Per</p>
-												<h5 className="mb-0 mt-1">Author</h5>
+											<InteractionsPerCategoryGraph data={this.state.InteractionsPerCategoryData} loading={this.state.InteractionsPerCategoryLoading} no_data={this.state.InteractionsPerCategoryNoData} />
+										</div>
+									</div>
+								</div>
+
+								<div className="card mb-4 avg-interactions-per-session">
+									<div className="card-header" id="headingFive" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Interactions Per Session</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerSessionColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerSessionOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerAuthorColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerAuthorOpenDiff}</span></h3>
-										</div>
+
+									<div id="collapseFive" className="collapse" aria-labelledby="headingFive" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Interactions Per</p>
-												<h5 className="mb-0 mt-1">Author</h5>
+											<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
+										</div>
+									</div>
+								</div>
+
+								<div className="card mb-4 avg-article-per-author">
+									<div className="card-header" id="headingSix" data-toggle="collapse" data-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Articles Per Author</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.ArticlesPerAuthorAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerAuthorColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerAuthorOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerSessionColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerSessionOpenDiff}</span></h3>
-										</div>
+
+									<div id="collapseSix" className="collapse" aria-labelledby="headingSix" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Articles Per</p>
-												<h5 className="mb-0 mt-1">Session</h5>
+											<ArticlesPerAuthorGraph data={this.state.ArticlesPerAuthorData} loading={this.state.ArticlesPerAuthorLoading} no_data={this.state.ArticlesPerAuthorNoData} />
+										</div>
+									</div>
+								</div>
+
+								<div className="card mb-4 avg-interactions-per-author">
+									<div className="card-header" id="headingSeven" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Interactions Per Author</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.InteractionsPerAuthorAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerAuthorColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerAuthorOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-								<div className="col-lg-3">
-									<div className="card mb-4">
-										<div className="skewed-bg">
-											<h3 className="text-center mb-0">{this.state.InteractionsPerSessionAvgCount}&nbsp;<span className={`sm-data ${this.state.InteractionsPerSessionColor}`} style={{ fontSize: '40%' }}>{this.state.InteractionsPerSessionOpenDiff}</span></h3>
-										</div>
+
+									<div id="collapseSeven" className="collapse" aria-labelledby="headingSeven" data-parent="#average-cards">
 										<div className="card-body">
-											<div className="text-center">
-												<p className="mb-0">Average Interactions Per</p>
-												<h5 className="mb-0 mt-1">Session</h5>
+											<InteractionsPerAuthorGraph data={this.state.InteractionsPerAuthorData} loading={this.state.InteractionsPerAuthorLoading} no_data={this.state.InteractionsPerAuthorNoData} />
+										</div>
+									</div>
+								</div>
+
+								<div className="card mb-4 avg-article-per-session">
+									<div className="card-header" id="headingEight" data-toggle="collapse" data-target="#collapseEight" aria-expanded="true" aria-controls="collapseEight">
+										<div className="row">
+											<div className="col-lg-4">
+												<h6 className="m-0 mt-2 font-weight-bold">Average Articles Per Session</h6>
+											</div>
+											<div className="col-lg-4">
+												<div className="skewed-bg">
+													<h3 className="text-center mb-0">{this.state.ArticlesPerSessionAvgCount}&nbsp;<span className={`sm-data ${this.state.ArticlesPerSessionColor}`} style={{ fontSize: '40%' }}>{this.state.ArticlesPerSessionOpenDiff}</span></h3>
+												</div>
+											</div>
+											<div className="col-lg-4 text-right mt-2">
+												<FontAwesomeIcon icon={faChevronDown} />
 											</div>
 										</div>
 									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-12">
-									<div className="graph-section">
-										<ArticlesPerCategoryGraph data={this.state.ArticlesPerCategoryData} loading={this.state.ArticlesPerCategoryLoading} no_data={this.state.ArticlesPerCategoryNoData} />
-									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-6">
-									<div className="graph-section">
-										<AllArticlesOpenGraph data={this.state.AllArticlesOpenData} loading={this.state.AllArticlesOpenLoading} no_data={this.state.AllArticlesOpenNoData} />
-									</div>
-								</div>
-								<div className="col-lg-6">
-									<div className="graph-section">
-										<ArticlesPerPlatformGraph data={this.state.ArticlesPerPlatformData} loading={this.state.ArticlesPerPlatformLoading} no_data={this.state.ArticlesPerPlatformNoData} />
-									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-12">
-									<div className="graph-section">
-										<InteractionsPerCategoryGraph data={this.state.InteractionsPerCategoryData} loading={this.state.InteractionsPerCategoryLoading} no_data={this.state.InteractionsPerCategoryNoData} />
-									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-12">
-									<div className="graph-section">
-										<InteractionsPerSessionGraph data={this.state.InteractionsPerSessionData} loading={this.state.InteractionsPerSessionLoading} no_data={this.state.InteractionsPerSessionNoData} />
-									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-6">
-									<div className="graph-section">
-										<ArticlesPerAuthorGraph data={this.state.ArticlesPerAuthorData} loading={this.state.ArticlesPerAuthorLoading} no_data={this.state.ArticlesPerAuthorNoData} />
-									</div>
-								</div>
-								<div className="col-lg-6">
-									<div className="graph-section">
-										<InteractionsPerAuthorGraph data={this.state.InteractionsPerAuthorData} loading={this.state.InteractionsPerAuthorLoading} no_data={this.state.InteractionsPerAuthorNoData} />
-									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-lg-12">
-									<div className="graph-section">
-										<ArticlesPerSessionGraph data={this.state.ArticlesPerSessionData} loading={this.state.ArticlesPerSessionLoading} no_data={this.state.ArticlesPerSessionNoData} />
+
+									<div id="collapseEight" className="collapse" aria-labelledby="headingEight" data-parent="#average-cards">
+										<div className="card-body">
+											<ArticlesPerSessionGraph data={this.state.ArticlesPerSessionData} loading={this.state.ArticlesPerSessionLoading} no_data={this.state.ArticlesPerSessionNoData} />
+										</div>
 									</div>
 								</div>
 							</div>

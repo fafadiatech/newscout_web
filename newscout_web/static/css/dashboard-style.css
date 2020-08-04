@@ -98,3 +98,34 @@ body {
 .shadow {
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
 }
+
+.btn-sm {
+  padding: .05rem .5rem;
+}
+
+.table td, .table th {
+  padding: .5rem;
+}
+
+@media only screen and (max-width: 767px) and (min-width: 381px){
+  .main-content.col-lg-12, .main-content.col-lg-10 {
+    padding-right: 15px !important;
+  }
+}
+
+.fnt-sm {
+  font-size: 0.9rem;
+}
+
+#average-cards .card {
+  border: 0px;
+  box-shadow: 5px 5px 5px #e6e6e6ee;
+  border-radius: 8px;
+}
+
+#average-cards .card-header {
+  background: #fff;
+  border: 0px;
+  border-radius: 8px;
+  padding: 20px;
+}
