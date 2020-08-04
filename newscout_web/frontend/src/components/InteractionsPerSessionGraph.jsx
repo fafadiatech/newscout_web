@@ -32,7 +32,6 @@ class InteractionsPerSessionGraph extends PureComponent {
     render() {
         return (
             <div className="col-lg-12">
-                <h4>Average Interactions Per Session</h4>
                 {
                     this.state.no_data ?
                         <h6 className="text-danger">No Enough Data To Generate Graph</h6>

@@ -27,7 +27,6 @@ class InteractionsPerCategoryGraph extends PureComponent {
     render() {
         return (
             <div className="col-lg-12">
-            <h4>Interactions Per Category</h4>
             {
                 this.state.no_data ?
                     <h6 className="text-danger">No Enough Data To Generate Graph</h6>

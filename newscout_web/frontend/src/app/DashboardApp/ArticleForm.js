@@ -383,89 +383,51 @@ class ArticleForm extends React.Component {
                             <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
                             <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
                                 <div className="pt-50 mb-3">
-                                    <h1 className="h2">{page_title}</h1>
-                                    <Form>
-                                        <Row>
-                                            <Col md={5}>
-                                                <Row form>
-                                                    <Col md={12}>
+                                    <h1 className="h5">{page_title}</h1>
+                                </div>
+                                <hr/>
+                                <div className="mb-5 mt-2">
+                                    <div className="row">
+                                        <div className="col-md-7">
+                                            <Form>
+                                                <Row>
+                                                    <Col md={6}>
                                                         <FormGroup>
-                                                            <Label for="article_domain">Domain</Label>
+                                                            <Label for="article_domain">Domain:</Label>
                                                             <Select refs="article_domain" options={this.state.domains} value={this.state.fields.domain} onChange={(e) => this.handleChange("article_domain", e)} />
                                                             <FormText color="danger">{this.state.errors["article_domain"]}</FormText>
                                                         </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                                <Row form>
-                                                    <Col md={12}>
                                                         <FormGroup>
-                                                            <Label for="name">Article Title</Label>
-                                                            <input refs="name" type="textarea" name="name" className="form-control" placeholder="Article Title" id="title" value={this.state.fields.title} onChange={(e) => this.onChange("title", e)} />
-                                                            <FormText color="danger">{this.state.errors["name"]}</FormText>
-                                                        </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                                <Row form>
-                                                    <Col md={12}>
-                                                        <FormGroup>
-                                                            <Label for="article_source">Article Source</Label>
+                                                            <Label for="article_source">Article Source:</Label>
                                                             <Select refs="source" options={this.state.sources} value={this.state.fields.source} onChange={(e) => this.handleChange("article_source", e)} />  <FormText color="danger">{this.state.errors["article_source"]}</FormText>
                                                         </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={5}>
-                                                <Row form>
-                                                    <Col md={12}>
                                                         <FormGroup>
-                                                            <Label for="article_category">Article Category</Label>
-                                                            <Select refs="category" value={this.state.fields.category} options={this.state.categories} onChange={(e) => this.handleChange("article_category", e)} />
-                                                            <FormText color="danger">{this.state.errors["article_category"]}</FormText>
-                                                        </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                                <Row form>
-                                                    <Col md={12}>
-                                                        <FormGroup>
-                                                            <Label for="published_on">Published On</Label>
+                                                            <Label for="published_on">Published On:</Label>
                                                             <Datetime refs="published_on" value={this.state.fields.published_on} dateFormat="YYYY-MM-DD" timeFormat={true} placeholder="YYYY-MM-DD" id="published_on" onChange={(e) => this.onChange("published_on", e)} />
                                                             <FormText color="danger">{this.state.errors["published_on"]}</FormText>
                                                         </FormGroup>
                                                     </Col>
-                                                </Row>
-                                                <Row form>
-                                                    <Col md={12}>
+                                                    <Col md={6}>
                                                         <FormGroup>
-                                                            <Label for="cover_image">Cover Image</Label>
-                                                            <input refs="cover_image" type="file" name="cover_image" className="" placeholder="Cover Image" id="cover_image" onChange={(e) => this.handleChange("cover_image", e)} value={this.state.cover_image_name} />
+                                                            <Label for="name">Article Title:</Label>
+                                                            <input refs="name" type="textarea" name="name" className="form-control" placeholder="Article Title" id="title" value={this.state.fields.title} onChange={(e) => this.onChange("title", e)} />
+                                                            <FormText color="danger">{this.state.errors["name"]}</FormText>
+                                                        </FormGroup>
+                                                        <FormGroup>
+                                                            <Label for="article_category">Article Category:</Label>
+                                                            <Select refs="category" value={this.state.fields.category} options={this.state.categories} onChange={(e) => this.handleChange("article_category", e)} />
+                                                            <FormText color="danger">{this.state.errors["article_category"]}</FormText>
+                                                        </FormGroup>
+                                                        <FormGroup>
+                                                            <Label for="cover_image">Cover Image:</Label>
+                                                            <input refs="cover_image" type="file" name="cover_image" className="" style={{display:'block'}} placeholder="Cover Image" id="cover_image" onChange={(e) => this.handleChange("cover_image", e)} value={this.state.cover_image_name} />
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
-                                            </Col>
-                                            <Col md={4}>
-                                                <div className="image-view">
-                                                    {this.state.loading ?
-                                                        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
-                                                        :
-                                                        ""
-                                                    }
-                                                    {
-                                                        this.state.fields.cover_image != "" ?
-                                                            <div className="float-right mb-2 text-right text-danger cursor-pointer" onClick={(e) => this.deleteImage(e)} data_id={this.state.cover_image_id} title="Remove Image">X</div>
-                                                            :
-                                                            ""
-                                                    }
-                                                    <img src={this.state.cover_image} className="img-fluid" />
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <Row form>
-                                                    <Col md={10}>
+                                                <Row>
+                                                    <Col md={12}>
                                                         <FormGroup>
+                                                            <Label for="description">Description:</Label>
                                                             <Summernote
                                                                 changedValue={this.onSummernoteChange}
                                                                 value={this.state.fields.blurb}
@@ -475,20 +437,44 @@ class ArticleForm extends React.Component {
                                                     </Col>
                                                 </Row>
                                                 <Row>
-                                                    <Col md={6}>
-                                                        <Button color="success" onClick={(e) => this.articleSave(method)} type="button">Save</Button>&nbsp;&nbsp;
-                                                        <Button color="success" onClick={(e) => this.articlePublish(method)} type="button">Save & Publish</Button>&nbsp;&nbsp;
-                                                        <Button color="secondary" onClick={this.redirecttoArticleList} type="button">Cancel</Button>
-                                                    </Col>
-                                                    <Col md={6}>
-                                                        {this.state.formSuccess ?
-                                                            <h6 className="text-success mt-2">Article submitted successfully.</h6>
-                                                            : ""}
+                                                    <Col md={12}>
+                                                        <Row>
+                                                            <Col md={6}>
+                                                                <Button color="success" onClick={(e) => this.articleSave(method)} type="button">Save</Button>&nbsp;&nbsp;
+                                                                <Button color="success" onClick={(e) => this.articlePublish(method)} type="button">Save & Publish</Button>&nbsp;&nbsp;
+                                                                <Button color="secondary" onClick={this.redirecttoArticleList} type="button">Cancel</Button>
+                                                            </Col>
+                                                            <Col md={6}>
+                                                                {this.state.formSuccess ?
+                                                                    <h6 className="text-success mt-2">Article submitted successfully.</h6>
+                                                                    : ""}
+                                                            </Col>
+                                                        </Row>
                                                     </Col>
                                                 </Row>
-                                            </Col>
-                                        </Row>
-                                    </Form>
+                                            </Form>
+                                        </div>
+                                        <div className="col-md-5">
+                                            <Row>
+                                                <Col md={12}>
+                                                    <div className="image-view">
+                                                        {this.state.loading ?
+                                                            <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+                                                            :
+                                                            ""
+                                                        }
+                                                        {
+                                                            this.state.fields.cover_image != "" ?
+                                                                <div className="float-right mb-2 text-right text-danger cursor-pointer" onClick={(e) => this.deleteImage(e)} data_id={this.state.cover_image_id} title="Remove Image">X</div>
+                                                                :
+                                                                ""
+                                                        }
+                                                        <img src={this.state.cover_image} className="img-fluid" />
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

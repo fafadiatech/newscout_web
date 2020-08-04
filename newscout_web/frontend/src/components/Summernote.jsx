@@ -30,8 +30,7 @@ class Summernote extends React.Component {
     render() {
         $(".dropdown-toggle").dropdown();
         var options = {
-                    height: 900,
-                    width: 850,
+                    height: 300,
                     dialogsInBody: true,
                     toolbar: [
                         ['style', ['bold', 'italic', 'underline', 'clear']],

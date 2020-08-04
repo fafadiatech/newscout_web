@@ -1381,15 +1381,12 @@ span.CodeMirror-selectedtext { background: none; }
   color: transparent !important;
 }
 
-.skewed-bg {
+/*.skewed-bg {
   color: #ec1f25;
-  height: 90px;
-  padding: 15px;
-  background: rgb(240, 240, 240);
 }
 
-.skewed-bg h3 {
+.skewed-bg h6 {
   font-size: 40px;
   line-height: 60px;
   text-shadow: 3px 3px 3px #d7cfcf;
-}
+}*/

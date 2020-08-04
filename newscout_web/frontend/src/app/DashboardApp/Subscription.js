@@ -297,6 +297,7 @@ class Subscription extends React.Component {
 		let result_array = this.state.results;
 		let results = [];
 		let state = this.state;
+		let current_date = new Date()
 		result_array.map((el, index) => {
 			if (state.fields.adgroup === undefined) {
 				var adgroup_value = { value: el.subs_type, label: el.subs_type }
@@ -315,16 +316,22 @@ class Subscription extends React.Component {
 					<span>{el.created_at}</span>
 				</td>
 				<td>
-					<span>{el.created_at}</span>
+					<span>{el.created_at && el.expires_on ? el.created_at : '-'}</span>
 				</td>
 				<td>
-					<span>{el.created_at}</span>
+					<span>{el.expires_on ? el.expires_on : '-'}</span>
 				</td>
+				{el.expires_on <= current_date ?
+					<React.Fragment>
+						<td className="text-success font-weight-bold">Active</td>
+					</React.Fragment>
+				:
+					<React.Fragment>
+						<td className="text-info font-weight-bold">Pause</td>
+					</React.Fragment>
+				}
 				<td>
-					<span>Active</span>
-				</td>
-				<td>
-					<a href={`/dashboard/subscription/${el.id}`} className="btn btn-sm btn-success">Edit</a>
+					<a href={`/dashboard/subscription/${el.id}`} className="btn btn-sm btn-warning">Edit</a>
 				</td>
 			</tr>
 			results.push(data);
@@ -349,19 +356,26 @@ class Subscription extends React.Component {
 							<SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
 							<div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
 								<div className="pt-50 mb-3">
-									<h1 className="h2">Subscriptions</h1>
 									<div className="clearfix">
+										<div className="float-left">
+											<h1 className="h5 mt-2">Subscriptions</h1>
+										</div>
 										<div className="float-right">
-											<Form>
-												<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
-											</Form>
+											<ul className="list-inline m-0">
+												<li className="list-inline-item">
+													<h6 className="text-info fnt-sm"><strong>Total {this.state.results.length} Users</strong></h6>
+												</li>
+												<li className="list-inline-item">
+													<Form>
+														<Input type="text" name="query" className="form-control" placeholder="search" onChange={this.handleQueryChange} value={this.state.q} onKeyPress={event => { this.handleKeyPress(event) }} />
+													</Form>
+												</li>
+											</ul>
 										</div>
 									</div>
 								</div>
-								<hr />
-								<div className="my-5">
-									<h5 className="text-info">Total {this.state.results.length} Users</h5>
-									<Table striped id="group-table">
+								<div className="mb-5 mt-2">
+									<Table striped responsive hover id="group-table">
 										<thead>
 											<tr>
 												<th style={{ width: "5%" }}>#</th>

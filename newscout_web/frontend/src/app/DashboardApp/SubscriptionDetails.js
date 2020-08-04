@@ -174,34 +174,40 @@ class SubscriptionDetail extends React.Component {
                             <SideBar menuitems={config_data.dashboardmenu} class={isSideOpen} domain="dashboard" isChecked={isChecked} active_page={active_page} />
                             <div className={`main-content ${isSideOpen ? 'offset-lg-2 col-lg-10' : 'col-lg-12'}`}>
                                 <div className="pt-50 mb-3">
-                                    <h1 className="h2">Update Subscription</h1>
+                                    <h1 className="h5">Update Subscription</h1>
                                 </div>
-                                <hr />
-                                <div className="my-5">
+                                <hr/>
+                                <div className="mb-5 mt-2">
                                     <div className="row">
-                                        <div className="col-md-6">
-                                            <div class="form-group">
-                                                <label for="exampleFormControlInput1">Email address:</label>
-                                                <h4>{this.state.email}</h4>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleFormControlInput1">Subs Type:</label>
-                                                <Select refs="adgroup" value={{ value: this.state.subs_type, label: this.state.subs_type }} onChange={(e) => this.handleChange(e)} options={[{ value: 'Basic', label: 'Basic' }, { value: 'Monthly', label: 'Monthly' }, { value: 'Yearly', label: 'Yearly' }]} />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleFormControlInput1">Created On:</label>
-                                                <h4>{this.state.createdOn}</h4>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleFormControlInput1">Auto Renew:</label>
-                                                <Select refs="adgroup" value={{ value: this.state.autoRenew, label: this.state.autoRenew }} onChange={(e) => this.handleRenewChange(e)} options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="exampleFormControlInput1">Payment Mode:</label>
-                                                <h4>{this.state.payement_mode}</h4>
-                                            </div>
-                                            <div class="form-group">
-                                                <button className="list-inline-item btn btn-sm btn-success" onClick={(e) => this.submitForm(e)}>Submit</button>
+                                        <div className="col-md-7">
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <div className="form-group">
+                                                        <label className="mb-1">Email address:</label>
+                                                        <h6>{this.state.email}</h6>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label className="mb-1">Created On:</label>
+                                                        <h6>{this.state.createdOn}</h6>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label className="mb-1">Payment Mode:</label>
+                                                        <h6>{this.state.payement_mode}</h6>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <div className="form-group">
+                                                        <label className="mb-1">Subs Type:</label>
+                                                        <Select refs="adgroup" value={{ value: this.state.subs_type, label: this.state.subs_type }} onChange={(e) => this.handleChange(e)} options={[{ value: 'Basic', label: 'Basic' }, { value: 'Monthly', label: 'Monthly' }, { value: 'Yearly', label: 'Yearly' }]} />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label className="mb-1">Auto Renew:</label>
+                                                        <Select refs="adgroup" value={{ value: this.state.autoRenew, label: this.state.autoRenew }} onChange={(e) => this.handleRenewChange(e)} options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <button className="list-inline-item btn btn-success" onClick={(e) => this.submitForm(e)}>Submit</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -211,7 +217,7 @@ class SubscriptionDetail extends React.Component {
                     </div>
                 </div>
                 <Footer privacyurl="#" facebookurl="#" twitterurl="#" />
-            </React.Fragment >
+            </React.Fragment>
         );
     }
 }
