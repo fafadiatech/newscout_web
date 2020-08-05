@@ -1,4 +1,6 @@
 body {
+  font-family: 'Poppins', sans-serif !important;
+  letter-spacing: 0.1px;
   font-size: .875rem;
 }
 
@@ -128,4 +130,8 @@ body {
   border: 0px;
   border-radius: 8px;
   padding: 20px;
+}
+
+.font-weight-bold {
+  font-weight: 600 !important;
 }

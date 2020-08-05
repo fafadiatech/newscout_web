@@ -5,11 +5,12 @@ html {
 
 body {
 	margin: 0;
-	font-family: "Open Sans", sans-serif !important;
+	font-family: 'Poppins', sans-serif !important;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	background: #f6f6f6;
 	padding: 66px 0px 66px 0px;
+	letter-spacing: 0.1px;
+	background: #f6f6f6;
 	color: #3b5265;
 }
 
@@ -33,6 +34,10 @@ a:hover {
 nav.navbar {
 	background-color: #fff;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.font-weight-bold {
+  font-weight: 600 !important;
 }
 
 .navbar-brand {
