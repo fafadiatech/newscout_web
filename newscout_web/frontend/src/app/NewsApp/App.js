@@ -104,7 +104,7 @@ class App extends React.Component {
 			economics: [],
 			misc: [],
 			domain: "domain=" + DOMAIN,
-			isLoading: false,
+			isLoading: true,
 			isSideOpen: true,
 			modal: false,
 			is_loggedin: false,
@@ -112,7 +112,13 @@ class App extends React.Component {
 			username: cookies.get('full_name'),
 			bookmark_ids: [],
 			isChecked: false,
-			options: []
+			options: [],
+			isLoadingUncategories : true,
+			isLoadingFinance : true,
+			isLoadingEconomics : true,
+			isLoadingMisc : true,
+			isLoadingSectorUpdate : true,
+			isLoadingRegionalUpdate : true,
 		}
 	}
 
@@ -239,6 +245,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
+			isLoading: false,
 			trending: trending_array,
 		})
 	}
@@ -246,22 +253,17 @@ class App extends React.Component {
 	getPosts = (cat_name, cat_id) => {
 		var url = ARTICLE_POSTS + "?" + this.state.domain + "&category=" + cat_name
 		if (cat_name == "Uncategorised") {
-			this.setState({ isLoading: false })
+			this.setState({ isLoadingUncategories: false })
 			getRequest(url, this.latestNewsPosts)
 		} else if (cat_name == "Finance") {
-			this.setState({ isLoading: false })
 			getRequest(url, this.financePosts)
 		} else if (cat_name == "Economics") {
-			this.setState({ isLoading: false })
 			getRequest(url, this.economicPosts)
 		} else if (cat_name == "Misc") {
-			this.setState({ isLoading: false })
 			getRequest(url, this.miscPosts)
 		} else if (cat_name == "Sector Updates") {
-			this.setState({ isLoading: false })
 			getRequest(url, this.sectorUpdatePosts)
 		} else if (cat_name == "Regional Updates") {
-			this.setState({ isLoading: false })
 			getRequest(url, this.regionalUpdatePosts)
 		}
 	}
@@ -296,6 +298,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
+			isLoadingSectorUpdate: false,
 			sector_update: sectorupdateposts_array
 		})
 	}
@@ -322,6 +325,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
+			isLoadingRegionalUpdate: false,
 			regional_update: regionalupdateposts_array
 		})
 	}
@@ -349,6 +353,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
+			isLoadingFinance: false,
 			finance: financeposts_array
 		})
 	}
@@ -375,6 +380,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
+			isLoadingEconomics: false,
 			economics: economicposts_array
 		})
 	}
@@ -401,6 +407,7 @@ class App extends React.Component {
 			}
 		})
 		this.setState({
+			isLoadingMisc: false,
 			misc: miscposts_array
 		})
 	}
@@ -498,12 +505,12 @@ class App extends React.Component {
 	}
 
 	render() {
-		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options } = this.state
+		var { menus, trending, finance, economics, sector_update, regional_update, misc, isLoading, isSideOpen, modal, is_loggedin, bookmark_ids, username, isChecked, options, isLoadingUncategories, isLoadingFinance, isLoadingEconomics, isLoadingMisc, isLoadingSectorUpdate, isLoadingRegionalUpdate } = this.state
 
 		var sector_update = sector_update.map((item, index) => {
 			return (
 				<div className="col-lg-4 mb-4" key={index}>
-					{isLoading ?
+					{isLoadingSectorUpdate ?
 						<Skeleton height={525} />
 						:
 						<VerticleCardItem
@@ -557,7 +564,7 @@ class App extends React.Component {
 		var regional_update = regional_update.map((item, index) => {
 			return (
 				<div className="col-lg-6 mb-4" key={index}>
-					{isLoading ?
+					{isLoadingRegionalUpdate ?
 						<Skeleton height={250} />
 						:
 						<HorizontalCardItem
@@ -586,7 +593,7 @@ class App extends React.Component {
 		var finance = finance.map((item, index) => {
 			return (
 				<React.Fragment key={index}>
-					{isLoading ?
+					{isLoadingFinance ?
 						<Skeleton height={230} />
 						:
 						<ImageOverlay
@@ -608,7 +615,7 @@ class App extends React.Component {
 		var economics = economics.map((item, index) => {
 			return (
 				<div className="col-lg-6 mb-4" key={index}>
-					{isLoading ?
+					{isLoadingEconomics ?
 						<Skeleton height={230} />
 						:
 						<HorizontalCardItem
@@ -637,7 +644,7 @@ class App extends React.Component {
 		var misc = misc.map((item, index) => {
 			return (
 				<div className="col-lg-4 mb-4" key={index}>
-					{isLoading ?
+					{isLoadingMisc ?
 						<Skeleton height={525} />
 						:
 						<VerticleCardItem
