@@ -102,9 +102,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'newscout_web',
-            'USER': 'postgres',
-            'PASSWORD': 'ftech#123',
+            'NAME': 'newscout',
+            'USER': 'newscout',
+            'PASSWORD': 'newscout',
             'HOST': 'localhost',
             'PORT': '5432',
         }
@@ -203,3 +203,7 @@ TWITTER_ACCESS_TOKEN = ""
 TWITTER_ACCESS_TOKEN_SECRET = ""
 
 CAPTCHA_ENABLED = True
+
+ETHERPAD_URL = ""
+ETHERPAD_SERVER = ""
+ETHERPAD_APIKEY = ""

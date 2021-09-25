@@ -27,7 +27,9 @@ djangorestframework==3.10.3
 docutils==0.15.2
 elasticsearch==6.3.1
 elasticsearch-dsl==6.3.1
+en-core-web-sm==2.3.1
 enum34==1.1.6
+etherpad-lite==0.5
 facebook-sdk==3.1.0
 filelock==3.0.12
 flake8==3.4.1
