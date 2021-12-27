@@ -78,16 +78,20 @@ class ArticleSerializer(serializers.ModelSerializer):
         return ""
 
     def get_root_category(self, instance):
-        if instance.category.name not in ["Uncategorised", "Uncategorized"]:
-            root_category = CategoryAssociation.objects.get(child_cat=instance.category)
-            return root_category.parent_cat.name
-        return instance.category.name
+        
+        # print(instance.category)
+        # if instance.category.name not in ["Uncategorised", "Uncategorized"]:
+        #     root_category = CategoryAssociation.objects.get(child_cat=instance.category)
+        #     return root_category.parent_cat.name
+        # return instance.category.name
+        return "Arts & Culture"
 
     def get_root_category_id(self, instance):
-        if instance.category.name not in ["Uncategorised", "Uncategorized"]:
-            root_category = CategoryAssociation.objects.get(child_cat=instance.category)
-            return root_category.parent_cat_id
-        return instance.category.id
+        # if instance.category.name not in ["Uncategorised", "Uncategorized"]:
+        #     root_category = CategoryAssociation.objects.get(child_cat=instance.category)
+        #     return root_category.parent_cat_id
+        # return instance.category.id
+        return 637
 
 
 class UserSerializer(serializers.Serializer):
