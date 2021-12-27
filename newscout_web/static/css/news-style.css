@@ -521,6 +521,7 @@ nav.navbar {
 
 .section-title {
 	position: relative;
+
 }
 
 .section-title::after {
@@ -541,6 +542,7 @@ nav.navbar {
 	color: #262626;
 	font-size: 28px;
 	font-weight: 600;
+	font-family: ui-rounded;
 	text-transform: capitalize;
 }
 
