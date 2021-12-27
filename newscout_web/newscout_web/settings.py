@@ -104,7 +104,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'newscout_web',
             'USER': 'postgres',
-            'PASSWORD': 'ftech#123',
+            'PASSWORD': 'ftech@1234',
             'HOST': 'localhost',
             'PORT': '5432',
         }
@@ -188,7 +188,7 @@ EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
 EMAIL_FROM = ''
 
-ELASTIC_SERVER_IP = "167.71.238.145"
+ELASTIC_SERVER_IP = "0.0.0.0"
 ELASTIC_SERVER_PORT = "9200"
 
 DBNAME = 'newscout_analytics'
