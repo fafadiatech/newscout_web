@@ -29,7 +29,7 @@ DEBUG = True
 # Enble sqlite database quick mode (by default disabled)
 QUICK_MODE = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["165.232.179.227"]
 
 
 # Application definition
@@ -150,6 +150,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -188,7 +189,7 @@ EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = None
 EMAIL_FROM = ''
 
-ELASTIC_SERVER_IP = "167.71.238.145"
+ELASTIC_SERVER_IP = "0.0.0.0"
 ELASTIC_SERVER_PORT = "9200"
 
 DBNAME = 'newscout_analytics'

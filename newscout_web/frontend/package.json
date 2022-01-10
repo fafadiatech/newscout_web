@@ -22,6 +22,7 @@
     "react-datetime": "^2.16.3",
     "react-dom": "^16.8.6",
     "react-helmet": "^6.0.0",
+    "react-keyboard-event-handler": "^1.5.4",
     "react-loading-skeleton": "^2.0.1",
     "react-scripts": "3.0.1",
     "react-select": "^3.0.4",
