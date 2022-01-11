@@ -5,7 +5,7 @@ html {
 
 body {
 	margin: 0;
-	font-family: 'Poppins', sans-serif !important;
+	font-family: 'Trirong', serif !important;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	padding: 66px 0px 66px 0px;
@@ -538,7 +538,6 @@ nav.navbar {
 	z-index: -1;
 	left: 0;
 }
-
 .section-title h2 {
 	display: inline-block;
 	background-color: #dfdfdf;
