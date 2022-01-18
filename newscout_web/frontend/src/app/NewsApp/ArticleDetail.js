@@ -250,6 +250,7 @@ class ArticleDetail extends React.Component {
 		this.setState({
 			recommendations: recommendations_array
 		})
+		console.log(recommendations_array[0]);
 	}
 
 	getArticleComment = (data) => {
@@ -410,7 +411,18 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+
+	handleScroll = () => {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.7) {
+			getRequest(ARTICLE_DETAIL_URL + this.state.next_article_url + "?" + this.state.domain, this.getNextArticleDetail);
+			console.log($(window).scrollTop() / ($(document).height() - $(window).height()) * 100);
+			console.log("Scrolling...");
+
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL + SLUG + "?" + this.state.domain, this.getArticleDetail);
 		getRequest(ARTICLE_COMMENT + "?article_id=" + ARTICLEID, this.getArticleComment);
@@ -433,6 +445,12 @@ class ArticleDetail extends React.Component {
 		this.getTheme()
 	}
 
+
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
+	}
+
+
 	render() {
 		var { menus, article, recommendations, username, modal, captchaImage,
 			isSideOpen, is_loggedin, bookmark_ids, isChecked,
@@ -450,7 +468,7 @@ class ArticleDetail extends React.Component {
 
 		var description = article.caption;
 		var source_url = "";
-		if(source_url !== undefined){
+		if (source_url !== undefined) {
 			source_url = article.source_url;
 		}
 		if (!this.state.has_subscribed) {
