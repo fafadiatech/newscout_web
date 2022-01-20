@@ -54,7 +54,7 @@ class ArticleDetail extends React.Component {
 			isSideOpen: true,
 			bookmark_ids: [],
 			isChecked: false,
-			next_article: {},
+			next_article: [],
 			next_article_url: '',
 			prev_article_url: '',
 			options: [],
@@ -180,23 +180,27 @@ class ArticleDetail extends React.Component {
 
 	getNextArticleDetail = (data) => {
 		var next_article = data.body.article;
+		var next_article_url = data.body.next_article;
 		var state = this.state;
-		state.next_article.id = next_article.id;
-		state.next_article.slug = "/news/article/" + next_article.slug;
-		state.next_article.title = next_article.title;
-		state.next_article.altText = next_article.title;
-		state.next_article.caption = next_article.blurb;
-		state.next_article.source = next_article.source;
-		state.next_article.source_url = next_article.source_url;
-		state.next_article.root_category = next_article.root_category;
-		state.next_article.category = next_article.category;
-		state.next_article.hash_tags = next_article.hash_tags;
-		state.next_article.date = moment(next_article.published_on).format('D MMMM YYYY');
+		var current_article = {}
+		current_article['id'] = next_article.id;
+		current_article['slug'] = "/news/article/" + next_article.slug;
+		current_article['title'] = next_article.title;
+		current_article['altText'] = next_article.title;
+		current_article['caption'] = next_article.blurb;
+		current_article['source'] = next_article.source;
+		current_article['source_url'] = next_article.source_url;
+		current_article['root_category'] = next_article.root_category;
+		current_article['category'] = next_article.category;
+		current_article['hash_tags'] = next_article.hash_tags;
+		current_article['date'] = moment(next_article.published_on).format('D MMMM YYYY');
+		state.next_article_url = next_article_url;
 		if (next_article.cover_image) {
-			state.next_article.src = "http://images.newscout.in/unsafe/1080x610/smart/" + decodeURIComponent(next_article.cover_image);
+			current_article['src'] = "http://images.newscout.in/unsafe/1080x610/smart/" + decodeURIComponent(next_article.cover_image);
 		} else {
-			state.next_article.src = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/" + config_data.defaultImage;
+			current_article['src'] = "http://images.newscout.in/unsafe/fit-in/1080x610/smart/" + config_data.defaultImage;
 		}
+		state.next_article.push(current_article)
 		state.isLoading = false
 		this.setState(state)
 	}
@@ -410,7 +414,25 @@ class ArticleDetail extends React.Component {
 		})
 	}
 
+	getMore = () => {
+		this.setState({
+			isLoading: true
+		})
+		getRequest(ARTICLE_DETAIL_URL + this.state.next_article_url + "?" + this.state.domain, this.getNextArticleDetail);
+	}
+
+	handleScroll = () => {
+		if ($(window).scrollTop() >= ($(document).height() - $(window).height()) * 0.7) {
+			if (!this.state.isLoading) {
+				// getRequest(ARTICLE_DETAIL_URL + this.state.next_article_url + "?" + this.state.domain, this.getNextArticleDetail);
+				this.getMore();
+
+			}
+		}
+	}
+
 	componentDidMount() {
+		window.addEventListener('scroll', this.handleScroll, true);
 		getRequest(MENUS + "?" + this.state.domain, this.getMenu);
 		getRequest(ARTICLE_DETAIL_URL + SLUG + "?" + this.state.domain, this.getArticleDetail);
 		getRequest(ARTICLE_COMMENT + "?article_id=" + ARTICLEID, this.getArticleComment);
@@ -433,6 +455,11 @@ class ArticleDetail extends React.Component {
 		this.getTheme()
 	}
 
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll)
+	}
+
+
 	render() {
 		var { menus, article, recommendations, username, modal, captchaImage,
 			isSideOpen, is_loggedin, bookmark_ids, isChecked,
@@ -450,7 +477,7 @@ class ArticleDetail extends React.Component {
 
 		var description = article.caption;
 		var source_url = "";
-		if(source_url !== undefined){
+		if (source_url !== undefined) {
 			source_url = article.source_url;
 		}
 		if (!this.state.has_subscribed) {
@@ -575,34 +602,38 @@ class ArticleDetail extends React.Component {
 													</div>
 												</div>
 											</div>
-											<div className="row">
-												<div className="col-lg-12">
-													<div className="article-detail mb-5">
-														{isLoading ?
-															<Skeleton height={500} />
-															:
-															<JumboBox
-																id={next_article.id}
-																image={next_article.src}
-																title={next_article.title}
-																description={next_article_description}
-																uploaded_by={next_article.source}
-																source_url={next_article.source_url}
-																slug_url={next_article.slug}
-																category={next_article.category}
-																hash_tags={next_article.hash_tags}
-																uploaded_on={next_article.date}
-																is_loggedin={is_loggedin}
-																toggle={this.toggle}
-																is_open={modal}
-																getArticleId={this.getArticleId}
-																bookmark_ids={bookmark_ids}
-																base_url={BASE_URL}
-															/>
-														}
+											{this.state.next_article.map((item) => {
+												return (
+													<div className="row">
+														<div className="col-lg-12">
+															<div className="article-detail mb-5">
+																{isLoading ?
+																	<Skeleton height={500} />
+																	:
+																	<JumboBox
+																		id={item.id}
+																		image={item.src}
+																		title={item.title}
+																		description={item.caption}
+																		uploaded_by={item.source}
+																		source_url={item.source_url}
+																		slug_url={item.slug}
+																		category={item.category}
+																		hash_tags={item.hash_tags}
+																		uploaded_on={item.date}
+																		is_loggedin={is_loggedin}
+																		toggle={this.toggle}
+																		is_open={modal}
+																		getArticleId={this.getArticleId}
+																		bookmark_ids={bookmark_ids}
+																		base_url={BASE_URL}
+																	/>
+																}
+															</div>
+														</div>
 													</div>
-												</div>
-											</div>
+												)
+											})}
 										</div>
 										<div className="col-lg-4 col-12 mb-4">
 											<div className="row">
