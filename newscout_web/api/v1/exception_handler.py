@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import exceptions, status
 from rest_framework.exceptions import AuthenticationFailed
 from collections import OrderedDict
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 def create_error_response(response_data):
