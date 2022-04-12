@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from os.path import basename
-from django.conf.urls import url, include
+from django.urls import include, re_path
 
 from rest_framework.routers import DefaultRouter
 
@@ -17,11 +17,11 @@ url_router.register(
 
 
 urlpatterns = [
-    url('', include(url_router.urls)),
-    url(r'^schedules/$', GetAds.as_view(), name='get-ads'),
-    url(r'^categories/$', CampaignCategoriesListView.as_view(),
+    re_path('', include(url_router.urls)),
+    re_path(r'^schedules/$', GetAds.as_view(), name='get-ads'),
+    re_path(r'^categories/$', CampaignCategoriesListView.as_view(),
         name='campign-categories-view'),
-    url(r'^grouptypes/$', GroupTypeListView.as_view(), name='group-type-view'),
-    url(r'^redirect/$', AdRedirectView.as_view(),
+    re_path(r'^grouptypes/$', GroupTypeListView.as_view(), name='group-type-view'),
+    re_path(r'^redirect/$', AdRedirectView.as_view(),
         name='get-ads-redirect')
 ]

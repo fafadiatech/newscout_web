@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.urls import include, re_path
 from .views import (
     IndexView,
     CampaignView,
@@ -12,20 +12,20 @@ from .views import (
 )
 
 urlpatterns = [
-    url(r"^$", IndexView.as_view(), name="index"),
-    url(r"^campaigns/$", CampaignView.as_view(), name="campaigns"),
-    url(r"^groups/$", GroupView.as_view(), name="groups"),
-    url(r"^advertisements/$", AdvertisementView.as_view(), name="advertisements"),
-    url(r"^articles/$", ArticleView.as_view(), name="articles"),
-    url(r"^article/create/$", ArticleCreateView.as_view(), name="article-create"),
-    url(
+    re_path(r"^$", IndexView.as_view(), name="index"),
+    re_path(r"^campaigns/$", CampaignView.as_view(), name="campaigns"),
+    re_path(r"^groups/$", GroupView.as_view(), name="groups"),
+    re_path(r"^advertisements/$", AdvertisementView.as_view(), name="advertisements"),
+    re_path(r"^articles/$", ArticleView.as_view(), name="articles"),
+    re_path(r"^article/create/$", ArticleCreateView.as_view(), name="article-create"),
+    re_path(
         r"^article/edit/(?P<slug>[\w-]+)/$",
         ArticleEditView.as_view(),
         name="article-edit",
     ),
-    url(r"^qc/$", QCToolView.as_view(), name="qc-tool"),
-    url(r"^subscription/$", SubscriptionView.as_view(), name="subscriptions"),
-    url(
+    re_path(r"^qc/$", QCToolView.as_view(), name="qc-tool"),
+    re_path(r"^subscription/$", SubscriptionView.as_view(), name="subscriptions"),
+    re_path(
         r"^subscription/(?P<pk>[\w-]+)/$",
         SubscriptionView.as_view(),
         name="subscriptions",
