@@ -54,12 +54,12 @@ url_router.register(
     r"article/draft-image", DraftMediaUploadViewSet, basename="draft-media"
 )
 url_router.register(r"comment", CommentViewSet, basename="comment")
-url_router.register(r"categories", CategoryAPI, basename="category")
 
 urlpatterns = [
     url("", include(url_router.urls)),
     url(r"^documentation/", schema_view),
     url(r"^trending/$", TrendingArticleAPI.as_view({'get': 'list'}), name="trending"),
+    url(r"^categories/$", CategoryAPI.as_view({'get': 'list', 'post':'create'}), name="category-list"),
     url(
         r"^categories/bulk/$", CategoryBulkUpdate.as_view(), name="category-bulk-update"
     ),
