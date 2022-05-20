@@ -224,13 +224,13 @@ class UserHashTagAPIView(APIView):
         return Response(create_error_response({"Msg": "Invalid tags"}), status=400)
 
 
-class CategoryModelViewSet(viewsets.ModelViewSet):
+class CategoryAPI(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class SourceModelViewSet(viewsets.ModelViewSet):
+class SourceAPI(viewsets.ModelViewSet):
     """
     List all the sources
     """
@@ -239,7 +239,7 @@ class SourceModelViewSet(viewsets.ModelViewSet):
     serializer_class = SourceSerializer
 
 
-class DomainsModelViewSet(viewsets.ModelViewSet):
+class DomainsAPI(viewsets.ModelViewSet):
     """
     List all the domains
     """
@@ -248,9 +248,9 @@ class DomainsModelViewSet(viewsets.ModelViewSet):
     serializer_class = DomainSerializer
 
 
-class UsersModelViewSet(viewsets.ModelViewSet):
+class UsersAPI(viewsets.ModelViewSet):
     """
-        List all the Users
+    List all the Users
     """
     permission_classes = (AllowAny,)
     queryset = BaseUserProfile.objects.all()
@@ -273,57 +273,13 @@ class PostpageNumberPagination(CursorPagination):
     ordering = "-created_at"
 
 
-class ArticleListAPIView(ListAPIView):
-    serializer_class = ArticleSerializer
+class ArticleListAPI(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
+    serializer_class = ArticleSerializer
     pagination_class = PostpageNumberPagination
+    queryset = Article.objects.all()
     filter_backends = (filters.OrderingFilter,)
     ordering = ("-published_on",)
-
-    def get_queryset(self):
-        q = self.request.GET.get("q", "")
-        tag = self.request.GET.getlist("tag", "")
-        category = self.request.GET.getlist("category", "")
-        source = self.request.GET.getlist("source", "")
-        queryset = Article.objects.all()
-
-        if self.request.user.domain:
-            queryset = queryset.filter(domain=self.request.user.domain)
-        else:
-            queryset = Article.objects.none()
-
-        if source:
-            queryset = queryset.filter(source__name__in=source)
-
-        if category:
-            queryset = queryset.filter(category__name__in=category)
-
-        if tag:
-            queryset = queryset.filter(hash_tags__name__in=tag)
-
-        if q:
-            q_list = q.split(" ")
-            condition_1 = reduce(operator.or_, [Q(title__icontains=s) for s in q_list])
-            condition_2 = reduce(
-                operator.or_, [Q(full_text__icontains=s) for s in q_list]
-            )
-            queryset = queryset.filter(condition_1 | condition_2)
-
-        return queryset
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            if serializer.data:
-                paginated_response = self.get_paginated_response(serializer.data)
-                return Response(create_response(paginated_response.data))
-            else:
-                return Response(
-                    create_error_response({"Msg": "News Doesn't Exist"}), status=400
-                )
 
 
 class ArticleDetailAPIView(APIView):
@@ -615,35 +571,24 @@ class ChangePasswordAPIView(APIView):
             )
 
 
-class BookmarkArticleAPIView(APIView):
+class BookmarkArticleAPI(viewsets.ModelViewSet):
     """
     This class is used to get user bookmark list
     """
 
     permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        user = self.request.user
-        bookmark_list = BookmarkArticleSerializer(
-            BookmarkArticle.objects.filter(user=user), many=True
-        )
-        return Response(create_response({"results": bookmark_list.data}))
+    queryset = BookmarkArticle.objects.all()
+    serializer_class = BookmarkArticleSerializer
 
 
-class ArticleLikeAPIView(APIView):
+class ArticleLikeAPI(viewsets.ModelViewSet):
     """
     This class is used to get user articles
     """
 
     permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        like_list = [0, 1]
-        user = self.request.user
-        article_list = ArticleLikeSerializer(
-            ArticleLike.objects.filter(user=user, is_like__in=like_list), many=True
-        )
-        return Response(create_response({"results": article_list.data}))
+    queryset = ArticleLike.objects.all()
+    serializer_class = ArticleLikeSerializer
 
 
 class HashTagAPIView(ListAPIView):
@@ -901,35 +846,15 @@ class ArticleSearchAPI(APIView):
         return Response(create_response(data))
 
 
-class MenuAPIView(APIView):
+class MenuAPI(viewsets.ModelViewSet):
     """
     This Api will return all the menus
     """
 
     permission_classes = (AllowAny,)
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
 
-    def get(self, request):
-        domain_id = self.request.GET.get("domain")
-        if not domain_id:
-            return Response(
-                create_error_response({"domain": ["Domain id is required"]})
-            )
-
-        domain = Domain.objects.filter(domain_id=domain_id).first()
-        if not domain:
-            return Response(
-                create_error_response({"domain": ["Domain id is required"]})
-            )
-
-        menus = MenuSerializer(Menu.objects.filter(domain=domain), many=True)
-        menus_list = menus.data
-        new_menulist = []
-        for menu in menus_list:
-            menu_dict = {}
-            menu_dict["heading"] = menu
-            new_menulist.append(menu_dict)
-
-        return Response(create_response({"results": new_menulist}))
 
 
 class DevicesAPIView(APIView):
@@ -1248,27 +1173,10 @@ class SocialLoginView(generics.GenericAPIView):
         raise ProviderMissing()
 
 
-class TrendingArticleAPIView(APIView):
+class TrendingArticleAPI(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
-
-    def get(self, request, format=None, *args, **kwargs):
-        """
-        List all the trending articles
-        """
-        domain_id = self.request.GET.get("domain")
-        if not domain_id:
-            return Response(
-                create_error_response({"domain": ["Domain id is required"]})
-            )
-
-        domain = Domain.objects.filter(domain_id=domain_id).first()
-        if not domain:
-            return Response(create_error_response({"domain": ["Invalid domain name"]}))
-
-        source = TrendingArticleSerializer(
-            TrendingArticle.objects.filter(domain=domain), many=True
-        )
-        return Response(create_response({"results": source.data}))
+    queryset = TrendingArticle.objects.all()
+    serializer_class = TrendingArticleSerializer
 
 
 class SocailMediaPublishing:
