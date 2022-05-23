@@ -62,6 +62,7 @@ from api.v1.serializers import (
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 from newscout_web.constants import SOCIAL_AUTH_PROVIDERS
 from django.db.models import Q
 from rest_framework.exceptions import APIException
@@ -278,7 +279,8 @@ class ArticleListAPI(viewsets.ModelViewSet):
     serializer_class = ArticleSerializer
     pagination_class = PostpageNumberPagination
     queryset = Article.objects.all()
-    filter_backends = (filters.OrderingFilter,)
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter,]
+    filterset_fields = ['category' , 'source', 'hash_tags',]
     ordering = ("-published_on",)
 
 
@@ -854,7 +856,8 @@ class MenuAPI(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['domain']
 
 
 class DevicesAPIView(APIView):
@@ -1177,6 +1180,8 @@ class TrendingArticleAPI(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     queryset = TrendingArticle.objects.all()
     serializer_class = TrendingArticleSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['domain']
 
 
 class SocailMediaPublishing:
