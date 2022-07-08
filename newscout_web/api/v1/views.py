@@ -55,6 +55,7 @@ from .serializers import (
     UserListSerializer,
 )
 
+from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import filters
@@ -1941,3 +1942,8 @@ class SyncEtherpadView(APIView):
         article_obj.save()
 
         return Response(create_response({"results": "Article synced successfully."}))
+
+
+
+def Map(request):
+    return render(request,'map.html')
