@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import random
 import spacy
+import re
 
 from django.db import models
 from django.db.models import Max
@@ -136,6 +137,7 @@ class Article(NewsSiteBaseModel):
     source_url = models.TextField(validators=[URLValidator()])
     cover_image = models.TextField(validators=[URLValidator()])
     blurb = models.TextField(blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
     full_text = models.TextField()
     published_on = models.DateTimeField()
     active = models.BooleanField(default=False)
@@ -178,6 +180,8 @@ class Article(NewsSiteBaseModel):
             )
             self.save()
 
+        self.location = re.search("(.*?)\:",self.blurb).group().replace(':', '')
+        print(self.location)
 
     def entities(self):
         """
