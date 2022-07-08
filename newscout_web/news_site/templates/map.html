@@ -1,0 +1,98 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/css/ol.css" type="text/css"> 
+    <link rel="stylesheet" href="./libs/v6.14.1-dist/ol.css" type="text/css">
+    <style>
+      .grid-container{
+        display: grid;
+        grid-template-columns: 80vw 20vw ;
+        grid-template-rows: 100vh;
+      }
+      .sidebar{
+        margin-left: 15px;
+      }
+    </style> 
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
+    
+    <title>OpenLayers Map</title>
+  </head>
+  <body>
+    <script src="./libs/v6.14.1-dist/ol.js"></script>
+    <h2>Openlayers Map</h2>
+    <div class="grid-container">
+      <div class="grid-1">
+        <div id="map" class="map"></div>
+      </div>
+      <div class="grid-2">
+        <div class="sidebar">
+          <h2>Base Layer</h2>
+        </div>
+      </div>
+    </div>
+    
+    <script type="text/javascript">
+      var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM({
+              attributions: 'Openlayers Map'
+            })
+          })
+        ],
+        view: new ol.View({
+          center: [8777123.293663096,2570545.0750152543],
+          zoom: 6,
+          maxZoom: 10,
+          minZoom: 4,
+          rotation: 0.5
+        })
+      });
+
+      var Style = new ol.style.Style({
+
+       // image: new ol.style.Circle({
+          //  radius: 10,
+          //  fill: new ol.style.Fill({
+           // color: '#3399CC'
+         // })
+       // })
+  
+        image: new ol.style.Icon({
+           anchor: [0.5, 10],
+           anchorXUnits: 'fraction',
+           anchorYUnits: 'pixels',
+           src: '/../../static/images/icons/navigation/marker.png',
+         }),
+      });
+
+
+      var marker1 = new ol.Feature({
+        geometry: new ol.geom.Point([8221570.4107151935, 2097195.2485362617]),
+        type: 'city',
+        name: 'pune'
+      });
+
+    var marker2 = new ol.Feature({
+      geometry: new ol.geom.Point([8110610.705830841, 2164387.514271786]),
+      type: 'city',
+      name: 'mumbai'
+    });
+
+
+    var vectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [marker1, marker2]
+      }),
+      style: Style
+    });
+
+    map.addLayer(vectorLayer);
+
+    map.on('click', function(e){
+      console.log(e.coordinate);
+    })
+    </script>
+  </body>
+</html> 
