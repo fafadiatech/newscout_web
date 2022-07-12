@@ -770,7 +770,7 @@ class App extends React.Component {
 
 				<Auth is_open={modal} toggle={this.toggle} loggedInUser={this.loggedInUser} />
 
-				<Footer privacyurl="#" facebookurl="#" twitterurl="#" />
+				<Footer privacyurl="#" facebookurl="https://www.facebook.com/fafadiatech/" twitterurl="https://twitter.com/FafadiaTechHQ" />
 			</React.Fragment>
 		);
 	}
