@@ -6,7 +6,7 @@ import Skeleton from 'react-loading-skeleton';
 import { Menu, VerticleCardItem, SideBar, Footer, VerticleCardAd } from 'newscout';
 
 import { BASE_URL, MENUS, ARTICLE_POSTS, ARTICLE_LOGOUT, SUGGESTIONS, SCHEDULES_URL, ALL_ARTICLE_BOOKMARK, ARTICLE_BOOKMARK } from '../../utils/Constants';
-import { getRequest } from '../../utils/Utils';
+import { getRequest, postRequest } from '../../utils/Utils';
 
 import Auth from './Auth';
 
