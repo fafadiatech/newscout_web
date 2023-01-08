@@ -86,6 +86,9 @@ in settings.py file it will create sqlite database (You can skip following 3 ste
 
 ## TODOs
 
+- [ ] Keep one version of NPM vs Yarn
+- [ ] Update the NodeJS version
+- [ ] Use Typescript for our new UI
 - [ ] Cleanup all dependencies
 - [ ] Remove all OAuth dependencies
 - [ ] Update Django & Python version for this Project
