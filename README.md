@@ -83,3 +83,11 @@ in settings.py file it will create sqlite database (You can skip following 3 ste
    ```
 1. Ingest data into elasticsearch `python manage.py ingest_data_to_elastic`
 1. Ensure you've installed NER model from spaCy `python3 -m spacy download en_core_web_sm`
+
+## TODOs
+
+- [ ] Cleanup all dependencies
+- [ ] Remove all OAuth dependencies
+- [ ] Update Django & Python version for this Project
+- [ ] Separate Backend and Frontend
+- [ ] Deprecate current frontend and rewrite new one in GatsbyJS
