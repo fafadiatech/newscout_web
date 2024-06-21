@@ -14,7 +14,7 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import url, include
+from django.urls import include, re_path
 from django.contrib import admin
 from ajax_select import urls as ajax_select_urls
 from dashboard.views import (
@@ -30,25 +30,25 @@ from core.feed import ArticlesFeed
 app_name = "newscout_web"
 
 urlpatterns = [
-    url(r"^$", IndexView.as_view(), name="index"),
-    url(r"^login/$", LoginView.as_view(), name="login"),
-    url(r"^logout/$", LogOutView.as_view(), name="logout"),
-    url(r"^change-password/$", ChangePasswordView.as_view(), name="change-password"),
-    url(
+    re_path(r"^$", IndexView.as_view(), name="index"),
+    re_path(r"^login/$", LoginView.as_view(), name="login"),
+    re_path(r"^logout/$", LogOutView.as_view(), name="logout"),
+    re_path(r"^change-password/$", ChangePasswordView.as_view(), name="change-password"),
+    re_path(
         r"^user/change-password/$",
         UserChangePasswordView.as_view(),
         name="user-change-password",
     ),
-    url(r"^user/profile/$", UserProfileView.as_view(), name="user-profile"),
-    url(r"^etherpad/(?P<slug>[\w-]+)/$", EtherpadView.as_view(), name="etherpad"),
-    url(r"^analytics/", include("analytics.urls")),
-    url(r"^dashboard/", include("dashboard.urls")),
-    url(r"^news/", include("news_site.urls")),
-    url(r"^ajax_select/", include(ajax_select_urls)),
-    url(r"^admin/", admin.site.urls),
-    url(r"^api/", include("api.urls")),
-    url(r"^event/", include("event_tracking.urls")),
-    url(r"^adapi/", include("advertising.urls")),
-    url(r"^article/rss/", ArticlesFeed(), name="news-item"),
-    url(r"^captcha/", include("captcha.urls")),
+    re_path(r"^user/profile/$", UserProfileView.as_view(), name="user-profile"),
+    re_path(r"^etherpad/(?P<slug>[\w-]+)/$", EtherpadView.as_view(), name="etherpad"),
+    re_path(r"^analytics/", include("analytics.urls")),
+    re_path(r"^dashboard/", include("dashboard.urls")),
+    re_path(r"^news/", include("news_site.urls")),
+    re_path(r"^ajax_select/", include(ajax_select_urls)),
+    re_path(r"^admin/", admin.site.urls),
+    re_path(r"^api/", include("api.urls")),
+    re_path(r"^event/", include("event_tracking.urls")),
+    re_path(r"^adapi/", include("advertising.urls")),
+    re_path(r"^article/rss/", ArticlesFeed(), name="news-item"),
+    re_path(r"^captcha/", include("captcha.urls")),
 ]
