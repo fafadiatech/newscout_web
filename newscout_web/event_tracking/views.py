@@ -19,7 +19,7 @@ class TrackerAPI(View):
         pixel = open(pixel_path, "rb").read()
 
         fired_event = {}
-        for k,v in request.GET.items():
+        for k, v in request.GET.items():
             fired_event[k] = v
 
         events.add(fired_event)
@@ -50,9 +50,9 @@ class NewsCoutLogAPI(APIView):
         results = {}
 
         for i in data:
-            if "category_name" in i and "domain_id" in i:
+            if "category_name" in i and "domain" in i:
                 value = i["category_name"]
-                key = i["domain_id"]
+                key = i["domain"]
                 if key not in results:
                     results[key] = [value]
                 else:
@@ -62,9 +62,9 @@ class NewsCoutLogAPI(APIView):
         if not results:
             data = events.collection.find({'device_id': device_id}).sort([("ts", pymongo.DESCENDING)])
             for i in data:
-                if "category_name" in i and "domain_id" in i:
+                if "category_name" in i and "domain" in i:
                     value = i["category_name"]
-                    key = i["domain_id"]
+                    key = i["domain"]
                     if key not in results:
                         results[key] = [value]
                     else:
