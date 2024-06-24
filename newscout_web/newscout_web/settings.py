@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'news_site',
     'captcha',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
