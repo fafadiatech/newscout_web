@@ -39,6 +39,7 @@ from .views import (
     SendInvitationView,
     SyncEtherpadView,
     RelatedAPIView,
+    Map,
 )
 from django.conf.urls import url, include
 
@@ -58,6 +59,7 @@ url_router.register(r"comment", CommentViewSet, basename="comment")
 urlpatterns = [
     url("", include(url_router.urls)),
     url(r"^documentation/", schema_view),
+    url(r"map/", Map, name='Map'),
     url(r"^trending/$", TrendingArticleAPIView.as_view(), name="trending"),
     url(
         r"^categories/bulk/$", CategoryBulkUpdate.as_view(), name="category-bulk-update"
